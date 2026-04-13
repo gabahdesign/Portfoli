@@ -1,0 +1,19 @@
+{
+  "Index": {
+    "welcome": "Bienvenue",
+    "featured_works": "Travaux en vedette",
+    "experience": "Expérience",
+    "personal_projects": "Projets personnels et collaborations",
+    "no_projects_found": "Aucun projet trouvé pour la catégorie sélectionnée.",
+    "collaborations_title": "Collaborations",
+    "collaborations_desc": "Une sélection d'entreprises et de marques qui ont fait confiance à ma vision pour leurs projets numériques.",
+    "view_cv": "Voir le CV professionnel"
+  },
+  "Navigation": {
+    "home": "Accueil",
+    "about_me": "À propos de moi",
+    "cv": "Curriculum",
+    "projectes": "Projets",
+    "back": "Retour"
+  }
+}

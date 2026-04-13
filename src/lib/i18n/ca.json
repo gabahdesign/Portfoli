@@ -1,0 +1,19 @@
+{
+  "Index": {
+    "welcome": "Benvingut",
+    "featured_works": "Treballs destacats",
+    "experience": "Experiència",
+    "personal_projects": "Projectes personals i col·laboracions",
+    "no_projects_found": "No s'ha trobat cap projecte de la categoria seleccionada.",
+    "collaborations_title": "Col·laboracions",
+    "collaborations_desc": "Una selecció d'empreses i marques que han confiat en la meva visió per als seus projectes digitals.",
+    "view_cv": "Veure currículum professional"
+  },
+  "Navigation": {
+    "home": "Inici",
+    "about_me": "Sobre mi",
+    "cv": "Currículum",
+    "projectes": "Projectes",
+    "back": "Tornar"
+  }
+}

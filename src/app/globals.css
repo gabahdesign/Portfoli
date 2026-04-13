@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESCOBREIX PORTFOLIO — Design Token System
+   Primary: Violet #843aea (descobreix.com exact)
+   Danger/CTA: Red #FF0A0A
+   ============================================================ */
+
+:root {
+  /* Surfaces (Zinc-inspired for professional depth) */
+  --color-bg: #09090b;
+  --color-surface: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-border: #27272a;
+  --color-border-subtle: #1a1a1c;
+
+  /* Text */
+  --color-text: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-muted-2: #52525b;
+
+  /* Brand Accent — Violet (Descobreix exact dark mode) */
+  --color-accent: #843aea;
+  --color-accent-hover: #7a23cc;
+  --color-accent-subtle: rgba(132, 58, 234, 0.12);
+  --color-accent-glow: rgba(132, 58, 234, 0.25);
+
+  /* Red — for CTAs, Danger, Highlights */
+  --color-red: #FF0A0A;
+  --color-red-hover: #D00000;
+  --color-red-subtle: rgba(255, 10, 10, 0.1);
+}
+
+.light {
+  --color-bg: #FFFFFF;
+  --color-surface: #F8F9FA;
+  --color-surface-2: #F1F3F5;
+  --color-border: #DEE2E6;
+  --color-border-subtle: #E9ECEF;
+
+  --color-text: #121212;
+  --color-muted: #495057;
+  --color-muted-2: #868E96;
+
+  /* Violet stays as accent (readable on light bg) */
+  --color-accent: #6D28D9;
+  --color-accent-hover: #5B21B6;
+  --color-accent-subtle: rgba(109, 40, 217, 0.08);
+  --color-accent-glow: rgba(109, 40, 217, 0.15);
+
+  --color-red: #DC2626;
+  --color-red-hover: #991B1B;
+  --color-red-subtle: rgba(220, 38, 38, 0.08);
+}
+
+@theme inline {
+  /* Core colors mapped to Tailwind utilities */
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-border: var(--color-border);
+  --color-border-subtle: var(--color-border-subtle);
+  
+  --color-text: var(--color-text);
+  --color-muted: var(--color-muted);
+  --color-muted-2: var(--color-muted-2);
+  
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-subtle: var(--color-accent-subtle);
+  --color-accent-glow: var(--color-accent-glow);
+
+  /* Fonts — Space Grotesk headlines + Inter body */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hero headings use display font */
+h1, h2, h3 {
+  font-family: var(--font-display);
+}
+
+/* Scrollbar — subtle and branded */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* Selection */
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Smooth transitions on theme change */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
