@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Plus, Edit2, Trash2, X, ChevronDown, ChevronRight, GripVertical, Building2, Landmark, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Edit2, Trash2, X, ChevronDown, ChevronRight, GripVertical, Building2, Landmark, ArrowUp, ArrowDown, Sparkles } from "lucide-react";
 
 export default function AdminEmpresas() {
   const [empresas, setEmpresas] = useState<any[]>([]);
