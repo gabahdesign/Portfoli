@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Home, User, LayoutGrid, FileText,
-  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil
+  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar
 } from "lucide-react";
 import { RequestAccessModal } from "./RequestAccessModal";
 
@@ -213,7 +213,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
   const t = useTranslations("Navigation");
 
   const isPreview = token === "preview";
-  const restrictedSections = ["projectes", "cv", "blog"];
+  const restrictedSections = ["blog"];
 
   useEffect(() => {
     const handleOpenSettings = () => setMobileSettingsOpen(true);
@@ -227,6 +227,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     { href: `/v/${token}/projectes`, label: t("projectes"), icon: LayoutGrid },
     { href: `/v/${token}/cv`, label: t("cv"), icon: FileText },
     { href: `/v/${token}/blog`, label: "Blog", icon: BookOpen },
+    { href: `/v/${token}/move`, label: t("move"), icon: Calendar },
   ];
 
   const isActive = (href: string) => {

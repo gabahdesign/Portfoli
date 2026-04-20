@@ -15,7 +15,8 @@
     "cv": "Resume",
     "projectes": "Projects",
     "back": "Back",
-    "settings": "Settings"
+    "settings": "Settings",
+    "move": "Move"
   },
   "Settings": {
     "title": "Settings",
