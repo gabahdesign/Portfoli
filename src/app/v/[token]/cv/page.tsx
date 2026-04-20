@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Download } from "lucide-react";
-import { Heatmap } from "@/components/portfolio/Heatmap";
 
 export default async function CVPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -106,9 +105,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
           </a>
       </div>
 
-      <div className="mb-20">
-        <Heatmap />
-      </div>
+
 
       <div className="space-y-20">
         {(!cvSections || cvSections.length === 0) && (
