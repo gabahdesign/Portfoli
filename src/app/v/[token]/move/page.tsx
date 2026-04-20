@@ -1,10 +1,14 @@
 import { Heatmap } from "@/components/portfolio/Heatmap";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Activity, Zap, MessageSquare } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function MovePage({ params }: { params: Promise<{ token: string }> }) {
   const locale = await getLocale();
   const t = await getTranslations("Navigation");
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+  const isAdmin = !!session;
 
   // Placeholder for Move Calendar activities
   const days = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
@@ -32,9 +36,11 @@ export default async function MovePage({ params }: { params: Promise<{ token: st
            <button className="flex items-center gap-2 px-6 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-sm font-bold hover:bg-[var(--color-surface-2)] transition-all">
              <ChevronRight size={16} />
            </button>
-           <button className="flex items-center gap-2 px-8 py-3 bg-[var(--color-accent)] text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all">
-             <Plus size={18} /> Afegir
-           </button>
+           {isAdmin && (
+             <button className="flex items-center gap-2 px-8 py-3 bg-[var(--color-accent)] text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all">
+               <Plus size={18} /> Afegir
+             </button>
+           )}
         </div>
       </div>
 
@@ -77,9 +83,11 @@ export default async function MovePage({ params }: { params: Promise<{ token: st
                )}
             </div>
 
-            <button className="mt-4 p-2 rounded-lg border border-dashed border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center">
-               <Plus size={14} />
-            </button>
+            {isAdmin && (
+              <button className="mt-4 p-2 rounded-lg border border-dashed border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                 <Plus size={14} />
+              </button>
+            )}
           </div>
         ))}
       </div>
