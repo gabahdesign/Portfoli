@@ -1,0 +1,50 @@
+/* 
+   MOVE MODERN — DESIGN TOKENS
+   Mirrored from Descobreix Portfolio Design System
+*/
+
+:root {
+  /* Surfaces & Backgrounds */
+  --color-bg: #09090b;
+  --color-surface: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-border: #27272a;
+  --color-border-subtle: #1a1a1c;
+
+  /* Text Colors */
+  --color-text: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-muted-2: #52525b;
+
+  /* Brand Accent — Portfolio Blue */
+  --color-accent: #156EF6;
+  --color-accent-hover: #0F5ED4;
+  --color-accent-subtle: rgba(21, 110, 246, 0.08);
+  --color-accent-glow: rgba(21, 110, 246, 0.15);
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+
+  /* Effects */
+  --radius-3xl: 24px;
+  --radius-2xl: 16px;
+  --glass-bg: rgba(20, 20, 22, 0.7);
+  --glass-border: rgba(39, 39, 42, 0.5);
+  --glass-blur: blur(12px);
+}
+
+.light {
+  --color-bg: #FFFFFF;
+  --color-surface: #F8F9FA;
+  --color-surface-2: #F1F3F5;
+  --color-border: #DEE2E6;
+  --color-border-subtle: #E9ECEF;
+
+  --color-text: #121212;
+  --color-muted: #495057;
+  --color-muted-2: #868E96;
+
+  --glass-bg: rgba(248, 249, 250, 0.7);
+  --glass-border: rgba(222, 226, 230, 0.5);
+}

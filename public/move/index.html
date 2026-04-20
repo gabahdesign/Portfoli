@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ca" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Move Dashboard — Descobreix</title>
+    
+    <!-- Design System (Modern UI) -->
+    <link rel="stylesheet" href="css/modern_tokens.css">
+    <link rel="stylesheet" href="css/modern_animations.css">
+    <link rel="stylesheet" href="css/modern_ui.css">
+    <link rel="stylesheet" href="css/modern_calendar.css">
+    
+    <!-- External Dependencies: Leaflet (Maps) & Quill (Rich Text) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="modern-body">
+
+    <!-- 1. PREMIUM HEADER (Glassmorphic) -->
+    <header class="modern-header" id="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="#" class="header-logo">
+                    <span class="logo-accent">Move</span>
+                    <span class="logo-dot">.</span>
+                </a>
+            </div>
+            
+            <!-- Calendar Navigation (Desktop) -->
+            <div class="header-center" id="calendar-nav-controls">
+                <button class="nav-btn" id="prev-btn" title="Anterior">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="current-date-badge">
+                    <span id="display-month">Abril</span>
+                    <span id="display-year" class="opacity-50">2026</span>
+                </div>
+                <button class="nav-btn" id="next-btn" title="Següent">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <div class="header-right">
+                <button class="btn-today" id="today-btn">Avui</button>
+                <div class="v-divider"></div>
+                <button class="portfolio-back-btn" id="back-to-portfolio">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 5 12 10 7"/><line x1="15" y1="12" x2="5" y2="12"/></svg>
+                    <span>Portfolio</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="modern-main overflow-x-hidden">
+        
+        <!-- 2. CONTROL BAR (View Switchers & Filters) -->
+        <section class="control-bar reveal-fade-in">
+            <div class="control-content">
+                <!-- Mobile Date Navigation (Hidden on desktop) -->
+                <div class="mobile-nav-inline md:hidden">
+                    <button class="nav-btn-sm" id="prev-btn-mob"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"/></svg></button>
+                    <span id="display-date-mob">Abril 2026</span>
+                    <button class="nav-btn-sm" id="next-btn-mob"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg></button>
+                </div>
+
+                <div class="view-selectors">
+                    <button class="view-chip active" data-view="month" id="view-month">Mes</button>
+                    <button class="view-chip" data-view="week" id="view-week">Setmana</button>
+                </div>
+
+                <div class="flex-spacer"></div>
+
+                <!-- Mobile Grid/List Toggle -->
+                <div class="mobile-toggle-group" id="mobile-layout-toggle-container">
+                    <label class="toggle-label md:hidden">
+                        <input type="checkbox" id="mobile-layout-toggle">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text-grid">Graella</span>
+                        <span class="toggle-text-list">Llista</span>
+                    </label>
+                </div>
+
+                <!-- Category Pills (Scrollable) -->
+                <div class="category-filters-wrapper">
+                    <div class="category-filters" id="category-chips-container">
+                        <!-- Chips injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CALENDAR VIEWPORT -->
+        <section class="calendar-viewport reveal-scale-up" id="calendar-container">
+            <!-- Grid generated by modern_calendar.js -->
+            <div id="calendar-render-target"></div>
+        </section>
+
+        <!-- 4. ACTIVITY MAP -->
+        <section class="map-section reveal-fade-in">
+            <div class="map-header">
+                <div class="flex items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <h3 class="font-bold text-sm uppercase tracking-widest">Mapa d'activitats</h3>
+                </div>
+            </div>
+            <div id="move-map" class="modern-map-container"></div>
+        </section>
+
+    </main>
+
+    <!-- 5. FLOATING ACTION BUTTON (Admin Only) -->
+    <button class="admin-fab" id="admin-add-btn" style="display: none;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <!-- 6. MODALS -->
+    
+    <!-- Modal: Detalls d'un dia (Usuaris) -->
+    <div class="modern-modal-overlay" id="day-plans-modal">
+        <div class="modern-modal day-modal animate-in zoom-in duration-300">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-subtitle" id="plans-modal-date">Dl, 24 Abril</span>
+                    <h2 class="modal-title">Plans d'avui</h2>
+                </div>
+                <button class="modal-close" onclick="closeModal('day-plans-modal')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="plans-list-container">
+                <!-- Dynamically filled with agenda items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Creació / Edició (Admin) -->
+    <div class="modern-modal-overlay" id="admin-form-modal">
+        <div class="modern-modal form-modal animate-in slide-in-from-bottom-10 duration-300">
+            <div class="modal-header">
+                <h2 class="modal-title" id="form-modal-title">Nova Activitat</h2>
+                <button class="modal-close" onclick="closeModal('admin-form-modal')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="move-activity-form" class="modern-form">
+                    <div className="form-grid">
+                        <!-- Standard Fields -->
+                        <div class="form-group flex-2">
+                            <label>Títol de l'activitat</label>
+                            <input type="text" name="title" id="form-title" placeholder="Ejem: Ruta per Collserola" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria</label>
+                            <select name="category_id" id="form-category-select">
+                                <!-- Categories injected by JS -->
+                            </select>
+                        </div>
+
+                        <!-- Dynamic Fields Row (Injected here) -->
+                        <div id="dynamic-fields-row" class="dynamic-fields-container"></div>
+                        
+                        <div class="form-group flex-2">
+                            <label>Ubicació (Nom o URL Google Maps)</label>
+                            <input type="text" name="location" id="form-location" placeholder="Barcelona, España...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data i Hora</label>
+                            <input type="datetime-local" name="date" id="form-date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripció detallada</label>
+                        <div id="editor-container" class="modern-quill-editor"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" onclick="closeModal('admin-form-modal')">Cancel·lar</button>
+                        <button type="submit" class="btn-submit">Guardar Activitat</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="js/modern_sync.js"></script>
+    <script src="js/modern_calendar.js"></script>
+</body>
+</html>

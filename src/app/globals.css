@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* ============================================================
    DESCOBREIX PORTFOLIO — Design Token System
@@ -99,6 +100,71 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide default cursor on interactive elements - REMOVED */
+a, button, [role="button"], input, select, textarea {
+  /* cursor none removed */
+}
+
+/* Typography Polish */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+/* Enhanced Prose (Tailwind Typography Overrides) */
+.prose {
+  --tw-prose-body: var(--color-muted);
+  --tw-prose-headings: var(--color-text);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-text);
+  --tw-prose-quotes: var(--color-text);
+  --tw-prose-hr: var(--color-border);
+}
+
+.prose p {
+  line-height: 1.8;
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+}
+
+.prose img {
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  margin: 3rem 0;
+}
+
+.prose h2 {
+  font-size: 2.25rem;
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--color-accent);
+  padding-left: 1.5rem;
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--color-accent);
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  background: var(--color-surface-2);
+  padding: 2rem;
+  border-radius: 0 1rem 1rem 0;
+  margin: 3rem 0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Hero headings use display font */

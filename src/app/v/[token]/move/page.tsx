@@ -1,104 +1,71 @@
 import { Heatmap } from "@/components/portfolio/Heatmap";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Activity, Zap, MessageSquare } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Activity, Zap, MessageSquare, Lock } from "lucide-react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { MoveCalendar } from "@/components/move/MoveCalendar";
+import { MoveMap } from "@/components/move/MoveMap";
 
-export default async function MovePage({ params }: { params: Promise<{ token: string }> }) {
-  const locale = await getLocale();
-  const t = await getTranslations("Navigation");
+export default async function MovePage() {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   const isAdmin = !!session;
 
-  // Placeholder for Move Calendar activities
-  const days = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
-  
+  const { data: groups } = await supabase.from("move_groups").select("*").order("sort_order", { ascending: true });
+  const { data: categories } = await supabase.from("move_categories").select("*").order("name", { ascending: true });
+  const { data: activities } = await supabase.from("move_activities").select("*, move_categories(name, move_groups(accent_color))").order("start_datetime", { ascending: true });
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-16 animate-in fade-in duration-700">
+    <div className="w-full max-w-6xl mx-auto px-4 md:px-10 py-12 md:py-20 animate-in fade-in duration-700">
       {/* 1. HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8 border-b border-[var(--color-border)] pb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-widest mb-4">
-             <Activity size={12} /> Move Activity Tracking
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-widest mb-6">
+             <Activity size={12} className="animate-pulse" /> Move Activity Hub
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-black text-[var(--color-text)] tracking-tighter lowercase">
+          <h1 className="font-display text-6xl md:text-8xl font-black text-[var(--color-text)] tracking-tighter lowercase leading-[0.8]">
             move<span className="text-[var(--color-accent)]">.</span>
           </h1>
           <p className="text-[var(--color-muted)] mt-4 max-w-xl font-medium leading-relaxed">
-            Gestió integrada d'activitats, entrenaments i progrés. Una eina dissenyada per a l'optimització del rendiment.
+            Gestió integrada d&apos;activitats, entrenaments i progrés. Una eina dissenyada per a l&apos;optimització del rendiment.
           </p>
         </div>
         
         <div className="flex gap-3">
-           <button className="flex items-center gap-2 px-6 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-sm font-bold hover:bg-[var(--color-surface-2)] transition-all">
-             <ChevronLeft size={16} />
-           </button>
-           <button className="flex items-center gap-2 px-6 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-sm font-bold hover:bg-[var(--color-surface-2)] transition-all">
-             <ChevronRight size={16} />
-           </button>
-           {isAdmin && (
-             <button className="flex items-center gap-2 px-8 py-3 bg-[var(--color-accent)] text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all">
-               <Plus size={18} /> Afegir
-             </button>
-           )}
+            {!isAdmin && (
+              <Link 
+                href="/admin" 
+                className="flex items-center gap-2 px-8 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-accent)] rounded-xl text-sm font-bold transition-all shadow-lg"
+              >
+                <Lock size={16} /> Admin Access
+              </Link>
+            )}
         </div>
       </div>
 
-      {/* 2. MAIN CALENDAR GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-2xl mb-20">
-        {days.map(day => (
-          <div key={day} className="bg-[var(--color-surface)] p-6 min-h-[300px] flex flex-col group hover:bg-[var(--color-surface-2)] transition-colors">
-            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-6">{day}</span>
-            
-            <div className="flex-1 space-y-3">
-               {/* Mock Activities */}
-               {day === "Dilluns" && (
-                 <div className="p-3 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 rounded-xl">
-                   <div className="flex items-center gap-2 text-[var(--color-accent)] mb-1">
-                     <Zap size={10} />
-                     <span className="text-[9px] font-black uppercase">Entrenament</span>
-                   </div>
-                   <p className="text-[11px] font-bold">Resistència 45'</p>
-                 </div>
-               )}
-               
-               {day === "Dimecres" && (
-                 <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
-                   <div className="flex items-center gap-2 text-[var(--color-muted)] mb-1">
-                     <CalendarIcon size={10} />
-                     <span className="text-[9px] font-black uppercase">Planificació</span>
-                   </div>
-                   <p className="text-[11px] font-bold">Sessió Tècnica</p>
-                 </div>
-               )}
+      <MoveCalendar 
+        isAdmin={isAdmin} 
+        groups={groups || []} 
+        categories={categories || []} 
+        activities={activities || []}
+      />
 
-               {day === "Divendres" && (
-                 <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-                   <div className="flex items-center gap-2 text-amber-500 mb-1">
-                     <MessageSquare size={10} />
-                     <span className="text-[9px] font-black uppercase">Revisió</span>
-                   </div>
-                   <p className="text-[11px] font-bold">Feedback Coach</p>
-                 </div>
-               )}
-            </div>
-
-            {isAdmin && (
-              <button className="mt-4 p-2 rounded-lg border border-dashed border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center">
-                 <Plus size={14} />
-              </button>
-            )}
-          </div>
-        ))}
+      {/* 3. FIELD MAP */}
+      <div className="mt-20">
+        <div className="mb-10">
+          <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Geolocalització</h2>
+          <p className="text-[var(--color-muted)] text-sm">Visualització de les activitats sobre el terreny per a una millor planificació logística.</p>
+        </div>
+        <MoveMap activities={activities || []} />
       </div>
 
-      {/* 3. FOOTER HEATMAP */}
+      {/* 4. FOOTER HEATMAP */}
       <div className="pt-20 border-t border-[var(--color-border)]">
         <div className="mb-10">
-          <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Activitat de Desenvolupament</h2>
-          <p className="text-[var(--color-muted)] text-sm">Resum anual de contribucions i activitat registrada a Move.</p>
+          <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Evolució de Rendiment</h2>
+          <p className="text-[var(--color-muted)] text-sm">Resum de la teva activitat física anual.</p>
         </div>
-        <Heatmap />
+        <Heatmap activities={activities || []} />
       </div>
     </div>
   );

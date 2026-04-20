@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/portfolio/Navbar";
 import { WelcomeBanner } from "@/components/portfolio/WelcomeBanner";
 import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
+import { CustomCursor } from "@/components/portfolio/CustomCursor";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -74,6 +75,7 @@ export default async function TokenLayout({
   return (
     <div className="min-h-screen bg-[var(--color-bg)] flex w-full">
       {!isPreview && <AnalyticsTracker token={token} />}
+      <CustomCursor />
       <Navbar token={token} locale={locale} isAdmin={!!session} />
       
       <main className="flex-1 w-full ml-0 md:ml-[240px] pb-20 md:pb-0 min-h-screen pt-16 md:pt-0 transition-all duration-300 overflow-x-hidden">

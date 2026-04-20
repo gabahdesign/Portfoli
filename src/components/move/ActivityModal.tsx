@@ -1,0 +1,492 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2 } from "lucide-react";
+import { clsx } from "clsx";
+import { saveActivity, deleteActivity, geocodeLocation } from "@/app/actions/activities";
+import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
+
+interface Category {
+  id: string;
+  name: string;
+  group_id: string;
+}
+
+interface Group {
+  id: string;
+  name: string;
+  icon_key: string;
+  accent_color: string;
+}
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  Mountain,
+  Waves,
+  Zap,
+  Flag,
+  Music,
+  Users,
+  Cpu,
+  Utensils,
+  Beer,
+  Search: SearchIcon
+};
+
+interface ActivityModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  groups: Group[];
+  categories: Category[];
+  editActivity?: any;
+  initialDate?: Date;
+}
+
+export function ActivityModal({ isOpen, onClose, groups, categories, editActivity, initialDate }: ActivityModalProps) {
+  const [step, setStep] = useState<'group' | 'category' | 'details'>('group');
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const router = useRouter();
+  
+  const [formData, setFormData] = useState({
+    id: "",
+    title: "",
+    description: "",
+    date: new Date().toISOString().split('T')[0],
+    time: "10:00",
+    endTime: "",
+    isAllDay: false,
+    location: "",
+    lat: "",
+    lng: "",
+    distance: "",
+    elevation: "",
+    difficulty: ""
+  });
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (editActivity) {
+        setStep('details');
+        
+        const cat = categories.find(c => c.id === editActivity.category_id);
+        setSelectedCategory(cat || null);
+        if (cat) {
+           const grp = groups.find(g => g.id === cat.group_id);
+           setSelectedGroup(grp || null);
+        }
+
+        const dateObj = new Date(editActivity.start_datetime);
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        
+        const HH = String(dateObj.getHours()).padStart(2, '0');
+        const MM = String(dateObj.getMinutes()).padStart(2, '0');
+
+        setFormData({
+          id: editActivity.id,
+          title: editActivity.title || "",
+          description: editActivity.description || "",
+          date: `${yyyy}-${mm}-${dd}`,
+          time: `${HH}:${MM}`,
+          endTime: editActivity.end_datetime ? `${String(new Date(editActivity.end_datetime).getHours()).padStart(2, '0')}:${String(new Date(editActivity.end_datetime).getMinutes()).padStart(2, '0')}` : "",
+          isAllDay: editActivity.metadata?.isAllDay || false,
+          location: editActivity.location || "",
+          lat: editActivity.location_coords?.lat?.toString() || "",
+          lng: editActivity.location_coords?.lng?.toString() || "",
+          distance: editActivity.metadata?.distance?.toString() || "",
+          elevation: editActivity.metadata?.elevation?.toString() || "",
+          difficulty: editActivity.metadata?.difficulty || ""
+        });
+      } else {
+        setStep('group');
+        setSelectedGroup(null);
+        setSelectedCategory(null);
+        setSearch("");
+        
+        const d = initialDate || new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+
+        setFormData({
+          id: "",
+          title: "",
+          description: "",
+          date: `${yyyy}-${mm}-${dd}`,
+          time: "10:00",
+          endTime: "",
+          isAllDay: false,
+          location: "",
+          lat: "",
+          lng: "",
+          distance: "",
+          elevation: "",
+          difficulty: ""
+        });
+      }
+    }
+  }, [isOpen, editActivity, initialDate, categories, groups]);
+
+  const handleSave = async () => {
+    if (!selectedCategory) return;
+    setLoading(true);
+    try {
+      const activityData = {
+        ...formData,
+        location_coords: (formData.lat && formData.lng) 
+           ? { lat: parseFloat(formData.lat), lng: parseFloat(formData.lng) } 
+           : null
+      };
+      
+      const res = await saveActivity(activityData, selectedCategory.id);
+      if (res.success) {
+        onClose();
+      } else {
+        alert("Error guardant: " + res.error);
+      }
+    } catch (e) {
+      alert("Error crític");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!formData.id || !confirm("Estàs segur d'eliminar aquesta activitat permanentment?")) return;
+    setIsDeleting(true);
+    try {
+      const res = await deleteActivity(formData.id);
+      if (res.success) onClose();
+      else alert("Error eliminant: " + res.error);
+    } catch (e) {
+      alert("Error crític");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleGeocode = async () => {
+    if (!formData.location) return;
+    setIsGeocoding(true);
+    try {
+       const res = await geocodeLocation(formData.location);
+       if (res.success) {
+          setFormData(prev => ({ ...prev, lat: res.lat, lng: res.lng }));
+       } else {
+          alert("No s'ha pogut trobar la ubicació exacta.");
+       }
+    } catch (e) {
+       alert("Error de connexió geolocalitzant.");
+    } finally {
+       setIsGeocoding(false);
+    }
+  };
+
+  // Automatic Difficulty Suggestion
+  useEffect(() => {
+    if (selectedGroup?.name === 'Muntanya i Natura' || selectedGroup?.name === 'Esport i Benestar') {
+      const dist = parseFloat(formData.distance) || 0;
+      const elev = parseFloat(formData.elevation) || 0;
+      
+      let suggestion = "";
+      if (dist === 0 && elev === 0) suggestion = "";
+      else if (dist < 5 && elev < 200) suggestion = "Fàcil / Familiar";
+      else if (dist < 12 && elev < 600) suggestion = "Moderat";
+      else if (dist < 20 && elev < 1200) suggestion = "Exigent";
+      else suggestion = "Molt Exigent / Expert";
+      
+      if (suggestion && formData.difficulty === "") {
+        setFormData(prev => ({ ...prev, difficulty: suggestion }));
+      }
+    }
+  }, [formData.distance, formData.elevation, selectedGroup]);
+
+  if (!isOpen) return null;
+
+  const filteredCategories = categories.filter(c => 
+    c.group_id === selectedGroup?.id && 
+    c.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex justify-center md:justify-end items-end md:items-stretch p-2 sm:p-4 md:p-0">
+      {/* Backdrop (Invisible but captures clicks to close) */}
+      <div className="absolute inset-0 bg-black/10 transition-opacity duration-500" onClick={onClose} />
+      
+      {/* Drawer / Modal Content */}
+      <div className="relative w-full md:w-[450px] lg:w-[500px] flex flex-col bg-[var(--color-surface)] border border-[var(--color-border)] md:border-y-0 md:border-r-0 md:border-l rounded-[2.5rem] md:rounded-l-3xl md:rounded-r-none overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 md:slide-in-from-right-full duration-300 max-h-[90vh] md:max-h-screen">
+        
+        {/* Header */}
+        <div className="p-8 border-b border-[var(--color-border)] flex justify-between items-center bg-[var(--color-surface-2)]/50">
+           <div>
+              <h3 className="text-xl font-display font-black tracking-tight flex items-center gap-2">
+                {step === 'group' && "Tria un Grup"}
+                {step === 'category' && `Explora ${selectedGroup?.name}`}
+                {step === 'details' && `Detalls de l'Activitat`}
+              </h3>
+              <p className="text-[10px] text-[var(--color-muted)] uppercase font-black tracking-widest mt-1">
+                {step === 'group' && "Pas 1 de 3"}
+                {step === 'category' && "Pas 2 de 3"}
+                {step === 'details' && "Pas 3 de 3 · " + selectedCategory?.name}
+              </p>
+           </div>
+           <button onClick={onClose} className="p-2 hover:bg-[var(--color-surface-2)] rounded-full transition-colors">
+              <X size={20} />
+           </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 md:p-8 flex-1 overflow-y-auto">
+          {/* STEP 1: SELECT GROUP */}
+          {step === 'group' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+               {groups.map(g => {
+                 const IconComponent = ICON_MAP[g.icon_key] || Plus;
+                 return (
+                   <button 
+                    key={g.id}
+                    onClick={() => { setSelectedGroup(g); setStep('category'); }}
+                    className="flex flex-col items-center gap-4 p-6 rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)]/5 transition-all group"
+                   >
+                      <div 
+                        className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-xl transition-transform group-hover:scale-110"
+                        style={{ backgroundColor: g.accent_color }}
+                      >
+                         <IconComponent size={20} />
+                      </div>
+                      <span className="text-xs font-bold text-center leading-tight">{g.name}</span>
+                   </button>
+                 );
+               })}
+            </div>
+          )}
+
+          {/* STEP 2: SELECT CATEGORY */}
+          {step === 'category' && (
+            <div className="space-y-6">
+               <div className="relative">
+                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={18} />
+                 <input 
+                   type="text" 
+                   autoFocus
+                   value={search}
+                   onChange={e => setSearch(e.target.value)}
+                   placeholder="Cerca una categoria..." 
+                   className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl pl-12 pr-4 py-4 text-sm outline-none focus:border-[var(--color-accent)] transition-all"
+                 />
+               </div>
+
+               <div className="grid grid-cols-2 gap-3">
+                  {filteredCategories.map(c => (
+                    <button 
+                      key={c.id}
+                      onClick={() => { setSelectedCategory(c); setStep('details'); }}
+                      className="flex items-center justify-between p-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] transition-all group"
+                    >
+                       <span className="text-xs font-bold">{c.name}</span>
+                       <ChevronRight size={14} className="text-[var(--color-muted)] group-hover:text-[var(--color-accent)]" />
+                    </button>
+                  ))}
+               </div>
+            </div>
+          )}
+
+          {/* STEP 3: DETAILS */}
+          {step === 'details' && (
+             <div className="space-y-6">
+                <div className="space-y-4">
+                  <input 
+                    type="text" 
+                    placeholder="Títol de l'activitat..." 
+                    value={formData.title}
+                    onChange={e => setFormData({...formData, title: e.target.value})}
+                    className="w-full bg-transparent border-b border-[var(--color-border)] py-4 text-2xl font-display font-black outline-none focus:border-[var(--color-accent)] transition-all"
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Data</label>
+                       <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
+                          <input 
+                            type="date" 
+                            value={formData.date}
+                            onChange={e => setFormData({...formData, date: e.target.value})}
+                            className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none" 
+                          />
+                       </div>
+                       <label className="flex items-center gap-2 mt-2 cursor-pointer group">
+                         <div className="relative flex items-center justify-center">
+                           <input type="checkbox" checked={formData.isAllDay} onChange={e => setFormData({...formData, isAllDay: e.target.checked})} className="peer appearance-none w-4 h-4 border border-[var(--color-border)] rounded bg-[var(--color-surface-2)] checked:bg-[var(--color-accent)] checked:border-[var(--color-accent)] transition-all" />
+                           <Check size={10} strokeWidth={4} className="absolute text-white opacity-0 peer-checked:opacity-100 pointer-events-none" />
+                         </div>
+                         <span className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] group-hover:text-[var(--color-accent)] transition-colors">Tot el dia</span>
+                       </label>
+                    </div>
+
+                    {!formData.isAllDay && (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                           <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Hora Inici</label>
+                           <div className="relative">
+                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
+                              <input 
+                                type="time" 
+                                value={formData.time}
+                                onChange={e => setFormData({...formData, time: e.target.value})}
+                                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none" 
+                              />
+                           </div>
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Hora Fi (Opcional)</label>
+                           <div className="relative">
+                              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)] opacity-50" size={14} />
+                              <input 
+                                type="time" 
+                                value={formData.endTime}
+                                onChange={e => setFormData({...formData, endTime: e.target.value})}
+                                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none" 
+                              />
+                           </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                   <div className="space-y-4">
+                     <div className="space-y-2">
+                       <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] flex justify-between items-center">
+                          <span>Ubicació Nominal</span>
+                          {formData.location && (
+                             <button type="button" onClick={handleGeocode} disabled={isGeocoding} className="text-[var(--color-accent)] hover:underline flex items-center gap-1 normal-case">
+                                {isGeocoding ? <Loader2 className="animate-spin" size={10} /> : <MapPin size={10} />} Auto-detectar coordenades
+                             </button>
+                          )}
+                       </label>
+                       <div className="relative">
+                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
+                           <input 
+                             type="text" 
+                             placeholder="Ciutat, Muntanya, Carrer..." 
+                             value={formData.location}
+                             onChange={e => setFormData({...formData, location: e.target.value})}
+                             className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all" 
+                           />
+                       </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Latitud (Opcional)</label>
+                          <input 
+                            type="number" 
+                            step="any"
+                            placeholder="Ex: 41.385" 
+                            value={formData.lat}
+                            onChange={e => setFormData({...formData, lat: e.target.value})}
+                            className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all" 
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Longitud (Opcional)</label>
+                          <input 
+                            type="number" 
+                            step="any"
+                            placeholder="Ex: 2.173" 
+                            value={formData.lng}
+                            onChange={e => setFormData({...formData, lng: e.target.value})}
+                            className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl px-3 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all" 
+                          />
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* DYNAMIC METADATA (Sport / Nature) */}
+                  {(selectedGroup?.name === 'Muntanya i Natura' || selectedGroup?.name === 'Esport i Benestar') && (
+                    <div className="p-6 bg-[var(--color-accent-subtle)]/5 border border-[var(--color-accent)]/20 rounded-3xl space-y-4">
+                       <div className="flex items-center gap-2 mb-2">
+                          <BarChart3 size={16} className="text-[var(--color-accent)]" />
+                          <span className="text-xs font-black uppercase tracking-widest text-[var(--color-accent)]">Dades Tècniques</span>
+                       </div>
+                       <div className="grid grid-cols-2 gap-4">
+                          <input 
+                            type="text" 
+                            placeholder="Distància (km)" 
+                            value={formData.distance}
+                            onChange={e => setFormData({...formData, distance: e.target.value})}
+                            className="bg-transparent border-b border-[var(--color-border)] py-2 text-xs outline-none focus:border-[var(--color-accent)]" 
+                          />
+                          <input 
+                            type="text" 
+                            placeholder="Desnivell (+)" 
+                            value={formData.elevation}
+                            onChange={e => setFormData({...formData, elevation: e.target.value})}
+                            className="bg-transparent border-b border-[var(--color-border)] py-2 text-xs outline-none focus:border-[var(--color-accent)]" 
+                          />
+                       </div>
+                       <div className="flex items-center gap-2 px-3 py-2 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)]">
+                          <Info size={12} className="text-[var(--color-muted)]" />
+                          <input 
+                            type="text" 
+                            placeholder="Dificultat (suggerida automàticament)" 
+                            value={formData.difficulty}
+                            onChange={e => setFormData({...formData, difficulty: e.target.value})}
+                            className="flex-1 bg-transparent text-[10px] font-bold outline-none uppercase" 
+                          />
+                       </div>
+                    </div>
+                  )}
+                </div>
+             </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-8 bg-[var(--color-surface-2)]/50 border-t border-[var(--color-border)] flex justify-between gap-4">
+           {step !== 'group' && (
+             <button 
+              onClick={() => step === 'category' ? setStep('group') : setStep('category')}
+              className="px-6 py-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-all flex items-center gap-2 shadow-sm"
+             >
+               <ChevronLeft size={14} strokeWidth={3} /> Enrere
+             </button>
+           )}
+           <div className="flex-1" />
+           {step === 'details' && (
+             <div className="flex items-center gap-3">
+               {editActivity && (
+                 <button 
+                  onClick={handleDelete}
+                  disabled={isDeleting || loading}
+                  className="bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-3 rounded-2xl transition-all disabled:opacity-50 flex items-center justify-center shadow-sm"
+                  title="Eliminar activitat"
+                 >
+                    {isDeleting ? <Loader2 className="animate-spin" size={18} /> : <Trash2 size={18} />}
+                 </button>
+               )}
+               <button 
+                onClick={handleSave}
+                disabled={loading || isDeleting}
+                className="bg-[var(--color-accent)] text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all disabled:opacity-50 flex items-center gap-2"
+               >
+                  {loading ? <Loader2 className="animate-spin" size={14} /> : (editActivity ? "Actualitzar" : "Guardar")}
+               </button>
+             </div>
+           )}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}

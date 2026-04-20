@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { TipTapEditor } from "@/components/admin/TipTapEditor";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, ChevronDown, Check, Building2 } from "lucide-react";
+import { ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, ChevronDown, Check, Building2, Upload, FileText, Loader2 } from "lucide-react";
+import { useRef } from "react";
 
 export default function EditWorkPage() {
   const params = useParams();
@@ -20,6 +21,10 @@ export default function EditWorkPage() {
   const [isVisOpen, setIsVisOpen] = useState(false);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -33,7 +38,9 @@ export default function EditWorkPage() {
     featured: false,
     protected: false,
     visibility_type: "public_token",
-    content: null as any
+    content: null as any,
+    pdf_url: "",
+    accent_color: "#5e6efc"
   });
 
   const showToast = (message: string, type: 'success' | 'error') => {
@@ -61,7 +68,9 @@ export default function EditWorkPage() {
             featured: wData.featured || false,
             protected: wData.protected || false,
             visibility_type: wData.visibility_type || "public_token",
-            content: wData.content || null
+            content: wData.content || null,
+            pdf_url: wData.pdf_url || "",
+            accent_color: wData.accent_color || "#5e6efc"
           });
           if (wData.version_history) setVersionHistory(wData.version_history);
         }
@@ -118,6 +127,71 @@ export default function EditWorkPage() {
       }
     }
     setSaving(false);
+  };
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      showToast("Només s'accepten fitxers PDF", "error");
+      return;
+    }
+
+    setUploadingPdf(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const filePath = `documents/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("portfolio-media")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
+      setFormData(prev => ({ ...prev, pdf_url: data.publicUrl }));
+      showToast("PDF pujat correctament", "success");
+    } catch (err: any) {
+      showToast("Error pujant PDF: " + err.message, "error");
+    } finally {
+      setUploadingPdf(false);
+    }
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Accept all media: images (including SVG/GIF), videos, audio, and PDF
+    const allowedMimeGroups = ["image/", "video/", "audio/", "application/pdf"];
+    const isSvg = file.name.toLowerCase().endsWith(".svg");
+    const isAllowed = allowedMimeGroups.some(g => file.type.startsWith(g)) || isSvg;
+    if (!isAllowed) {
+      showToast("Format no suportat. Usa imatges, GIFs, vídeos, audios, SVG o PDF.", "error");
+      return;
+    }
+
+    setUploadingCover(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const filePath = `works/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("portfolio-media")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
+      setFormData(prev => ({ ...prev, cover_url: data.publicUrl }));
+      showToast("Imatge/Vídeo de portada pujat!", "success");
+    } catch (err: any) {
+      showToast("Error pujant mèdia: " + err.message, "error");
+    } finally {
+      setUploadingCover(false);
+    }
   };
 
   const restoreSnapshot = (snapshot: any) => {
@@ -295,14 +369,126 @@ export default function EditWorkPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider">Imatge de Portada (URL)</label>
-              <input 
-                type="text" 
-                value={formData.cover_url} 
-                onChange={e => setFormData({...formData, cover_url: e.target.value})} 
-                placeholder="https://..."
-                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-3 py-2 outline-none focus:border-[var(--color-accent)] transition-colors" 
-              />
+              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider">Imatge o Vídeo de Portada (Miniatura)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={formData.cover_url} 
+                  onChange={e => setFormData({...formData, cover_url: e.target.value})} 
+                  placeholder="https://..."
+                  className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-3 py-2 outline-none focus:border-[var(--color-accent)] transition-colors" 
+                />
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  disabled={uploadingCover}
+                  className="bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-muted)] hover:text-[var(--color-accent)] p-2.5 rounded-xl transition-all"
+                  title="Pujar imatge, GIF o vídeo"
+                >
+                  {uploadingCover ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
+                </button>
+                <input 
+                  ref={coverInputRef}
+                  type="file" 
+                  accept="image/*,video/*,audio/*,.svg,.pdf,application/pdf" 
+                  className="hidden" 
+                  onChange={handleCoverUpload} 
+                />
+              </div>
+              
+              {formData.cover_url && (
+                <div className="mt-4 relative group rounded-xl overflow-hidden border border-[var(--color-border)] bg-black/20">
+                  {formData.cover_url.match(/\.(mp4|webm|mov)$/i) || formData.cover_url.includes('video') ? (
+                    <div className="aspect-video">
+                      <video 
+                        src={formData.cover_url} 
+                        className="w-full h-full object-cover" 
+                        autoPlay muted loop playsInline
+                      />
+                    </div>
+                  ) : formData.cover_url.match(/\.(mp3|wav|ogg|aac|m4a)$/i) ? (
+                    <div className="flex flex-col items-center gap-3 p-6">
+                      <div className="w-12 h-12 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+                      </div>
+                      <audio src={formData.cover_url} controls className="w-full" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">Fitxer d'Àudio</span>
+                    </div>
+                  ) : formData.cover_url.match(/\.pdf$/i) ? (
+                    <div className="flex flex-col items-center gap-3 p-6">
+                      <FileText className="w-10 h-10 text-[var(--color-accent)] opacity-70" />
+                      <span className="text-xs font-bold text-[var(--color-muted)] truncate max-w-full px-4">{formData.cover_url.split('/').pop()}</span>
+                      <a href={formData.cover_url} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-[var(--color-accent)] hover:underline">Obrir PDF</a>
+                    </div>
+                  ) : (
+                    <div className="aspect-video">
+                      <img 
+                        src={formData.cover_url} 
+                        className="w-full h-full object-cover" 
+                        alt="Preview"
+                      />
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <button type="button" onClick={() => setFormData(p => ({...p, cover_url: ''}))} className="bg-red-500/80 hover:bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest transition-colors">✕ Treure</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider text-left">Documentació PDF</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={formData.pdf_url} 
+                  onChange={e => setFormData({...formData, pdf_url: e.target.value})} 
+                  placeholder="https://.../fitxer.pdf"
+                  className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-3 py-2 outline-none focus:border-[var(--color-accent)] transition-colors" 
+                />
+                <button
+                  type="button"
+                  onClick={() => pdfInputRef.current?.click()}
+                  disabled={uploadingPdf}
+                  className="bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-muted)] hover:text-[var(--color-accent)] p-2.5 rounded-xl transition-all"
+                  title="Pujar fitxer PDF"
+                >
+                  {uploadingPdf ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
+                </button>
+                <input 
+                  ref={pdfInputRef}
+                  type="file" 
+                  accept="application/pdf" 
+                  className="hidden" 
+                  onChange={handlePdfUpload} 
+                />
+              </div>
+              {formData.pdf_url && (
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-[var(--color-accent)] font-bold uppercase">
+                  <FileText size={12} />
+                  <span>Fitxer vinculat</span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider text-left">Color d'Accent del Projecte</label>
+              <div className="flex items-center gap-3">
+                <input 
+                  type="color" 
+                  value={formData.accent_color} 
+                  onChange={e => setFormData({...formData, accent_color: e.target.value})}
+                  className="w-12 h-12 rounded-lg bg-[var(--color-bg)] border border-[var(--color-border)] cursor-pointer overflow-hidden p-0" 
+                />
+                <input 
+                  type="text" 
+                  value={formData.accent_color} 
+                  onChange={e => setFormData({...formData, accent_color: e.target.value})}
+                  className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-3 py-2 outline-none focus:border-[var(--color-accent)] transition-colors" 
+                  placeholder="#5e6efc"
+                />
+              </div>
+              <p className="text-[9px] text-[var(--color-muted)] mt-2 opacity-60">Aquest color personalitzarà els botons i detalls quan l'usuari vegi aquest projecte.</p>
             </div>
 
             <div className="pt-4 border-t border-[var(--color-border)] space-y-5">

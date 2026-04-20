@@ -1,7 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
+import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
 import Image from "next/image";
+import Link from "next/link";
+import { Move, Maximize2 } from "lucide-react";
 
 export default async function PortfolioHome({
   params,
@@ -51,7 +54,7 @@ export default async function PortfolioHome({
 
   const { data: featuredWorks } = await supabase
     .from("works")
-    .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, featured, companies(name)")
+    .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, featured, pdf_url, companies(name)")
     .eq("status", "published")
     .order("work_date", { ascending: false });
 
@@ -107,8 +110,34 @@ export default async function PortfolioHome({
           <p className="text-xl md:text-2xl font-medium text-[var(--color-text)] opacity-70 max-w-2xl mx-auto drop-shadow-md leading-relaxed">
             {tagline}
           </p>
+
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+             <Link
+               href="?mode=present"
+               className="group relative px-8 py-4 bg-white text-black font-bold rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl overflow-hidden"
+             >
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-accent)] to-[#AF52F2] opacity-0 group-hover:opacity-10 transition-opacity" />
+                <div className="relative flex items-center gap-3">
+                   <Maximize2 size={20} className="text-[var(--color-accent)]" />
+                   {locale === 'ca' ? 'Presentació de Projectes' : 'Project Presentation'}
+                </div>
+             </Link>
+
+             <Link
+               href={`/v/${token}/move`}
+               className="group px-8 py-4 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] font-bold rounded-2xl transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)] flex items-center gap-3"
+             >
+                <div className="w-8 h-8 rounded-xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-110 transition-transform">
+                   <Move size={18} />
+                </div>
+                <span>Move</span>
+             </Link>
+          </div>
         </div>
       </section>
+
+      {/* Global PDF Presentation Overlay */}
+      <PdfPresentationMode works={visibleWorks.filter(w => !!w.pdf_url) as any} />
 
       <div className="max-w-7xl mx-auto px-6 pb-32">
         
@@ -144,10 +173,10 @@ export default async function PortfolioHome({
                 </div>
               </div>
               
-              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {projectClients.map((company) => (
-                  <div key={company.slug} className="flex flex-col items-center gap-4 group text-center p-2">
-                    <div className="relative w-32 h-32    flex items-center justify-center overflow-hidden shrink-0 transition-all duration-500 group-hover:scale-105   ">
+                  <div key={company.slug} className="flex flex-col items-center gap-3 group text-center p-2">
+                    <div className="relative w-24 h-24    flex items-center justify-center overflow-hidden shrink-0 transition-all duration-500 group-hover:scale-105   ">
                       {company.logo_url ? (
                         <Image 
                           src={company.logo_url} 

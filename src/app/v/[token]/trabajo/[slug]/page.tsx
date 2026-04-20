@@ -16,11 +16,8 @@ export default async function WorkPage({
   searchParams,
 }: {
   params: Promise<{ token: string; slug: string }>;
-  searchParams: Promise<{ mode?: string }>;
 }) {
   const { token, slug } = await params;
-  const { mode } = await searchParams;
-  const isPresentMode = mode === "present";
 
   const supabase = await createClient();
 
@@ -98,36 +95,26 @@ export default async function WorkPage({
     }
   }
 
-  let contentNode;
-
-  if (isPresentMode) {
-    contentNode = (
-       <div className="fixed inset-0 bg-[#0A0014] z-[100] overflow-y-auto w-full h-full text-[var(--color-text)] px-8 md:px-20 py-16">
-        <Link 
-          href={`/v/${token}/trabajo/${slug}`} 
-          className="fixed top-6 right-6 text-[var(--color-muted)] hover:text-[var(--color-accent)] bg-[var(--color-surface-2)] p-2 rounded-full backdrop-blur-xl border border-[var(--color-border)] transition-all"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-        </Link>
-        <div className="max-w-4xl mx-auto animate-in fade-in duration-[1000ms]">
-           <h1 className="font-display text-5xl md:text-7xl font-black mb-16 leading-tight text-[var(--color-text)] tracking-tight">{work.title}</h1>
-           <div 
-            className="prose prose-invert prose-2xl max-w-none prose-img:rounded-2xl prose-img:shadow-2xl prose-a:text-[var(--color-accent)] prose-headings:font-display prose-headings:text-[var(--color-text)]"
-             dangerouslySetInnerHTML={{ __html: htmlContent }}
-           />
-        </div>
-      </div>
-    );
-  } else {
-    contentNode = (
+  const contentNode = (
       <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in duration-500">
         
         <BackButton />
 
-        {/* COVER */}
-        <div className="w-full aspect-video relative rounded-2xl overflow-hidden mb-12 border border-color-border shadow-2xl">
+        {/* COVER / MEDIA */}
+        <div className="w-full aspect-video relative rounded-2xl overflow-hidden mb-12 border border-color-border shadow-2xl bg-black/20">
            {work.cover_url ? (
-             <Image src={work.cover_url} alt={work.title} fill className="object-cover" priority />
+             work.cover_url.match(/\.(mp4|webm|mov)$|video/i) ? (
+               <video 
+                 src={work.cover_url} 
+                 className="w-full h-full object-cover" 
+                 autoPlay 
+                 muted 
+                 loop 
+                 playsInline 
+               />
+             ) : (
+               <Image src={work.cover_url} alt={work.title} fill className="object-cover" priority />
+             )
            ) : (
              <div className="w-full h-full bg-color-surface flex items-center justify-center">
                <span className="text-color-muted font-display text-2xl opacity-50">Marc Portfolio</span>
@@ -157,13 +144,19 @@ export default async function WorkPage({
               <h1 className="font-display text-4xl md:text-6xl font-black text-[var(--color-text)] leading-tight tracking-tight">{work.title}</h1>
           </div>
            
-           <Link 
-              href={`?mode=present`}
-              className="shrink-0 bg-color-surface border border-color-border hover:border-color-accent hover:text-color-accent text-color-muted px-4 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2"
-           >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-              Modo Presentación
-           </Link>
+           <div className="flex gap-3">
+              {work.pdf_url && (
+                <a 
+                  href={work.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 bg-[var(--color-accent)] border border-transparent hover:brightness-110 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-[var(--color-accent)]/20 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Veure PDF
+                </a>
+              )}
+            </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-16">
@@ -198,11 +191,22 @@ export default async function WorkPage({
           </div>
         )}
       </div>
-    );
-  }
+
+  );
 
   return (
     <PinGateWrapper slug={slug} token={token} isProtected={work.protected}>
+      {work.accent_color && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root {
+            --color-accent: ${work.accent_color} !important;
+            --color-accent-subtle: ${work.accent_color}15 !important;
+            --color-accent-hover: ${work.accent_color} !important;
+          }
+          .prose a { color: ${work.accent_color} !important; }
+          .prose h1, .prose h2, .prose h3 { color: var(--color-text); }
+        `}} />
+      )}
       {contentNode}
     </PinGateWrapper>
   );

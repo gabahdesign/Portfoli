@@ -15,6 +15,7 @@ interface Work {
   company_id: string;
   work_date?: string;
   companies?: { name: string };
+  pdf_url?: string;
 }
 
 interface PortfolioFeedProps {
@@ -148,19 +149,21 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
         </div>
 
         {filteredWorks.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
             {filteredWorks.map((work) => (
-              <FeaturedWorkCard
-                key={work.slug}
-                slug={work.slug}
-                title={work.title}
-                coverUrl={work.cover_url}
-                summary={work.summary}
-                tags={work.tags || []}
-                protectedNode={work.protected}
-                token={token}
-                workDate={work.work_date}
-              />
+              <div key={work.slug} className="break-inside-avoid">
+                <FeaturedWorkCard
+                  slug={work.slug}
+                  title={work.title}
+                  coverUrl={work.cover_url}
+                  summary={work.summary}
+                  tags={work.tags || []}
+                  protectedNode={work.protected}
+                  token={token}
+                  workDate={work.work_date}
+                  pdfUrl={work.pdf_url}
+                />
+              </div>
             ))}
           </div>
         ) : (
