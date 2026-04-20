@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/portfolio/Navbar";
 import { WelcomeBanner } from "@/components/portfolio/WelcomeBanner";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
@@ -64,16 +63,17 @@ export default async function TokenLayout({
       notFound();
     }
 
-    const defaultMsg = tokenData.welcome_message ? (tokenData.welcome_message as any)["ca"] : undefined;
-    welcomeMessage = tokenData.welcome_message 
-      ? (tokenData.welcome_message as any)[locale] || defaultMsg
+    const welcome_msg = tokenData.welcome_message as Record<string, string> | null;
+    const defaultMsg = welcome_msg ? (welcome_msg as Record<string, string>)["ca"] : undefined;
+    welcomeMessage = welcome_msg 
+      ? (welcome_msg as Record<string, string>)[locale] || defaultMsg
       : undefined;
   }
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] flex w-full">
       {!isPreview && <AnalyticsTracker token={token} />}
-      <Navbar token={token} locale={locale} />
+      <Navbar token={token} locale={locale} isAdmin={!!session} />
       
       <main className="flex-1 w-full ml-0 md:ml-[240px] pb-20 md:pb-0 min-h-screen pt-16 md:pt-0 transition-all duration-300 overflow-x-hidden">
         {!isPreview && <WelcomeBanner message={welcomeMessage} />}

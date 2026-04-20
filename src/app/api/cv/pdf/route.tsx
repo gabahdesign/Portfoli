@@ -142,9 +142,9 @@ export async function GET(req: NextRequest) {
       />
     );
 
-    const chunks = [];
-    for await (const chunk of stream) {
-      chunks.push(chunk);
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of stream as any) {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
     }
     const pdfBuffer = Buffer.concat(chunks);
 

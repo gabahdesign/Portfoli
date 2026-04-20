@@ -1,7 +1,7 @@
 import { Mail, MapPin, ExternalLink, Link2, Globe } from "lucide-react";
 
 export default async function ContactoPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+  await params;
   
   // This could easily be fetched from DB (about_me metrics) or hardcoded
   // For the portfolio, we'll implement a clean, straightforward contact card stack
@@ -9,8 +9,8 @@ export default async function ContactoPage({ params }: { params: Promise<{ token
   const contacts = [
     {
       platform: "Email Directo",
-      value: "hola@descobreix.com",
-      link: "mailto:hola@descobreix.com",
+      value: "info@descobreix.com",
+      link: "mailto:info@descobreix.com",
       icon: <Mail className="w-6 h-6" />
     },
     {
@@ -21,13 +21,13 @@ export default async function ContactoPage({ params }: { params: Promise<{ token
     },
     {
       platform: "GitHub",
-      value: "github.com/marc",
-      link: "https://github.com",
+      value: "gabahdesign/Portfoli",
+      link: "https://github.com/gabahdesign/Portfoli",
       icon: <Globe className="w-6 h-6" />
     },
     {
       platform: "Centro Base",
-      value: "Barcelona, España (Remoto global)",
+      value: "Baix Llobregat, Anoia, Barcelonès i Vallès Occidental",
       link: null,
       icon: <MapPin className="w-6 h-6" />
     }
@@ -66,7 +66,7 @@ export default async function ContactoPage({ params }: { params: Promise<{ token
            <h4 className="text-color-text font-display text-2xl mb-2">Treballem junts</h4>
            <p className="text-color-muted max-w-md">Estic obert a noves propostes i conèixer nous reptes. Escriu-me i respondré en menys de 24 hores.</p>
          </div>
-         <a href="mailto:hola@descobreix.com" className="shrink-0 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-[var(--color-accent-glow)] transition-all hover:scale-105 active:scale-95">
+         <a href="mailto:info@descobreix.com" className="shrink-0 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-[var(--color-accent-glow)] transition-all hover:scale-105 active:scale-95">
            Enviar Correu Electrònic
          </a>
       </div>

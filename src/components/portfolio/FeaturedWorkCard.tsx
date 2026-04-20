@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Lock, ArrowUpRight } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { useLocale } from "next-intl";
 
 interface FeaturedWorkCardProps {
   slug: string;
@@ -24,7 +24,6 @@ export function FeaturedWorkCard({
   token,
   workDate,
 }: FeaturedWorkCardProps) {
-  const t = useTranslations("Index");
   const locale = useLocale();
 
   return (

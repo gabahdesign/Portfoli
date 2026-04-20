@@ -22,6 +22,7 @@ export function LanguageSelector() {
     if (newLocale === locale) return;
 
     // Save language preference in cookie
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
     
     startTransition(() => {

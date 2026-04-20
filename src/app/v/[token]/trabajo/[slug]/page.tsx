@@ -54,7 +54,7 @@ export default async function WorkPage({
   let htmlContent = "";
   if (work.content && typeof work.content === "object") {
     try {
-      htmlContent = generateHTML(work.content as any, [
+      htmlContent = generateHTML(work.content as object, [
         StarterKit,
         ImageExtension,
         LinkExtension,
@@ -80,9 +80,10 @@ export default async function WorkPage({
   if (rawWorks) {
     let validWorks = rawWorks;
     if (tokenData.company_ids && tokenData.company_ids.length > 0) {
-      validWorks = validWorks.filter((w: any) => 
-        tokenData.company_ids.includes(w.company_id) || w.companies?.is_freelance
-      );
+      validWorks = validWorks.filter((w) => {
+        const company = Array.isArray(w.companies) ? w.companies[0] : w.companies;
+        return tokenData.company_ids.includes(w.company_id) || (company as { is_freelance: boolean })?.is_freelance;
+      });
     }
 
     const currentIndex = validWorks.findIndex(w => w.slug === slug);

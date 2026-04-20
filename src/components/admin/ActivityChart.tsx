@@ -58,7 +58,8 @@ export function ActivityChart({ data }: ActivityChartProps) {
               color: 'var(--color-text)'
             }}
             itemStyle={{ color: 'var(--color-accent)', fontWeight: 'bold' }}
-            formatter={(value: any) => [`${value} visites`, 'Activitat']}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            formatter={(value: any) => [`${value} visites`, 'Activitat'] as any}
             labelStyle={{ color: 'var(--color-muted)', marginBottom: '5px' }}
           />
           <Area 

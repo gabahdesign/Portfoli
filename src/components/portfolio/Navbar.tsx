@@ -6,29 +6,75 @@ import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Home, User, LayoutGrid, FileText, Mail,
-  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock
+  Home, User, LayoutGrid, FileText,
+  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil
 } from "lucide-react";
 import { RequestAccessModal } from "./RequestAccessModal";
 
+// Inline SVG flag components
+function FlagCA() {
+  return (
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+      <rect width="24" height="16" fill="#FCDD09" />
+      <rect y="1.78" width="24" height="1.78" fill="#DA121A" />
+      <rect y="5.33" width="24" height="1.78" fill="#DA121A" />
+      <rect y="8.89" width="24" height="1.78" fill="#DA121A" />
+      <rect y="12.44" width="24" height="1.78" fill="#DA121A" />
+    </svg>
+  );
+}
+function FlagES() {
+  return (
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+      <rect width="24" height="4" fill="#AA151B" />
+      <rect y="4" width="24" height="8" fill="#F1BF00" />
+      <rect y="12" width="24" height="4" fill="#AA151B" />
+    </svg>
+  );
+}
+function FlagEN() {
+  return (
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+      <rect width="24" height="16" fill="#012169" />
+      <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.5" />
+      <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.5" />
+      <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
+      <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.5" />
+    </svg>
+  );
+}
+function FlagFR() {
+  return (
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+      <rect width="8" height="16" fill="#002395" />
+      <rect x="8" width="8" height="16" fill="#FFFFFF" />
+      <rect x="16" width="8" height="16" fill="#ED2939" />
+    </svg>
+  );
+}
+
 const languages = [
-  { code: "ca", label: "Català", short: "CA" },
-  { code: "es", label: "Castellano", short: "ES" },
-  { code: "en", label: "English", short: "EN" },
-  { code: "fr", label: "Français", short: "FR" },
+  { code: "ca", label: "Català", Flag: FlagCA },
+  { code: "es", label: "Español", Flag: FlagES },
+  { code: "en", label: "English", Flag: FlagEN },
+  { code: "fr", label: "Français", Flag: FlagFR },
 ];
 
 function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void; currentLocale: string; token: string }) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isPending, startTransition] = useTransition();
+  const [langOpen, setLangOpen] = useState(false);
   const router = useRouter();
+  const t = useTranslations("Settings");
 
   useEffect(() => {
     setTheme(document.documentElement.classList.contains("light") ? "light" : "dark");
   }, []);
 
   const handleLang = (code: string) => {
+    setLangOpen(false);
     if (code === currentLocale) return;
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000`;
     startTransition(() => { router.refresh(); });
   };
@@ -44,7 +90,7 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--color-border)]">
-        <span className="text-sm font-bold text-[var(--color-text)] tracking-wide uppercase" style={{ fontFamily: "var(--font-display)" }}>Ajustos</span>
+        <span className="text-sm font-bold text-[var(--color-text)] tracking-wide uppercase" style={{ fontFamily: "var(--font-display)" }}>{t("title")}</span>
         <button onClick={onClose} className="p-1.5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
           <X className="w-4 h-4" />
         </button>
@@ -53,43 +99,60 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
       {/* iPhone Style List */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 bg-[var(--color-bg)]">
         {/* Language & Theme Group */}
-        <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
-          <div className="p-4 flex items-center justify-between">
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
+          <button
+            type="button"
+            onClick={() => setLangOpen(!langOpen)}
+            className="w-full p-4 flex items-center justify-between"
+          >
             <div className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
                 <Globe className="w-4 h-4" />
               </div>
-              <span className="text-sm font-semibold">Idioma</span>
+              <span className="text-sm font-semibold">{t("language")}</span>
             </div>
-            <div className="relative group/lang">
-              <button
-                disabled={isPending}
-                className="bg-[var(--color-surface-2)] text-[var(--color-text)] text-xs font-bold px-4 py-2 rounded-xl outline-none border border-[var(--color-border)] flex items-center gap-2 hover:border-[var(--color-accent)] transition-all min-w-[120px] justify-between"
-              >
-                <span>{languages.find(l => l.code === currentLocale)?.label}</span>
-                <ChevronRight className={`w-3 h-3 transition-transform duration-300 group-hover/lang:rotate-90`} />
-              </button>
-              
-              <div className="absolute right-0 bottom-full mb-2 w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl overflow-hidden opacity-0 invisible group-hover/lang:opacity-100 group-hover/lang:visible transition-all duration-300 z-[60] shadow-2xl">
-                {languages.map((lng) => (
-                  <button
-                    key={lng.code}
-                    onClick={() => handleLang(lng.code)}
-                    className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-[var(--color-accent)] hover:text-white transition-colors ${currentLocale === lng.code ? 'text-[var(--color-accent)]' : 'text-[var(--color-text)]'}`}
-                  >
-                    {lng.label}
-                  </button>
-                ))}
+            <div className="flex items-center gap-2">
+              {(() => { const current = languages.find(l => l.code === currentLocale); return current ? <current.Flag /> : null; })()}
+              <ChevronRight className={`w-3 h-3 text-[var(--color-muted)] transition-transform duration-300 ${langOpen ? 'rotate-90' : ''}`} />
+            </div>
+          </button>
+
+          {langOpen && (
+            <div className="bg-[var(--color-bg)] p-2">
+              <div className="flex flex-col gap-1">
+                {languages.map((lng) => {
+                  const isSelected = currentLocale === lng.code;
+                  return (
+                    <button
+                      key={lng.code}
+                      onClick={() => handleLang(lng.code)}
+                      disabled={isPending}
+                      className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-bold'
+                          : 'text-[var(--color-text)] hover:bg-[var(--color-surface)] hover:text-[var(--color-accent)]'
+                      }`}
+                    >
+                      <lng.Flag />
+                      <span className="flex-1 text-left">{lng.label}</span>
+                      {isSelected && (
+                        <svg className="w-4 h-4 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </div>
+          )}
 
           <div className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
                 {theme === "dark" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               </div>
-              <span className="text-sm font-semibold">Mode Fosc</span>
+              <span className="text-sm font-semibold">{t("dark_mode")}</span>
             </div>
             <button
               onClick={toggleTheme}
@@ -111,7 +174,7 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
               <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
                 <ShieldCheck className="w-4 h-4" />
               </div>
-              <span className="text-sm font-semibold">Accés Client</span>
+              <span className="text-sm font-semibold">{t("client_access")}</span>
             </div>
             <ChevronRight className="w-4 h-4 text-[var(--color-muted)]" />
           </Link>
@@ -120,10 +183,10 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
         {/* Legal Group */}
         <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
           {[
-            { label: "Política de Privacitat", slug: "privacitat" },
-            { label: "Política de Cookies", slug: "cookies" },
-            { label: "Condicions d'Ús", slug: "condicions" },
-            { label: "Avís Legal", slug: "avis-legal" }
+            { label: t("privacy_policy"), slug: "privacitat" },
+            { label: t("cookie_policy"), slug: "cookies" },
+            { label: t("terms_of_use"), slug: "condicions" },
+            { label: t("legal_notice"), slug: "avis-legal" }
           ].map((item) => (
             <Link
               key={item.slug}
@@ -141,7 +204,7 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
   );
 }
 
-export function Navbar({ token, locale = "ca" }: { token: string; locale?: string }) {
+export function Navbar({ token, locale = "ca", isAdmin = false }: { token: string; locale?: string; isAdmin?: boolean }) {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
@@ -241,17 +304,28 @@ export function Navbar({ token, locale = "ca" }: { token: string; locale?: strin
               })}
             </nav>
 
-            {/* Settings Trigger */}
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold w-full transition-all"
-              style={{ color: "var(--color-muted)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; (e.currentTarget as HTMLElement).style.background = "var(--color-accent-subtle)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-muted)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-            >
-              <span className="flex items-center gap-3"><Settings className="w-4 h-4" /> Ajustos</span>
-              <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-            </button>
+            {/* Settings & Admin Triggers */}
+            <div className="flex flex-col gap-2">
+              {isAdmin && (
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold w-full transition-all text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-lg shadow-[var(--color-accent-glow)]/20"
+                >
+                  <span className="flex items-center gap-3"><Pencil className="w-4 h-4" /> Administrar</span>
+                  <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                </Link>
+              )}
+              <button
+                onClick={() => setSettingsOpen(true)}
+                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold w-full transition-all"
+                style={{ color: "var(--color-muted)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-accent)"; (e.currentTarget as HTMLElement).style.background = "var(--color-accent-subtle)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-muted)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+              >
+                <span className="flex items-center gap-3"><Settings className="w-4 h-4" /> {t("settings")}</span>
+                <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+              </button>
+            </div>
           </div>
         )}
       </aside>
@@ -311,12 +385,23 @@ export function Navbar({ token, locale = "ca" }: { token: string; locale?: strin
         >
           descobreix<span style={{ color: "var(--color-accent)" }}>.</span>
         </Link>
-        <button
-          onClick={() => setMobileSettingsOpen(true)}
-          className="p-2 -mr-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors"
-        >
-          <Settings className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2 -mr-2">
+          {isAdmin && (
+            <Link
+              href="/admin/dashboard"
+              className="p-2 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 rounded-full transition-colors flex items-center justify-center relative"
+            >
+              <Pencil className="w-5 h-5" />
+              <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_var(--color-accent-glow)] border border-[var(--color-bg)]" />
+            </Link>
+          )}
+          <button
+            onClick={() => setMobileSettingsOpen(true)}
+            className="p-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
       </header>
       {mobileSettingsOpen && (
         <div

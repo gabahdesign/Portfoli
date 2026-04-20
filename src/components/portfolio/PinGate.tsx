@@ -64,7 +64,7 @@ export function PinGate({
         <Lock className="w-8 h-8 text-[var(--color-accent)]" />
       </div>
       
-      <h2 className="text-4xl font-display font-black text-[var(--color-text)] mb-4 text-center tracking-tight">Accés Protegit</h2>
+      <h2 className="text-4xl font-display font-black text-[var(--color-text)] mb-4 text-center tracking-tight">{title}</h2>
       <p className="text-[var(--color-muted)] text-center max-w-md leading-relaxed mb-10 font-medium">
         {description}
       </p>

@@ -51,15 +51,23 @@ export default async function PortfolioHome({
 
   const { data: featuredWorks } = await supabase
     .from("works")
-    .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, companies(name)")
+    .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, featured, companies(name)")
     .eq("status", "published")
-    .eq("featured", true)
     .order("work_date", { ascending: false });
 
+  // Filter works based on visibility and specifically ensuring that if a companyId is provided, 
+  // we include those works regardless of being featured, while the client side handling 
+  // will decide what to display (featured by default, or all if filtered).
   const visibleWorks = (featuredWorks || []).filter(w => {
-    if (companyIdsFilter.length === 0) return true;
-    if (collaborationCompanyIds.includes(w.company_id)) return true;
-    return companyIdsFilter.includes(w.company_id);
+    // 1. Check if the work belongs to a company allowed by the token
+    const isAllowedByToken = companyIdsFilter.length === 0 || companyIdsFilter.includes(w.company_id);
+    
+    // 2. Check if it's a collaboration/freelance project (these are usually allowed)
+    const isCollaboration = collaborationCompanyIds.includes(w.company_id);
+    
+    //Logic: Show if (Allowed by Token OR Collaboration) AND (Featured OR specific company filter)
+    // Actually, in the server we should just pass all allowed works and let the client filter.
+    return isAllowedByToken || isCollaboration;
   });
 
   const latestWorkCover = visibleWorks.length > 0 ? visibleWorks[0].cover_url : null;
@@ -102,10 +110,15 @@ export default async function PortfolioHome({
       <div className="max-w-7xl mx-auto px-6 pb-32">
         
         {/* 2. PORTFOLIO FEED (Search + Filtered Works Grid) */}
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <PortfolioFeed 
-          works={visibleWorks as any} 
-          token={token} 
-          locale={locale} 
+          works={visibleWorks.map(w => ({
+            ...w,
+            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+            companies: Array.isArray(w.companies) ? w.companies[0] : (w.companies as any)
+          })) as any} 
+          token={token}
+          locale={locale}
           initialCompanyId={companyId}
           companies={allCompanies || []}
         />

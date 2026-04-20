@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { getLocale, getTranslations } from "next-intl/server";
-import { Newspaper, Lock, ArrowRight, Calendar, User, Share2 } from "lucide-react";
+import { getLocale } from "next-intl/server";
+import { Newspaper, Lock, ArrowRight, Calendar, Share2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -60,7 +60,8 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
             
             {/* Featured Post (LHS Large) */}
             <div className="lg:col-span-8 space-y-12">
-               {posts.slice(0, 1).map(post => (
+               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+               {(posts || []).slice(0, 1).map((post: any) => (
                  <article key={post.id} className="group">
                     <div className="relative aspect-[16/9] w-full overflow-hidden mb-8 border border-[var(--color-border)]">
                        {post.cover_url ? (
@@ -93,7 +94,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                                </div>
                                <div>
                                   <p className="font-bold text-sm text-[var(--color-text)]">Contingut Premium</p>
-                                  <p className="text-xs text-[var(--color-muted)]">Subscriu-te per llegir l'article complet.</p>
+                                  <p className="text-xs text-[var(--color-muted)]">Subscriu-te per llegir l&apos;article complet.</p>
                                </div>
                             </div>
                             <button className="bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-3 rounded-xl font-bold text-sm hover:bg-[var(--color-accent)] hover:text-white transition-all shadow-xl">
@@ -111,7 +112,8 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                
                {/* Grid of smaller posts */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-16 border-t border-[var(--color-border)]">
-                  {posts.slice(1).map(post => (
+                                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(posts || []).slice(1).map((post: any) => (
                     <article key={post.id}>
                        <div className="flex items-center gap-3 mb-3 text-[9px] font-black uppercase tracking-widest text-[var(--color-muted)]">
                           <Calendar size={12} /> {new Date(post.published_at).toLocaleDateString(locale)}
@@ -133,7 +135,8 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                   <div>
                      <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-accent)] mb-8">Darrera Hora</h4>
                      <div className="space-y-8">
-                        {posts.slice(0, 5).map((post, i) => (
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {(posts || []).slice(0, 5).map((post: any, i: number) => (
                           <div key={post.id} className="group cursor-pointer">
                              <div className="flex gap-4">
                                 <span className="text-2xl font-serif text-[var(--color-muted)] font-black italic opacity-30">0{i+1}</span>
@@ -153,7 +156,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                         Accedeix a tot el contingut exclusiu, anàlisis de mercat i plantilles per només un pagament únic.
                      </p>
                      <button className="w-full bg-[var(--color-accent)] text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-[var(--color-accent)]/20">
-                        Subscriure'm ara
+                        Subscriure&apos;m ara
                      </button>
                   </div>
                </div>

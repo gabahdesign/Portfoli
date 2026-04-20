@@ -3,12 +3,12 @@
 import { useEffect, useState, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { TipTapEditor } from "@/components/admin/TipTapEditor";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, Activity, Newspaper, Lock, CreditCard } from "lucide-react";
 
-export default function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const postId = resolvedParams.id;
+export default function EditBlogPostPage() {
+  const params = useParams();
+  const postId = params.id as string;
   const router = useRouter();
   const supabase = createClient();
   
@@ -52,7 +52,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
       setLoading(false);
     }
     loadData();
-  }, [postId, supabase]);
+  }, [postId]); // Removed unstable supabase from dependencies to prevent infinite loops
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
@@ -65,7 +65,8 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     setSaving(true);
     const payload = {
       ...formData,

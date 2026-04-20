@@ -25,7 +25,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
   }
   const cvSections = Array.from(uniqueSections.values());
 
-  const renderSectionContent = (content: any) => {
+  const renderSectionContent = (content: unknown) => {
     if (!content) return null;
     
     // If array directly (new flat format)
@@ -34,7 +34,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
     }
     
     // If object with language keys {ca:[...], es:[...]}
-    const localizedContent = content[locale] || content["ca"] || content["es"] || content["en"];
+    const localizedContent = (content as Record<string, unknown>)[locale] || (content as Record<string, unknown>)["ca"] || (content as Record<string, unknown>)["es"] || (content as Record<string, unknown>)["en"];
     
     if (Array.isArray(localizedContent)) {
        return renderArrayContent(localizedContent);
@@ -52,9 +52,21 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
     return null;
   };
 
-  const renderArrayContent = (items: any[]) => (
+  interface CVItem {
+    title?: string;
+    name?: string;
+    date?: string;
+    date_start?: string;
+    date_end?: string;
+    place?: string;
+    subtitle?: string;
+    level?: string;
+    description?: string;
+  }
+
+  const renderArrayContent = (items: CVItem[]) => (
     <div className="space-y-8">
-      {items.map((item: any, i: number) => (
+      {items.map((item, i: number) => (
         <div key={i} className="border-l-2 border-[var(--color-border)] pl-6 relative">
           <div className="absolute w-2 h-2 rounded-full bg-[var(--color-accent)] -left-[5px] top-2 shadow-[0_0_10px_var(--color-accent-glow)]"></div>
           <div className="flex justify-between items-start mb-1">

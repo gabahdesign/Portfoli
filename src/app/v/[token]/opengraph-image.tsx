@@ -10,7 +10,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image({ params }: { params: { token: string } }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: tokenData } = await supabase
     .from("access_tokens")
     .select("label")
@@ -73,7 +73,7 @@ export default async function Image({ params }: { params: { token: string } }) {
             marginTop: 40
           }}>
             <p style={{ fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-              Per a l'equip de {label}
+              Per a l&apos;equip de {label}
             </p>
           </div>
         </div>

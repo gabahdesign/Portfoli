@@ -14,6 +14,17 @@
     "about_me": "About me",
     "cv": "Resume",
     "projectes": "Projects",
-    "back": "Back"
+    "back": "Back",
+    "settings": "Settings"
+  },
+  "Settings": {
+    "title": "Settings",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "client_access": "Client Access",
+    "privacy_policy": "Privacy Policy",
+    "cookie_policy": "Cookie Policy",
+    "terms_of_use": "Terms of Use",
+    "legal_notice": "Legal Notice"
   }
 }

@@ -20,10 +20,15 @@
   --color-muted-2: #52525b;
 
   /* Brand Accent — Violet (Descobreix exact dark mode) */
-  --color-accent: #843aea;
+  /* --color-accent: #843aea;
   --color-accent-hover: #7a23cc;
   --color-accent-subtle: rgba(132, 58, 234, 0.12);
-  --color-accent-glow: rgba(132, 58, 234, 0.25);
+  --color-accent-glow: rgba(132, 58, 234, 0.25); */
+  /* Brand Accent — Blue (Descobreix exact dark mode)*/
+  --color-accent: #156EF6;
+  --color-accent-hover: #0F5ED4;
+  --color-accent-subtle: rgba(21, 110, 246, 0.08);
+  --color-accent-glow: rgba(21, 110, 246, 0.15);
 
   /* Red — for CTAs, Danger, Highlights */
   --color-red: #FF0A0A;
@@ -43,10 +48,18 @@
   --color-muted-2: #868E96;
 
   /* Violet stays as accent (readable on light bg) */
-  --color-accent: #6D28D9;
+  /* --color-accent: #6D28D9;
   --color-accent-hover: #5B21B6;
   --color-accent-subtle: rgba(109, 40, 217, 0.08);
-  --color-accent-glow: rgba(109, 40, 217, 0.15);
+  --color-accent-glow: rgba(109, 40, 217, 0.15); */
+
+  /* Blue stays as accent (readable on light bg) */
+  --color-accent: #156EF6;
+  /* base */
+  --color-accent-hover: #0F5ED4;
+  /* ~15% darker */
+  --color-accent-subtle: rgba(21, 110, 246, 0.08);
+  --color-accent-glow: rgba(21, 110, 246, 0.15);
 
   --color-red: #DC2626;
   --color-red-hover: #991B1B;
@@ -60,11 +73,11 @@
   --color-surface-2: var(--color-surface-2);
   --color-border: var(--color-border);
   --color-border-subtle: var(--color-border-subtle);
-  
+
   --color-text: var(--color-text);
   --color-muted: var(--color-muted);
   --color-muted-2: var(--color-muted-2);
-  
+
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
   --color-accent-subtle: var(--color-accent-subtle);
@@ -89,15 +102,29 @@ body {
 }
 
 /* Hero headings use display font */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
 }
 
 /* Scrollbar — subtle and branded */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
 
 /* Selection */
 ::selection {
@@ -106,7 +133,9 @@ h1, h2, h3 {
 }
 
 /* Smooth transitions on theme change */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   transition-property: background-color, border-color, color;
   transition-duration: 150ms;
   transition-timing-function: ease;

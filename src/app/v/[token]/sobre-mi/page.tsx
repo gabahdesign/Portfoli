@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import Image from "next/image";
 import { Mail, Link2, Globe, MapPin, ExternalLink } from "lucide-react";
 import { generateHTML } from "@tiptap/html";
@@ -9,11 +9,8 @@ import LinkExtension from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 
 export default async function AboutMePage({ params }: { params: Promise<{ token: string }> }) {
-  // Await the params
-  const { token } = await params;
-  
+  await params;
   const locale = await getLocale();
-  const t = await getTranslations("Navigation");
   const supabase = await createClient();
 
   const ADMIN_PROFILE_ID = "00000000-0000-0000-0000-000000000000";
@@ -38,13 +35,13 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
     bioHtml = bioData;
   } else if (bioData && typeof bioData === "object") {
     try {
-      bioHtml = generateHTML(bioData as any, [
+      bioHtml = generateHTML(bioData as object, [
         StarterKit,
         ImageExtension,
         LinkExtension,
         Underline,
       ]);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error parsing bio JSON:", err);
       bioHtml = "";
     }
@@ -53,8 +50,8 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
   const contactLinks = [
     {
       label: "Email Directo",
-      value: about.email || "hola@descobreix.com",
-      link: `mailto:${about.email || "hola@descobreix.com"}`,
+      value: "info@descobreix.com",
+      link: "mailto:info@descobreix.com",
       icon: <Mail className="w-5 h-5" />
     },
     {
@@ -65,13 +62,13 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
     },
     {
       label: "GitHub",
-      value: "Project Archive",
-      link: about.social_links?.github || "https://github.com",
+      value: "gabahdesign/Portfoli",
+      link: "https://github.com/gabahdesign/Portfoli",
       icon: <Globe className="w-5 h-5" />
     },
     {
       label: "Ubicació",
-      value: about.location || "Barcelona",
+      value: "Baix Llobregat, Anoia, Barcelonès i Vallès Occidental",
       link: null,
       icon: <MapPin className="w-5 h-5" />
     }
@@ -136,7 +133,7 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
              <p className="text-[var(--color-muted)] text-sm max-w-sm leading-relaxed">Si creus que el meu perfil encaixa amb el que busques, escriu-me i et respondré el més aviat possible.</p>
            </div>
            <a 
-             href={`mailto:${about.email || "hola@descobreix.com"}`} 
+             href="mailto:info@descobreix.com" 
              className="shrink-0 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-[var(--color-accent-glow)] transition-all hover:scale-105 active:scale-95"
            >
              Enviar Correu Electrònic

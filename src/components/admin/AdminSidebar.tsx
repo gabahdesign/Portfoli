@@ -44,84 +44,80 @@ export function AdminSidebar() {
     router.refresh();
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
-      <div className="h-16 flex items-center px-8 border-b border-[var(--color-border)] font-display text-xl font-black tracking-tight text-[var(--color-accent)] shrink-0 justify-between">
-        <div className="flex items-center gap-2">
-          <span>Marc</span>
-          <span className="text-[var(--color-text)] opacity-40 font-medium text-[10px] uppercase tracking-widest border border-[var(--color-border)] px-1.5 py-0.5 rounded">Admin</span>
-        </div>
-        <button className="xl:hidden p-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors" onClick={() => setMobileOpen(false)}>
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-
-      <nav className="flex-1 py-8 px-5 space-y-1.5 overflow-y-auto custom-scrollbar">
-        <AdminNavLink href="/admin/dashboard" onClick={() => setMobileOpen(false)}>
-          <LayoutDashboard className="w-4 h-4 mr-3" />
-          Dashboard
-        </AdminNavLink>
-        
-        <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Contingut</div>
-        <AdminNavLink href="/admin/empresas" onClick={() => setMobileOpen(false)}>
-          <Building2 className="w-4 h-4 mr-3" />
-          Empreses i Clients
-        </AdminNavLink>
-        <AdminNavLink href="/admin/trabajos" onClick={() => setMobileOpen(false)}>
-          <div className="flex justify-between items-center w-full pr-2">
-            <div className="flex items-center">
-              <LayoutGrid className="w-4 h-4 mr-3" />
-              Projectes
-            </div>
-            {draftCount > 0 && (
-              <span className="bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]">
-                {draftCount}
-              </span>
-            )}
-          </div>
-        </AdminNavLink>
-        <AdminNavLink href="/admin/blog" onClick={() => setMobileOpen(false)}>
-          <BookOpen className="w-4 h-4 mr-3" />
-          Blog
-        </AdminNavLink>
-        
-        <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Personal</div>
-        <AdminNavLink href="/admin/sobre-mi" onClick={() => setMobileOpen(false)}>
-          <User2 className="w-4 h-4 mr-3" />
-          Sobre mi
-        </AdminNavLink>
-        <AdminNavLink href="/admin/cv" onClick={() => setMobileOpen(false)}>
-          <FileText className="w-4 h-4 mr-3" />
-          Currículum
-        </AdminNavLink>
-        
-        <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
-        <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
-          <KeyRound className="w-4 h-4 mr-3" />
-          Accessos Portfoli
-        </AdminNavLink>
-        <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
-          <Settings className="w-4 h-4 mr-3" />
-          Ajustos Sistema
-        </AdminNavLink>
-
-        <div className="mt-10 pt-6 border-t border-[var(--color-border)]/50">
-           <button 
-             onClick={handleLogout}
-             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:text-white border border-red-400/20 hover:bg-red-500 transition-all active:scale-[0.98]"
-           >
-             <LogOut className="w-4 h-4" /> Tancar Sessió
-           </button>
-        </div>
-      </nav>
-    </div>
-  );
-
   return (
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden xl:flex w-72 bg-[var(--color-surface)] border-l border-[var(--color-border)] flex-col shrink-0 sticky top-0 h-screen z-[60]">
-        <SidebarContent />
+        <div className="flex flex-col h-full">
+          <div className="h-16 flex items-center px-8 border-b border-[var(--color-border)] font-display text-xl font-black tracking-tight text-[var(--color-accent)] shrink-0 justify-between">
+            <div className="flex items-center gap-2">
+              <span>Marc</span>
+              <span className="text-[var(--color-text)] opacity-40 font-medium text-[10px] uppercase tracking-widest border border-[var(--color-border)] px-1.5 py-0.5 rounded">Admin</span>
+            </div>
+            <button className="xl:hidden p-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors" onClick={() => setMobileOpen(false)}>
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <nav className="flex-1 py-8 px-5 space-y-1.5 overflow-y-auto custom-scrollbar">
+            <AdminNavLink href="/admin/dashboard" onClick={() => setMobileOpen(false)}>
+              <LayoutDashboard className="w-4 h-4 mr-3" />
+              Dashboard
+            </AdminNavLink>
+            
+            <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Contingut</div>
+            <AdminNavLink href="/admin/empresas" onClick={() => setMobileOpen(false)}>
+              <Building2 className="w-4 h-4 mr-3" />
+              Empreses i Clients
+            </AdminNavLink>
+            <AdminNavLink href="/admin/trabajos" onClick={() => setMobileOpen(false)}>
+              <div className="flex justify-between items-center w-full pr-2">
+                <div className="flex items-center">
+                  <LayoutGrid className="w-4 h-4 mr-3" />
+                  Projectes
+                </div>
+                {draftCount > 0 && (
+                  <span className="bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]">
+                    {draftCount}
+                  </span>
+                )}
+              </div>
+            </AdminNavLink>
+            <AdminNavLink href="/admin/blog" onClick={() => setMobileOpen(false)}>
+              <BookOpen className="w-4 h-4 mr-3" />
+              Blog
+            </AdminNavLink>
+            
+            <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Personal</div>
+            <AdminNavLink href="/admin/sobre-mi" onClick={() => setMobileOpen(false)}>
+              <User2 className="w-4 h-4 mr-3" />
+              Sobre mi
+            </AdminNavLink>
+            <AdminNavLink href="/admin/cv" onClick={() => setMobileOpen(false)}>
+              <FileText className="w-4 h-4 mr-3" />
+              Currículum
+            </AdminNavLink>
+            
+            <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
+            <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
+              <KeyRound className="w-4 h-4 mr-3" />
+              Accessos Portfoli
+            </AdminNavLink>
+            <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
+              <Settings className="w-4 h-4 mr-3" />
+              Ajustos Sistema
+            </AdminNavLink>
+
+            <div className="mt-10 pt-6 border-t border-[var(--color-border)]/50">
+               <button 
+                 onClick={handleLogout}
+                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:text-white border border-red-400/20 hover:bg-red-500 transition-all active:scale-[0.98]"
+               >
+                 <LogOut className="w-4 h-4" /> Tancar Sessió
+               </button>
+            </div>
+          </nav>
+        </div>
       </aside>
 
       {/* Mobile Sticky Header */}
@@ -153,7 +149,76 @@ export function AdminSidebar() {
       {/* Full Screen Mobile Menu */}
       {mobileOpen && (
         <div className="xl:hidden fixed inset-0 z-[100] bg-[var(--color-surface)] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-           <SidebarContent />
+           <div className="flex flex-col h-full">
+            <div className="h-16 flex items-center px-8 border-b border-[var(--color-border)] font-display text-xl font-black tracking-tight text-[var(--color-accent)] shrink-0 justify-between">
+              <div className="flex items-center gap-2">
+                <span>Marc</span>
+                <span className="text-[var(--color-text)] opacity-40 font-medium text-[10px] uppercase tracking-widest border border-[var(--color-border)] px-1.5 py-0.5 rounded">Admin</span>
+              </div>
+              <button className="xl:hidden p-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors" onClick={() => setMobileOpen(false)}>
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <nav className="flex-1 py-8 px-5 space-y-1.5 overflow-y-auto custom-scrollbar">
+              <AdminNavLink href="/admin/dashboard" onClick={() => setMobileOpen(false)}>
+                <LayoutDashboard className="w-4 h-4 mr-3" />
+                Dashboard
+              </AdminNavLink>
+              
+              <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Contingut</div>
+              <AdminNavLink href="/admin/empresas" onClick={() => setMobileOpen(false)}>
+                <Building2 className="w-4 h-4 mr-3" />
+                Empreses i Clients
+              </AdminNavLink>
+              <AdminNavLink href="/admin/trabajos" onClick={() => setMobileOpen(false)}>
+                <div className="flex justify-between items-center w-full pr-2">
+                  <div className="flex items-center">
+                    <LayoutGrid className="w-4 h-4 mr-3" />
+                    Projectes
+                  </div>
+                  {draftCount > 0 && (
+                    <span className="bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]">
+                      {draftCount}
+                    </span>
+                  )}
+                </div>
+              </AdminNavLink>
+              <AdminNavLink href="/admin/blog" onClick={() => setMobileOpen(false)}>
+                <BookOpen className="w-4 h-4 mr-3" />
+                Blog
+              </AdminNavLink>
+              
+              <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Personal</div>
+              <AdminNavLink href="/admin/sobre-mi" onClick={() => setMobileOpen(false)}>
+                <User2 className="w-4 h-4 mr-3" />
+                Sobre mi
+              </AdminNavLink>
+              <AdminNavLink href="/admin/cv" onClick={() => setMobileOpen(false)}>
+                <FileText className="w-4 h-4 mr-3" />
+                Currículum
+              </AdminNavLink>
+              
+              <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
+              <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
+                <KeyRound className="w-4 h-4 mr-3" />
+                Accessos Portfoli
+              </AdminNavLink>
+              <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
+                <Settings className="w-4 h-4 mr-3" />
+                Ajustos Sistema
+              </AdminNavLink>
+
+              <div className="mt-10 pt-6 border-t border-[var(--color-border)]/50">
+                 <button 
+                   onClick={handleLogout}
+                   className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:text-white border border-red-400/20 hover:bg-red-500 transition-all active:scale-[0.98]"
+                 >
+                   <LogOut className="w-4 h-4" /> Tancar Sessió
+                 </button>
+              </div>
+            </nav>
+          </div>
         </div>
       )}
     </>

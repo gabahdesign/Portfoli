@@ -1,16 +1,13 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export function Heatmap() {
-  // Generate dummy data (52 weeks * 7 days)
-  const weeks = 52;
-  const days = 7;
-  
   const [activityData, setActivityData] = useState<{ level: number }[][]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const data = [];
     for (let w = 0; w < 52; w++) {

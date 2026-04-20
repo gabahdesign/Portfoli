@@ -43,7 +43,7 @@ export function RequestAccessModal({ isOpen, onClose, sectionName }: RequestAcce
       if (submitError) throw submitError;
 
       setSuccess(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error submitting request:", err);
       setError("Hi ha hagut un error al enviar la sol·licitud. Torna-ho a provar.");
     } finally {
@@ -52,38 +52,40 @@ export function RequestAccessModal({ isOpen, onClose, sectionName }: RequestAcce
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] bg-[var(--color-bg)] overflow-y-auto animate-in slide-in-from-bottom-8 fade-in duration-500">
       <div 
-        className="relative w-full max-w-lg bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500"
+        className="min-h-screen w-full flex flex-col max-w-4xl mx-auto relative px-6 py-12 md:py-24"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Decor */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent opacity-50" />
-        
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-xl text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-all z-10"
+          className="absolute top-6 right-6 md:top-12 md:right-6 p-3 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)] hover:scale-105 transition-all z-10 flex items-center gap-2"
         >
+          <span className="text-[10px] font-black uppercase tracking-widest pl-2 hidden md:block">Tancar</span>
           <X className="w-5 h-5" />
         </button>
+
+        <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
+        
+
 
         <div className="p-8 md:p-10">
           {!success ? (
             <>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] shadow-[0_0_20px_var(--color-accent-glow)]">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-12">
+                <div className="w-16 h-16 rounded-3xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] shadow-[0_0_30px_var(--color-accent-glow)] shrink-0">
                   <Lock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Accés Restringit</h2>
+                  <h2 className="text-4xl md:text-5xl font-display font-black text-[var(--color-text)] tracking-tight">Accés Restringit</h2>
                   <p className="text-[var(--color-muted)] text-xs font-bold uppercase tracking-widest mt-0.5">
                     Secció: <span className="text-[var(--color-accent)]">{sectionName || "Privada"}</span>
                   </p>
                 </div>
               </div>
 
-              <p className="text-[var(--color-muted)] text-sm leading-relaxed mb-8">
-                El contingut d'aquesta secció és confidencial. Si vols veure la meva feina estratègica o el meu CV complet, sol·licita un token d'accés omplint aquest formulari.
+              <p className="text-[var(--color-muted)] text-base md:text-lg leading-relaxed mb-12 max-w-xl">
+                El contingut d&apos;aquesta secció és confidencial. Si vols veure la meva feina estratègica o el meu CV complet, sol·licita un token d&apos;accés omplint aquest formulari.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -168,7 +170,7 @@ export function RequestAccessModal({ isOpen, onClose, sectionName }: RequestAcce
               </div>
               <h2 className="text-3xl font-display font-black text-[var(--color-text)] tracking-tight mb-4">Sol·licitud Enviada</h2>
               <p className="text-[var(--color-muted)] leading-relaxed max-w-sm mx-auto mb-10">
-                Gràcies per l'interès! Revisaré la teva sol·licitud i et contactaré el més aviat possible a <span className="text-[var(--color-text)] font-bold">{formData.email}</span>.
+                Gràcies per l&apos;interès! Revisaré la teva sol·licitud i et contactaré el més aviat possible a <span className="text-[var(--color-text)] font-bold">{formData.email}</span>.
               </p>
               <button 
                 onClick={onClose}
@@ -180,6 +182,7 @@ export function RequestAccessModal({ isOpen, onClose, sectionName }: RequestAcce
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

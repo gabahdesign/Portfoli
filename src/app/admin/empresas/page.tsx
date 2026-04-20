@@ -57,7 +57,7 @@ export default function AdminEmpresas() {
     const parents = flatData.filter(e => !e.parent_id).sort((a,b) => a.name.localeCompare(b.name));
     const children = flatData.filter(e => e.parent_id);
     
-    let result: any[] = [];
+    const result: any[] = [];
     
     parents.forEach(parent => {
       result.push({ ...parent, depth: 0 });

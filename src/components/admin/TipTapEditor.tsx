@@ -12,8 +12,8 @@ import { Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, Image as Im
 import { createClient } from "@/lib/supabase/client";
 
 interface TipTapEditorProps {
-  content: any;
-  onChange: (json: any) => void;
+  content: string | object | null;
+  onChange: (json: object) => void;
 }
 
 export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
@@ -61,8 +61,8 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       if (error) throw error;
       const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
       editor.chain().focus().setImage({ src: data.publicUrl }).run();
-    } catch (err: any) {
-      alert(`Error al subir la imagen: ${err.message}`);
+    } catch (err: unknown) {
+      alert(`Error al subir la imagen: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setUploading(false);
     }

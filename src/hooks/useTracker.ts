@@ -7,10 +7,13 @@ import { useEffect, useRef } from "react";
  * Include it on /v/[token] and /v/[token]/trabajo/[slug] pages.
  */
 export function useTracker(token: string, eventType: "page_view" | "work_view", workId?: string) {
-  const startTime = useRef(Date.now());
+  const startTime = useRef<number | null>(null);
   const maxScroll = useRef(0);
 
   useEffect(() => {
+    if (startTime.current === null) {
+      startTime.current = Date.now();
+    }
     const trackScroll = () => {
       const scrolled = window.scrollY + window.innerHeight;
       const total = document.documentElement.scrollHeight;
@@ -21,7 +24,8 @@ export function useTracker(token: string, eventType: "page_view" | "work_view", 
     window.addEventListener("scroll", trackScroll, { passive: true });
 
     const send = () => {
-      const duration = Math.round((Date.now() - startTime.current) / 1000);
+      const start = startTime.current ?? Date.now();
+      const duration = Math.round((Date.now() - start) / 1000);
       navigator.sendBeacon(
         "/api/analytics",
         JSON.stringify({

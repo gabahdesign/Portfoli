@@ -1,4 +1,3 @@
-import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 interface LegalContent {

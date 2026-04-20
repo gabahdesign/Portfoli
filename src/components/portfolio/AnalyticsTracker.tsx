@@ -19,7 +19,7 @@ export function AnalyticsTracker({ token }: DropTrackerProps) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token }),
         });
-      } catch (e) {
+      } catch {
         // fail silently for telemetry
       }
     };
@@ -48,8 +48,9 @@ export function AnalyticsTracker({ token }: DropTrackerProps) {
       // /v/token/trabajo/abc -> work view
       // /v/token/cv -> cv view 
       // /v/token -> home view
-      let event_type = "page_view";
-      let resource_id = null; // We could parse UUID from URL if available, but let's pass path
+      // /v/token/trabajo/abc -> work view
+      // /v/token/cv -> cv view 
+      // /v/token -> home view
 
       fetch("/api/analytics", {
         method: "POST",

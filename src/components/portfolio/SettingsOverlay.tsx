@@ -26,6 +26,7 @@ export function SettingsOverlay({ currentLocale = 'ca' }: { currentLocale?: stri
 
   const handleLanguageChange = (newLocale: string) => {
     if (newLocale === currentLocale) return;
+    // eslint-disable-next-line react-hooks/immutability
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
     startTransition(() => {
       router.refresh();

@@ -22,9 +22,6 @@ export default function AdminAjustos() {
   useEffect(() => {
     async function loadConfig() {
       setLoading(true);
-      // Simulating loading config or fetching from a 'settings' table if it existed
-      // For now we'll use local state as a mock if the table doesn't exist yet
-      // In a real scenario, we'd fetch from supabase.from('settings').select('*')
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setFormData(prev => ({ ...prev, admin_email: user.email || "" }));
@@ -36,7 +33,6 @@ export default function AdminAjustos() {
 
   const handleSave = async () => {
     setSaving(true);
-    // Simulate API call
     await new Promise(r => setTimeout(r, 1000));
     setSaving(false);
     alert("Ajustos desats correctament (Simulació)");
@@ -49,7 +45,7 @@ export default function AdminAjustos() {
       <div className="mb-10 flex justify-between items-end border-b border-[var(--color-border)] pb-6">
         <div>
           <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight">Ajustos del Sistema</h1>
-          <p className="text-[var(--color-muted)] text-sm mt-1">Gestiona les preferències globals i el perfil de l'administrador.</p>
+          <p className="text-[var(--color-muted)] text-sm mt-1">Gestiona les preferències globals i el perfil de l&apos;administrador.</p>
         </div>
         <button 
           onClick={handleSave}
@@ -62,7 +58,6 @@ export default function AdminAjustos() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Tabs */}
         <div className="w-full md:w-64 flex flex-col gap-1">
           <button 
             onClick={() => setActiveTab("general")}
@@ -90,7 +85,6 @@ export default function AdminAjustos() {
           </button>
         </div>
 
-        {/* Form area */}
         <div className="flex-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-8 shadow-inner">
           {activeTab === "general" && (
             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
@@ -123,7 +117,7 @@ export default function AdminAjustos() {
               <div className="flex items-center justify-between p-4 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)]">
                 <div>
                   <p className="text-sm font-bold text-[var(--color-text)]">Mode Manteniment</p>
-                  <p className="text-[10px] text-[var(--color-muted)]">Desactiva l'accés públic al portfolio temporalment.</p>
+                  <p className="text-[10px] text-[var(--color-muted)]">Desactiva l&apos;accés públic al portfolio temporalment.</p>
                 </div>
                 <button 
                   onClick={() => setFormData({...formData, maintenance_mode: !formData.maintenance_mode})}
@@ -148,18 +142,16 @@ export default function AdminAjustos() {
                    onChange={e => setFormData({...formData, notification_email: e.target.value})}
                    className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-[var(--color-text)] focus:border-[var(--color-accent)] outline-none" 
                  />
-                 <p className="text-[10px] text-[var(--color-muted)] mt-2">S'utilitzarà per als avisos de nous accessos per token (Resend).</p>
+                 <p className="text-[10px] text-[var(--color-muted)] mt-2">S&apos;utilitzarà per als avisos de nous accessos per token (Resend).</p>
                </div>
             </div>
           )}
 
-          {activeTab === "perfil" && (
             <div className="text-center py-12">
-               <User className="w-12 h-12 text-[var(--color-muted)] mx-auto mb-4 opacity-20" />
-               <p className="text-[var(--color-muted)] text-sm italic">Configuració del perfil d'administrador d'acord amb Supabase Auth.</p>
+               <Shield className="w-12 h-12 text-[var(--color-muted)] mx-auto mb-4 opacity-20" />
+               <p className="text-[var(--color-muted)] text-sm italic">Configuració del perfil d&apos;administrador d&apos;acord amb Supabase Auth.</p>
                <p className="text-[var(--color-text)] mt-2 font-bold">{formData.admin_email}</p>
             </div>
-          )}
           
           {activeTab === "seguretat" && (
             <div className="space-y-6">

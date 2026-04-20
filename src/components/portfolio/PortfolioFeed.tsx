@@ -22,7 +22,7 @@ interface PortfolioFeedProps {
   token: string;
   locale: string;
   initialCompanyId?: string;
-  companies?: any[];
+  companies?: Array<{ id: string; name: string }>;
 }
 
 export function PortfolioFeed({ works, token, locale, initialCompanyId, companies }: PortfolioFeedProps) {
@@ -52,6 +52,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
 
   const filteredWorks = useMemo(() => {
     return works.filter(w => {
+      // 1. Basic matching
       const matchesSearch = 
         w.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
         w.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -164,7 +165,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
           </div>
         ) : (
           <div className="py-32 text-center flex flex-col items-center gap-4">
-            <p className="text-[var(--color-muted)] text-sm italic">No s'ha trobat cap projecte que coincideixi amb la cerca.</p>
+            <p className="text-[var(--color-muted)] text-sm italic">No s&apos;ha trobat cap projecte que coincideixi amb la cerca.</p>
             <button 
               onClick={clearFilters}
               className="text-xs font-bold text-[var(--color-accent)] hover:underline"

@@ -14,6 +14,17 @@
     "about_me": "Sobre mí",
     "cv": "Currículum",
     "projectes": "Proyectos",
-    "back": "Volver"
+    "back": "Volver",
+    "settings": "Ajustes"
+  },
+  "Settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "dark_mode": "Modo Oscuro",
+    "client_access": "Acceso Cliente",
+    "privacy_policy": "Política de Privacidad",
+    "cookie_policy": "Política de Cookies",
+    "terms_of_use": "Condiciones de Uso",
+    "legal_notice": "Aviso Legal"
   }
 }

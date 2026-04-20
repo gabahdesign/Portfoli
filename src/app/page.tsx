@@ -103,7 +103,7 @@ export default async function PublicHome() {
                        </div>
                     </div>
                     <h3 className="text-lg font-bold text-white group-hover:text-[var(--color-accent)] transition-colors">{work.title}</h3>
-                    <p className="text-[var(--color-muted)] text-xs mt-1">{work.companies?.name}</p>
+                    <p className="text-[var(--color-muted)] text-xs mt-1">{Array.isArray(work.companies) ? work.companies[0]?.name : (work.companies as any)?.name}</p>
                  </Link>
                ))}
             </div>
