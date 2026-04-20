@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, FileText, Maximize } from "lucide-react";
 import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import ImageExtension from "@tiptap/extension-image";
@@ -10,12 +10,15 @@ import LinkExtension from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import { PinGateWrapper } from "@/components/portfolio/PinGateWrapper";
 import { BackButton } from "@/components/portfolio/BackButton";
+import { VideoNode, AudioNode, IframeNode } from "@/components/admin/TipTapExtensions";
+import { clsx } from "clsx";
 
 export default async function WorkPage({
   params,
-  searchParams,
+  searchParams: _searchParams,
 }: {
   params: Promise<{ token: string; slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { token, slug } = await params;
 
@@ -51,22 +54,142 @@ export default async function WorkPage({
     }
   }
 
-  let htmlContent = "";
-  if (work.content && typeof work.content === "object") {
-    try {
-      htmlContent = generateHTML(work.content as object, [
-        StarterKit,
-        ImageExtension,
-        LinkExtension,
-        Underline,
-      ]);
-    } catch (err) {
-      console.error("TipTap parsing error:", err);
+  // -----------------------------------------
+  // RENDER BLOCKS
+  // -----------------------------------------
+  const renderBlock = (block: any) => {
+    const settings = block.settings || {};
+    const content = block.content || {};
+
+    const blockStyle = {
+      backgroundColor: settings.backgroundColor || 'transparent',
+      paddingTop: settings.padding || '0px',
+      paddingBottom: settings.padding || '0px',
+    };
+
+    switch (block.type) {
+      case 'text':
+        let html = "";
+        if (content.json) {
+           html = generateHTML(content.json, [StarterKit, ImageExtension, LinkExtension, Underline, VideoNode, AudioNode, IframeNode]);
+        } else if (content.text) {
+           html = `<p>${content.text}</p>`;
+        }
+        return (
+          <div key={block.id} style={blockStyle}>
+            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full" : "max-w-4xl")}>
+              <article 
+                className="prose prose-invert prose-lg max-w-none prose-p:text-[var(--color-muted)] prose-headings:text-[var(--color-text)]"
+                dangerouslySetInnerHTML={{ __html: html }}
+              />
+            </div>
+          </div>
+        );
+
+      case 'media':
+        if (!content.url) return null;
+        return (
+          <div key={block.id} style={blockStyle}>
+            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
+               <div className={clsx("relative rounded-2xl overflow-hidden shadow-2xl border border-white/5", !settings.fullWidth && "aspect-video")}>
+                  {content.mimeType?.startsWith('video') ? (
+                    <video src={content.url} controls className="w-full h-full object-cover" />
+                  ) : (
+                    <img src={content.url} className="w-full h-full object-cover" alt="" />
+                  )}
+               </div>
+            </div>
+          </div>
+        );
+
+      case 'gallery':
+        const items = content.items || [];
+        if (items.length === 0) return null;
+        return (
+          <div key={block.id} style={blockStyle}>
+            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-7xl")}>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {items.map((url: string, idx: number) => (
+                    <div key={idx} className="aspect-square rounded-2xl overflow-hidden border border-white/5 shadow-lg group">
+                       <img 
+                        src={url} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        alt="" 
+                       />
+                    </div>
+                  ))}
+               </div>
+            </div>
+          </div>
+        );
+
+      case 'pdf':
+        if (!content.url) return null;
+        if (content.display === 'embed') {
+           return (
+             <div key={block.id} style={blockStyle}>
+               <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
+                  <div className="relative w-full aspect-[1/1.4] md:aspect-[1/1.4142] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 group">
+                     {/* Clean Viewer Wrapper */}
+                     <iframe 
+                       src={`${content.url}#toolbar=0&navpanes=0&scrollbar=0`}
+                       className="w-full h-full border-none pointer-events-none md:pointer-events-auto"
+                       title={content.title}
+                     />
+                     
+                     {/* Overlay for mobile or to provide a clean exit/open action */}
+                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a 
+                          href={content.url} 
+                          target="_blank" 
+                          className="p-3 bg-black/60 backdrop-blur-xl text-white rounded-xl border border-white/10 hover:bg-[var(--color-accent)] transition-all"
+                          title="Veure en pantalla completa"
+                        >
+                          <Maximize className="w-5 h-5" />
+                        </a>
+                     </div>
+                  </div>
+                  {content.description && (
+                    <p className="mt-4 text-center text-sm text-[var(--color-muted)] max-w-2xl mx-auto italic">{content.description}</p>
+                  )}
+               </div>
+             </div>
+           );
+        }
+        return (
+          <div key={block.id} style={blockStyle}>
+            <div className="max-w-4xl mx-auto px-6">
+               <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-xl hover:border-[var(--color-accent)]/30 transition-all group">
+                  <div className="w-20 h-20 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 shrink-0 group-hover:scale-110 transition-transform">
+                     <FileText size={40} />
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] mb-2">Documentació Oficial PDF</p>
+                     <h3 className="text-xl font-bold text-[var(--color-text)] mb-2">{content.title}</h3>
+                     {content.description && <p className="text-sm text-[var(--color-muted)] line-clamp-2">{content.description}</p>}
+                  </div>
+                  <a 
+                    href={content.url} 
+                    target="_blank" 
+                    className="bg-[var(--color-accent)] text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
+                  >
+                    Obrir Document
+                  </a>
+               </div>
+            </div>
+          </div>
+        );
+
+      case 'spacer':
+        return <div key={block.id} className="h-16 md:h-24" />;
+
+      default:
+        return null;
     }
-  }
+  };
 
   // -----------------------------------------
-  // Obtener prev/next works autorizados
+  // FETCH NAVIGATION
   // -----------------------------------------
   let prevWork: { slug: string, title: string } | null = null;
   let nextWork: { slug: string, title: string } | null = null;
@@ -79,10 +202,10 @@ export default async function WorkPage({
 
   if (rawWorks) {
     let validWorks = rawWorks;
-    if (tokenData.company_ids && tokenData.company_ids.length > 0) {
+    if (tokenData?.company_ids && tokenData.company_ids.length > 0) {
       validWorks = validWorks.filter((w) => {
         const company = Array.isArray(w.companies) ? w.companies[0] : w.companies;
-        return tokenData.company_ids.includes(w.company_id) || (company as { is_freelance: boolean })?.is_freelance;
+        return tokenData.company_ids!.includes(w.company_id) || (company as { is_freelance: boolean })?.is_freelance;
       });
     }
 
@@ -92,6 +215,24 @@ export default async function WorkPage({
       // Ajustamos la semántica: "Anterior" (más nuevo) -> index - 1, "Següent" (más antiguo) -> index + 1
       prevWork = currentIndex > 0 ? validWorks[currentIndex - 1] : null;
       nextWork = currentIndex < validWorks.length - 1 ? validWorks[currentIndex + 1] : null;
+    }
+  }
+
+  const content = work.content || {};
+  let htmlContent = "";
+  if (content && typeof content === "object" && !Array.isArray(content)) {
+    try {
+      htmlContent = generateHTML(content as object, [
+        StarterKit,
+        ImageExtension,
+        LinkExtension,
+        Underline,
+        VideoNode,
+        AudioNode,
+        IframeNode,
+      ]);
+    } catch (err) {
+      console.error("TipTap parsing error:", err);
     }
   }
 
@@ -142,21 +283,7 @@ export default async function WorkPage({
                <span className="text-color-muted font-mono text-sm">{work.work_date ? new Date(work.work_date).getFullYear() : "Presente"}</span>
              </div>
               <h1 className="font-display text-4xl md:text-6xl font-black text-[var(--color-text)] leading-tight tracking-tight">{work.title}</h1>
-          </div>
-           
-           <div className="flex gap-3">
-              {work.pdf_url && (
-                <a 
-                  href={work.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 bg-[var(--color-accent)] border border-transparent hover:brightness-110 text-white px-5 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-[var(--color-accent)]/20 flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                  Veure PDF
-                </a>
-              )}
-            </div>
+           </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-16">
@@ -167,10 +294,17 @@ export default async function WorkPage({
           ))}
         </div>
 
-        <article 
-          className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:text-[var(--color-text)] prose-p:text-[var(--color-muted)] prose-p:leading-relaxed prose-a:text-[var(--color-accent)] hover:prose-a:text-[var(--color-accent-hover)] prose-img:rounded-2xl prose-img:border prose-img:border-[var(--color-border)] mb-16"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-        />
+        {/* PROJECT BLOCKS */}
+        <div className="space-y-0">
+           {Array.isArray(work.content) ? (
+             work.content.map((block: any) => renderBlock(block))
+           ) : (
+             <article 
+               className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:text-[var(--color-text)] prose-p:text-[var(--color-muted)] prose-p:leading-relaxed prose-a:text-[var(--color-accent)] hover:prose-a:text-[var(--color-accent-hover)] prose-img:rounded-2xl prose-img:border prose-img:border-[var(--color-border)] mb-16"
+               dangerouslySetInnerHTML={{ __html: htmlContent || "" }}
+             />
+           )}
+        </div>
 
         {/* NAVEGACIÓ ANTERIOR / SEGÜENT */}
         {(prevWork || nextWork) && (

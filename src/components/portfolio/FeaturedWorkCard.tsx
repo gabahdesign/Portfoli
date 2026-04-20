@@ -56,12 +56,12 @@ export function FeaturedWorkCard({
       {/* 1. Mèdia (The Shot) */}
       <Link 
         href={`/v/${token}/trabajo/${slug}`}
-        className="relative aspect-video rounded-3xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl group block"
+        className="relative rounded-3xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl group block transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {coverUrl ? (
-          <div className="relative w-full h-full min-h-[200px] overflow-hidden">
+          <div className="relative w-full h-full overflow-hidden">
             {isVideo ? (
               <video
                 ref={videoRef}
@@ -69,10 +69,10 @@ export function FeaturedWorkCard({
                 muted
                 loop
                 playsInline
-                className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
               />
             ) : isPdf ? (
-              <div className="relative w-full h-full bg-[var(--color-surface-2)] flex items-center justify-center">
+              <div className="relative w-full aspect-[3/4] bg-[var(--color-surface-2)] flex items-center justify-center">
                 <object 
                   data={`${coverUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
                   type="application/pdf" 
@@ -88,7 +88,7 @@ export function FeaturedWorkCard({
               <img
                 src={coverUrl}
                 alt={title}
-                className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
               />
             )}
           </div>
@@ -108,7 +108,7 @@ export function FeaturedWorkCard({
              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)]/80 to-transparent" />
           </div>
         ) : (
-          <div className="w-full aspect-video flex items-center justify-center text-[var(--color-border)]">
+          <div className="w-full aspect-video flex items-center justify-center text-[var(--color-border)] bg-[var(--color-surface)]">
              <div className="flex flex-col items-center gap-2 opacity-20">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

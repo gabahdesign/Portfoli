@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { TipTapEditor } from "@/components/admin/TipTapEditor";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, ChevronDown, Check, Building2, Upload, FileText, Loader2 } from "lucide-react";
 import { useRef } from "react";
+import { BlockBuilder, Block } from "@/components/admin/block-builder/BlockBuilder";
 
 export default function EditWorkPage() {
   const params = useParams();
@@ -21,9 +21,7 @@ export default function EditWorkPage() {
   const [isVisOpen, setIsVisOpen] = useState(false);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const pdfInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
@@ -38,8 +36,7 @@ export default function EditWorkPage() {
     featured: false,
     protected: false,
     visibility_type: "public_token",
-    content: null as any,
-    pdf_url: "",
+    content: [] as Block[],
     accent_color: "#5e6efc"
   });
 
@@ -67,9 +64,14 @@ export default function EditWorkPage() {
             status: wData.status || "draft",
             featured: wData.featured || false,
             protected: wData.protected || false,
+            protected: wData.protected || false,
             visibility_type: wData.visibility_type || "public_token",
-            content: wData.content || null,
-            pdf_url: wData.pdf_url || "",
+            content: Array.isArray(wData.content) ? wData.content : (wData.content?.type === 'doc' ? [{
+              id: 'initial',
+              type: 'text',
+              content: { text: "", json: wData.content }, // Keep the raw Tiptap JSON if it exists
+              settings: { padding: '2.5rem' }
+            }] : []),
             accent_color: wData.accent_color || "#5e6efc"
           });
           if (wData.version_history) setVersionHistory(wData.version_history);
@@ -127,36 +129,6 @@ export default function EditWorkPage() {
       }
     }
     setSaving(false);
-  };
-
-  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      showToast("Només s'accepten fitxers PDF", "error");
-      return;
-    }
-
-    setUploadingPdf(true);
-    try {
-      const ext = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const filePath = `documents/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("portfolio-media")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
-      setFormData(prev => ({ ...prev, pdf_url: data.publicUrl }));
-      showToast("PDF pujat correctament", "success");
-    } catch (err: any) {
-      showToast("Error pujant PDF: " + err.message, "error");
-    } finally {
-      setUploadingPdf(false);
-    }
   };
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,8 +228,8 @@ export default function EditWorkPage() {
             />
           </div>
 
-          <div className="mt-8 border border-[var(--color-border)] rounded-xl">
-            <TipTapEditor content={formData.content} onChange={(html) => setFormData({...formData, content: html})} />
+          <div className="mt-8 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface)]/10">
+            <BlockBuilder blocks={formData.content} onChange={(blocks) => setFormData({...formData, content: blocks})} />
           </div>
         </div>
 
@@ -432,41 +404,6 @@ export default function EditWorkPage() {
                   <div className="absolute top-2 right-2">
                     <button type="button" onClick={() => setFormData(p => ({...p, cover_url: ''}))} className="bg-red-500/80 hover:bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-widest transition-colors">✕ Treure</button>
                   </div>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider text-left">Documentació PDF</label>
-              <div className="flex gap-2">
-                <input 
-                  type="text" 
-                  value={formData.pdf_url} 
-                  onChange={e => setFormData({...formData, pdf_url: e.target.value})} 
-                  placeholder="https://.../fitxer.pdf"
-                  className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-3 py-2 outline-none focus:border-[var(--color-accent)] transition-colors" 
-                />
-                <button
-                  type="button"
-                  onClick={() => pdfInputRef.current?.click()}
-                  disabled={uploadingPdf}
-                  className="bg-[var(--color-surface-2)] border border-[var(--color-border)] hover:border-[var(--color-accent)] text-[var(--color-muted)] hover:text-[var(--color-accent)] p-2.5 rounded-xl transition-all"
-                  title="Pujar fitxer PDF"
-                >
-                  {uploadingPdf ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
-                </button>
-                <input 
-                  ref={pdfInputRef}
-                  type="file" 
-                  accept="application/pdf" 
-                  className="hidden" 
-                  onChange={handlePdfUpload} 
-                />
-              </div>
-              {formData.pdf_url && (
-                <div className="mt-2 flex items-center gap-2 text-[10px] text-[var(--color-accent)] font-bold uppercase">
-                  <FileText size={12} />
-                  <span>Fitxer vinculat</span>
                 </div>
               )}
             </div>

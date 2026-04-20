@@ -102,11 +102,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide default cursor on interactive elements - REMOVED */
-a, button, [role="button"], input, select, textarea {
-  /* cursor none removed */
-}
-
 /* Typography Polish */
 h1, h2, h3, h4 {
   font-family: var(--font-display);

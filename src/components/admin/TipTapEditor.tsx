@@ -8,8 +8,9 @@ import Underline from "@tiptap/extension-underline";
 import CharacterCount from "@tiptap/extension-character-count";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useRef, useState, useCallback } from "react";
-import { Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, Quote, List, ListOrdered, Loader2, Upload } from "lucide-react";
+import { Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, Image as ImageIcon, Heading1, Heading2, Quote, List, ListOrdered, Loader2, Upload, Film, Music, FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { VideoNode, AudioNode, IframeNode } from "./TipTapExtensions";
 
 interface TipTapEditorProps {
   content: string | object | null;
@@ -26,8 +27,11 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
       Underline,
       Image.configure({
-        HTMLAttributes: { class: 'rounded-lg border border-color-border shadow-lg my-6 max-w-full h-auto' },
+        HTMLAttributes: { class: 'rounded-xl border border-[var(--color-border)] shadow-lg my-6 max-w-full h-auto object-cover' },
       }),
+      VideoNode,
+      AudioNode,
+      IframeNode,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: { class: 'text-color-accent hover:text-color-accent-hover underline underline-offset-4 cursor-pointer' },
@@ -48,21 +52,44 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
     },
   });
 
-  const uploadImage = useCallback(async (file: File) => {
+  const uploadMedia = useCallback(async (file: File) => {
     if (!editor) return;
-    if (!file.type.startsWith("image/")) { alert("Solo se permiten imágenes."); return; }
+    
+    // Check if it's explicitly supported
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    const isAudio = file.type.startsWith("audio/");
+    const isPdf = file.type === "application/pdf";
+    
+    if (!isImage && !isVideo && !isAudio && !isPdf) { 
+      alert("Format no suportat. Usa imatges, vídeos, àudio o PDF."); 
+      return; 
+    }
+    
     setUploading(true);
     try {
       const supabase = createClient();
       const ext = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const filePath = `works/${fileName}`;
+      
       const { error } = await supabase.storage.from("portfolio-media").upload(filePath, file, { upsert: false });
       if (error) throw error;
+      
       const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
-      editor.chain().focus().setImage({ src: data.publicUrl }).run();
+      
+      if (isImage) {
+        editor.chain().focus().setImage({ src: data.publicUrl }).run();
+      } else if (isVideo) {
+        editor.chain().focus().insertContent({ type: 'video', attrs: { src: data.publicUrl } }).run();
+      } else if (isAudio) {
+        editor.chain().focus().insertContent({ type: 'audio', attrs: { src: data.publicUrl } }).run();
+      } else if (isPdf) {
+        editor.chain().focus().insertContent({ type: 'iframe', attrs: { src: data.publicUrl, title: file.name } }).run();
+      }
+      
     } catch (err: unknown) {
-      alert(`Error al subir la imagen: ${err instanceof Error ? err.message : String(err)}`);
+      alert(`Error al pujar el fitxer: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setUploading(false);
     }
@@ -70,7 +97,7 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) uploadImage(file);
+    if (file) uploadMedia(file);
     e.target.value = "";
   };
 
@@ -78,8 +105,8 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) uploadImage(file);
-  }, [uploadImage]);
+    if (file) uploadMedia(file);
+  }, [uploadMedia]);
 
   const handleLink = () => {
     if (!editor) return;
@@ -121,11 +148,11 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           className={`p-2 rounded-lg transition-all ${uploading ? "opacity-50 cursor-not-allowed text-[var(--color-muted)]" : "text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)]"}`}
-          title="Pujar imatge (també pots arrossegar)"
+          title="Pujar mèdia (imatge, vídeo, àudio, PDF)"
         >
-          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <div className="flex -space-x-1"><ImageIcon className="w-4 h-4" /><Film className="w-4 h-4 hidden sm:block" /></div>}
         </button>
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileInput} />
+        <input ref={fileInputRef} type="file" accept="image/*,video/*,audio/*,application/pdf" className="hidden" onChange={handleFileInput} />
       </div>
 
       {/* Drag overlay */}

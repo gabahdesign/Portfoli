@@ -67,22 +67,47 @@ export async function deleteActivity(id: string) {
 
 export async function geocodeLocation(query: string) {
   try {
-    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`, {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1`, {
       method: "GET",
       headers: {
-        "User-Agent": "DescobreixApp/1.0 (marcg@example.com)"
+        "Accept-Language": "ca,es,en",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
       }
     });
     
-    if (!res.ok) return { success: false, error: "HTTP error" };
+    if (!res.ok) return { success: false, error: `HTTP ${res.status}` };
     
     const data = await res.json();
-    if (data && data.length > 0) {
-      return { success: true, lat: data[0].lat, lng: data[0].lon };
+    if (Array.isArray(data) && data.length > 0) {
+      return { success: true, lat: data[0].lat, lng: data[0].lon, display_name: data[0].display_name };
     }
-    return { success: false, error: "No location found" };
+    return { success: false, error: "No s'ha trobat res" };
   } catch (e) {
-    return { success: false, error: "Fetch failed" };
+    console.error("Geocode error:", e);
+    return { success: false, error: "Error de xarxa" };
+  }
+}
+
+export async function reverseGeocode(lat: number, lng: number) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`, {
+      method: "GET",
+      headers: {
+        "Accept-Language": "ca,es,en",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      }
+    });
+    
+    if (!res.ok) return { success: false, error: `HTTP ${res.status}` };
+    
+    const data = await res.json();
+    if (data && data.display_name) {
+      return { success: true, address: data.display_name };
+    }
+    return { success: false, error: "Adreça no trobada" };
+  } catch (e) {
+    console.error("Reverse geocode error:", e);
+    return { success: false, error: "Error de xarxa" };
   }
 }
 

@@ -1,10 +1,7 @@
-import { Heatmap } from "@/components/portfolio/Heatmap";
-import { getLocale, getTranslations } from "next-intl/server";
-import { Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Activity, Zap, MessageSquare, Lock } from "lucide-react";
+import { Activity, Lock } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { MoveCalendar } from "@/components/move/MoveCalendar";
-import { MoveMap } from "@/components/move/MoveMap";
 
 export default async function MovePage() {
   const supabase = await createClient();
@@ -13,10 +10,48 @@ export default async function MovePage() {
 
   const { data: groups } = await supabase.from("move_groups").select("*").order("sort_order", { ascending: true });
   const { data: categories } = await supabase.from("move_categories").select("*").order("name", { ascending: true });
-  const { data: activities } = await supabase.from("move_activities").select("*, move_categories(name, move_groups(accent_color))").order("start_datetime", { ascending: true });
+  
+  // Fetch basic activity data first to be resilient to missing participation tables
+  const { data: activitiesData } = await supabase
+    .from("move_activities")
+    .select(`
+      *, 
+      move_categories(name, move_groups(accent_color))
+    `)
+    .order("start_datetime", { ascending: true });
+
+  // If there are activities, try to fetch participants separately
+  let activities = activitiesData || [];
+  if (activities.length > 0) {
+    const { data: participants } = await supabase
+      .from("move_activity_participants")
+      .select(`
+        activity_id,
+        move_profiles(username)
+      `);
+    
+    // Merge participants into activities if available
+    if (participants) {
+      activities = activities.map(act => ({
+        ...act,
+        move_activity_participants: participants.filter(p => p.activity_id === act.id)
+      }));
+    }
+  }
+    
+  // Get move profile if logged in
+  let moveProfile = null;
+  if (session) {
+    const { data: profile } = await supabase
+      .from("move_profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .maybeSingle();
+    moveProfile = profile;
+  }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 md:px-10 py-12 md:py-20 animate-in fade-in duration-700">
+    <div className="w-full max-w-6xl mx-auto px-4 md:px-10 py-12 md:py-20 animate-in fade-in duration-700" id="move-page-top">
       {/* 1. HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8 border-b border-[var(--color-border)] pb-8">
         <div>
@@ -44,29 +79,13 @@ export default async function MovePage() {
       </div>
 
       <MoveCalendar 
-        isAdmin={isAdmin} 
+        isAdmin={isAdmin}
+        user={session?.user || null}
+        profile={moveProfile}
         groups={groups || []} 
         categories={categories || []} 
         activities={activities || []}
       />
-
-      {/* 3. FIELD MAP */}
-      <div className="mt-20">
-        <div className="mb-10">
-          <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Geolocalització</h2>
-          <p className="text-[var(--color-muted)] text-sm">Visualització de les activitats sobre el terreny per a una millor planificació logística.</p>
-        </div>
-        <MoveMap activities={activities || []} />
-      </div>
-
-      {/* 4. FOOTER HEATMAP */}
-      <div className="pt-20 border-t border-[var(--color-border)]">
-        <div className="mb-10">
-          <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Evolució de Rendiment</h2>
-          <p className="text-[var(--color-muted)] text-sm">Resum de la teva activitat física anual.</p>
-        </div>
-        <Heatmap activities={activities || []} />
-      </div>
     </div>
   );
 }

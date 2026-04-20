@@ -1,11 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2, Map } from "lucide-react";
 import { clsx } from "clsx";
 import { saveActivity, deleteActivity, geocodeLocation } from "@/app/actions/activities";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import dynamic from "next/dynamic";
+import { Toast, ToastType } from "../ui/Toast";
+
+const LocationPicker = dynamic(() => import("./LocationPicker"), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 z-[10000] bg-black/40 backdrop-blur-sm flex items-center justify-center"><Loader2 className="animate-spin text-white" size={32} /></div>
+});
 
 interface Category {
   id: string;
@@ -50,8 +57,22 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const router = useRouter();
+
+  const filteredCategories = useMemo(() => {
+    return categories.filter(c => {
+      const matchesGroup = selectedGroup ? c.group_id === selectedGroup.id : true;
+      const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
+      return matchesGroup && matchesSearch;
+    });
+  }, [categories, selectedGroup, search]);
   
+  const showNotification = (message: string, type: ToastType) => {
+    setToast({ message, type });
+  };
+
   const [formData, setFormData] = useState({
     id: "",
     title: "",
@@ -139,6 +160,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const handleSave = async () => {
     if (!selectedCategory) return;
     setLoading(true);
+    showNotification("Guardant activitat...", "loading");
     try {
       const activityData = {
         ...formData,
@@ -149,12 +171,13 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
       
       const res = await saveActivity(activityData, selectedCategory.id);
       if (res.success) {
+        showNotification("Activitat guardada correctament", "success");
         onClose();
       } else {
-        alert("Error guardant: " + res.error);
+        showNotification("Error guardant: " + res.error, "error");
       }
     } catch (e) {
-      alert("Error crític");
+      showNotification("Error crític en desar", "error");
     } finally {
       setLoading(false);
     }
@@ -163,12 +186,17 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const handleDelete = async () => {
     if (!formData.id || !confirm("Estàs segur d'eliminar aquesta activitat permanentment?")) return;
     setIsDeleting(true);
+    showNotification("Eliminant activitat...", "loading");
     try {
       const res = await deleteActivity(formData.id);
-      if (res.success) onClose();
-      else alert("Error eliminant: " + res.error);
+      if (res.success) {
+        showNotification("Activitat eliminada", "success");
+        onClose();
+      } else {
+        showNotification("Error eliminant: " + res.error, "error");
+      }
     } catch (e) {
-      alert("Error crític");
+      showNotification("Error crític en eliminar", "error");
     } finally {
       setIsDeleting(false);
     }
@@ -177,15 +205,17 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const handleGeocode = async () => {
     if (!formData.location) return;
     setIsGeocoding(true);
+    showNotification("Cercant coordenades...", "loading");
     try {
        const res = await geocodeLocation(formData.location);
        if (res.success) {
           setFormData(prev => ({ ...prev, lat: res.lat, lng: res.lng }));
+          showNotification("Ubicació trobada!", "success");
        } else {
-          alert("No s'ha pogut trobar la ubicació exacta.");
+          showNotification("No s'ha pogut trobar la ubicació.", "error");
        }
     } catch (e) {
-       alert("Error de connexió geolocalitzant.");
+       showNotification("Error de connexió geolocalitzant.", "error");
     } finally {
        setIsGeocoding(false);
     }
@@ -210,17 +240,17 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     }
   }, [formData.distance, formData.elevation, selectedGroup]);
 
-  if (!isOpen) return null;
-
-  const filteredCategories = categories.filter(c => 
-    c.group_id === selectedGroup?.id && 
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   if (!isOpen || !mounted) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex justify-center md:justify-end items-end md:items-stretch p-2 sm:p-4 md:p-0">
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
       {/* Backdrop (Invisible but captures clicks to close) */}
       <div className="absolute inset-0 bg-black/10 transition-opacity duration-500" onClick={onClose} />
       
@@ -379,11 +409,20 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
                            <input 
                              type="text" 
-                             placeholder="Ciutat, Muntanya, Carrer..." 
+                             placeholder="Escull una ubicació..." 
                              value={formData.location}
-                             onChange={e => setFormData({...formData, location: e.target.value})}
-                             className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all" 
+                             readOnly
+                             onClick={() => setIsMapOpen(true)}
+                             className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-12 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all cursor-pointer hover:bg-[var(--color-surface-2)]/80" 
                            />
+                           <button 
+                             type="button" 
+                             onClick={() => setIsMapOpen(true)}
+                             className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 rounded-xl transition-all hover:scale-110 active:scale-95"
+                             title="Obrir mapa"
+                           >
+                              <Map size={16} />
+                           </button>
                        </div>
                      </div>
                      <div className="grid grid-cols-2 gap-4">
@@ -486,6 +525,22 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
            )}
         </div>
       </div>
+      {isMapOpen && (
+        <LocationPicker 
+          initialLat={formData.lat ? parseFloat(formData.lat) : undefined}
+          initialLng={formData.lng ? parseFloat(formData.lng) : undefined}
+          onConfirm={(data) => {
+            setFormData(prev => ({
+              ...prev,
+              location: data.address,
+              lat: data.lat.toString(),
+              lng: data.lng.toString()
+            }));
+            setIsMapOpen(false);
+          }}
+          onCancel={() => setIsMapOpen(false)}
+        />
+      )}
     </div>,
     document.body
   );

@@ -9,24 +9,58 @@ import {
   Search,
   LayoutGrid,
   List as ListIcon,
-  Map as MapIcon
+  Map as MapIcon,
+  Activity,
+  User as UserIcon,
+  LogOut,
+  Users,
+  Loader2,
+  Map as MapViewIcon
 } from "lucide-react";
 import { clsx } from "clsx";
 import { ActivityModal } from "./ActivityModal";
+import { MoveAuthModal } from "./MoveAuthModal";
+import { logoutMoveUser } from "@/app/actions/move_auth";
+import { joinMoveActivity, leaveMoveActivity } from "@/app/actions/move_participation";
+import { useRouter } from "next/navigation";
+import { Toast, ToastType } from "../ui/Toast";
+import { MoveMap } from "./MoveMap";
+import { Heatmap } from "../portfolio/Heatmap";
 
 interface MoveCalendarProps {
   isAdmin?: boolean;
+  user: any;
+  profile: any;
   groups: any[];
   categories: any[];
   activities: any[];
 }
 
-export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCalendarProps) {
+export function MoveCalendar({ isAdmin, user, profile, groups, categories, activities }: MoveCalendarProps) {
+  const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [editActivity, setEditActivity] = useState<any>(null);
   const [initialDate, setInitialDate] = useState<Date>(new Date());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+
+  const showNotification = (message: string, type: ToastType) => {
+    setToast({ message, type });
+  };
+
+  const filteredActivities = useMemo(() => {
+    if (!searchTerm.trim()) return activities;
+    const s = searchTerm.toLowerCase();
+    return activities.filter(act => 
+      act.title?.toLowerCase().includes(s) || 
+      act.location?.toLowerCase().includes(s) ||
+      act.move_categories?.name?.toLowerCase().includes(s)
+    );
+  }, [activities, searchTerm]);
 
   const daysInMonth = useMemo(() => {
     const year = currentDate.getFullYear();
@@ -49,6 +83,35 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const handleLogout = async () => {
+    await logoutMoveUser();
+    router.refresh();
+    showNotification("Sessió tancada", "success");
+  };
+
+  const handleJoinLeave = async (activityId: string, isJoined: boolean) => {
+    if (!profile) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setLoadingAction(activityId);
+    try {
+      if (isJoined) {
+        await leaveMoveActivity(activityId);
+        showNotification("T'has desapuntat", "success");
+      } else {
+        await joinMoveActivity(activityId);
+        showNotification("T'has apuntat!", "success");
+      }
+      router.refresh();
+    } catch (err) {
+      showNotification("S'ha produït un error", "error");
+    } finally {
+      setLoadingAction(null);
+    }
   };
 
   return (
@@ -94,6 +157,15 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
           >
             <ListIcon size={14} /> Agenda
           </button>
+          <button 
+            onClick={() => setViewMode('map')}
+            className={clsx(
+              "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+              viewMode === 'map' ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
+            )}
+          >
+            <MapViewIcon size={14} /> Mapa
+          </button>
         </div>
 
         <div className="flex gap-3">
@@ -102,9 +174,35 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
              <input 
                type="text" 
                placeholder="Cerca activitats..." 
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
                className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all w-48"
              />
            </div>
+           
+           {profile ? (
+             <div className="flex items-center gap-4 bg-[var(--color-surface-2)] pl-4 pr-2 py-1.5 rounded-xl border border-[var(--color-border)]">
+                <div className="flex flex-col items-end">
+                   <span className="text-[9px] font-black tracking-widest text-[var(--color-accent)] uppercase">Connectat</span>
+                   <span className="text-xs font-bold text-white">{profile.username}</span>
+                </div>
+                <button 
+                  onClick={handleLogout}
+                  className="p-2 text-[var(--color-muted)] hover:text-red-500 transition-colors"
+                  title="Tancar sessió"
+                >
+                  <LogOut size={16} />
+                </button>
+             </div>
+           ) : (
+             <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="flex items-center gap-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:border-[var(--color-accent)]/50 transition-all"
+             >
+               <UserIcon size={14} /> Registra&apos;t / Entra
+             </button>
+           )}
+
            {isAdmin && (
              <button 
               onClick={() => {
@@ -119,6 +217,8 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
            )}
         </div>
       </div>
+
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* 2. CALENDAR GRID */}
       {viewMode === 'grid' ? (
@@ -167,7 +267,7 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
 
                   {/* Rendering Real Activities */}
                   <div className="space-y-1.5">
-                    {activities
+                    {filteredActivities
                       .filter(act => {
                         const actDate = new Date(act.start_datetime);
                         return actDate.getDate() === day && 
@@ -210,12 +310,138 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
             })}
           </div>
         </div>
+      ) : viewMode === 'list' ? (
+        <div className="animate-in fade-in duration-500 space-y-6">
+          {filteredActivities.length > 0 ? (
+            <div className="space-y-8">
+               {/* Organize by month/day */}
+               {Object.entries(
+                 filteredActivities.reduce((acc: any, act) => {
+                    const date = new Date(act.start_datetime).toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+                    if (!acc[date]) acc[date] = [];
+                    acc[date].push(act);
+                    return acc;
+                 }, {})
+               ).map(([date, dayActivities]: [string, any]) => (
+                 <div key={date} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                       <div className="h-px flex-1 bg-[var(--color-border)]" />
+                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] whitespace-nowrap">{date}</span>
+                       <div className="h-px flex-1 bg-[var(--color-border)] opacity-30" />
+                    </div>
+                    <div className="grid gap-4">
+                       {dayActivities.map((act: any) => (
+                          <div 
+                            key={act.id} 
+                            onClick={() => {
+                              if (isAdmin) {
+                                 setEditActivity(act);
+                                 setInitialDate(new Date(act.start_datetime));
+                                 setIsModalOpen(true);
+                              }
+                            }}
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[2.5rem] hover:bg-[var(--color-surface-2)] transition-all cursor-pointer group shadow-lg"
+                          >
+                             <div className="flex items-center gap-6">
+                                <div 
+                                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner"
+                                  style={{ backgroundColor: (act.move_categories?.move_groups?.accent_color || '#843aea') + '20' }}
+                                >
+                                   <Activity className="w-6 h-6" style={{ color: act.move_categories?.move_groups?.accent_color || '#843aea' }} />
+                                </div>
+                                <div>
+                                   <h4 className="text-xl font-display font-black text-[var(--color-text)] mb-1.5 tracking-tight">{act.title}</h4>
+                                   <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-[10px] text-[var(--color-muted)] font-bold uppercase tracking-widest">
+                                      <span style={{ color: act.move_categories?.move_groups?.accent_color }} className="opacity-80">
+                                         {act.move_categories?.name}
+                                      </span>
+                                      <span>•</span>
+                                      <span>{new Date(act.start_datetime).toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                                      {act.location && (
+                                        <>
+                                          <span>•</span>
+                                          <span>{act.location}</span>
+                                        </>
+                                      )}
+                                      
+                                      {act.move_activity_participants?.length > 0 && (
+                                        <div className="flex items-center gap-2 ml-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                                          <Users size={10} className="text-[var(--color-accent)]" />
+                                          <span className="text-white/70 normal-case font-medium">
+                                            {act.move_activity_participants.map((p: any) => p.move_profiles?.username).filter(Boolean).join(', ')}
+                                          </span>
+                                        </div>
+                                      )}
+                                   </div>
+                                </div>
+                             </div>
+
+                             <div className="flex items-center gap-4">
+                                {(() => {
+                                  const isJoined = act.move_activity_participants?.some((p: any) => p.move_profiles?.username === profile?.username);
+                                  return (
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleJoinLeave(act.id, isJoined);
+                                      }}
+                                      disabled={loadingAction === act.id}
+                                      className={clsx(
+                                        "px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all min-w-[150px] flex items-center justify-center gap-2",
+                                        isJoined 
+                                          ? "bg-white/5 text-white border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" 
+                                          : "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
+                                      )}
+                                    >
+                                      {loadingAction === act.id ? (
+                                        <Loader2 size={14} className="animate-spin" />
+                                      ) : isJoined ? (
+                                        "Ja hi estic"
+                                      ) : (
+                                        "M'apunto"
+                                      )}
+                                    </button>
+                                  );
+                                })()}
+
+                                {isAdmin && (
+                                  <div className="p-2 bg-[var(--color-surface-2)] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                                     <Plus className="rotate-45 text-[var(--color-muted)]" size={16} />
+                                  </div>
+                                )}
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 </div>
+               ))}
+            </div>
+          ) : (
+            <div className="bg-[var(--color-surface)] p-12 rounded-[2.5rem] border border-[var(--color-border)] text-center text-[var(--color-muted)] shadow-2xl">
+              <CalendarIcon className="mx-auto mb-6 opacity-10" size={64} />
+              <p className="font-medium text-lg">No hi ha activitats programades.</p>
+              <p className="text-sm opacity-60 mt-2">Explora la graella per veure el calendari complet.</p>
+            </div>
+          )}
+        </div>
       ) : (
-        <div className="animate-in fade-in duration-500 space-y-4">
-          <div className="bg-[var(--color-surface)] p-8 rounded-3xl border border-[var(--color-border)] text-center text-[var(--color-muted)]">
-            <CalendarIcon className="mx-auto mb-4 opacity-20" size={48} />
-            <p className="font-medium">No hi ha activitats programades per a aquesta setmana.</p>
+        <div className="animate-in fade-in duration-700">
+           <div className="mb-10">
+              <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Geolocalització</h2>
+              <p className="text-[var(--color-muted)] text-sm">Visualització de les activitats sobre el terreny per a una millor planificació logística.</p>
+           </div>
+           <MoveMap activities={activities || []} />
+        </div>
+      )}
+
+      {/* 4. OPTIONAL HEATMAP (Only shown in Grid/List) */}
+      {viewMode !== 'map' && (
+        <div className="pt-20 border-t border-[var(--color-border)] animate-in fade-in duration-700 mt-20">
+          <div className="mb-10">
+            <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Evolució de Rendiment</h2>
+            <p className="text-[var(--color-muted)] text-sm">Resum de la teva activitat física anual.</p>
           </div>
+          <Heatmap activities={activities || []} />
         </div>
       )}
 
@@ -227,6 +453,14 @@ export function MoveCalendar({ isAdmin, groups, categories, activities }: MoveCa
         categories={categories}
         editActivity={editActivity}
         initialDate={initialDate}
+      />
+
+      <MoveAuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => {
+          router.refresh();
+        }}
       />
     </div>
   );
