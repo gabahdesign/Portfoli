@@ -49,8 +49,11 @@ export default async function PublicHome() {
         )}
         
         <div className="z-10 text-center px-6 max-w-4xl">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/40 text-[9px] font-black uppercase tracking-[0.4em] mb-8 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4 backdrop-blur-md">
             <Sparkles size={12} className="text-[var(--color-accent)]" /> Portfoli Públic
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-8 text-[9px] text-[var(--color-muted)] font-black uppercase tracking-[0.2em] opacity-60">
+            Web en procés &middot; Continguts i idiomes sota revisió (poden haver-hi faltes)
           </div>
           <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter mb-8 lowercase">
             {aboutData?.name || "Marc"}<span className="text-[var(--color-accent)]">.</span>

@@ -95,8 +95,11 @@ export default async function PortfolioHome({
         )}
         
         <div className="z-10 text-center px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-[0.3em] mb-6 backdrop-blur-md">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-[0.3em] mb-4 backdrop-blur-md">
             {locale === 'ca' ? 'Actualització Recent' : 'Latest Update'}
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-8 text-[9px] text-[var(--color-muted)] font-black uppercase tracking-[0.2em] opacity-50">
+            Web en procés &middot; Continguts i idiomes sota revisió (poden haver-hi faltes)
           </div>
           <h1 className="text-6xl md:text-8xl font-black text-[var(--color-text)] tracking-tighter mb-6 drop-shadow-2xl">
             {aboutData?.name || "Marc"}<span className="text-[var(--color-accent)]">.</span>
