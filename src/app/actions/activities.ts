@@ -21,6 +21,8 @@ export async function saveActivity(formData: any, categoryId: string) {
   const payload = {
     title: formData.title,
     description: formData.description,
+    whatsapp_link: formData.whatsapp_link || null,
+    subcategory_id: formData.subcategory_id || null,
     category_id: categoryId,
     start_datetime: startDateTime,
     end_datetime: endDateTime,

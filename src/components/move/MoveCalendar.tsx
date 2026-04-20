@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { Toast, ToastType } from "../ui/Toast";
 import { MoveMap } from "./MoveMap";
 import { Heatmap } from "../portfolio/Heatmap";
+import { MoveActivityDetailModal } from "./MoveActivityDetailModal";
 
 interface MoveCalendarProps {
   isAdmin?: boolean;
@@ -47,6 +48,7 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [selectedDetailActivity, setSelectedDetailActivity] = useState<any>(null);
 
   const showNotification = (message: string, type: ToastType) => {
     setToast({ message, type });
@@ -278,12 +280,8 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                         <div 
                           key={act.id} 
                           onClick={(e) => {
-                             if (isAdmin) {
-                               e.stopPropagation();
-                               setEditActivity(act);
-                               setInitialDate(new Date(act.start_datetime));
-                               setIsModalOpen(true);
-                             }
+                             e.stopPropagation();
+                             setSelectedDetailActivity(act);
                           }}
                           className="px-2 py-1.5 rounded-lg border text-[9px] font-bold truncate transition-all hover:scale-[1.02]"
                           style={{ 
@@ -334,11 +332,7 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                           <div 
                             key={act.id} 
                             onClick={() => {
-                              if (isAdmin) {
-                                 setEditActivity(act);
-                                 setInitialDate(new Date(act.start_datetime));
-                                 setIsModalOpen(true);
-                              }
+                               setSelectedDetailActivity(act);
                             }}
                             className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[2.5rem] hover:bg-[var(--color-surface-2)] transition-all cursor-pointer group shadow-lg"
                           >
@@ -460,6 +454,22 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={() => {
           router.refresh();
+        }}
+      />
+
+      <MoveActivityDetailModal 
+        isOpen={!!selectedDetailActivity}
+        onClose={() => setSelectedDetailActivity(null)}
+        activity={selectedDetailActivity}
+        isAdmin={isAdmin}
+        isJoined={selectedDetailActivity?.move_activity_participants?.some((p: any) => p.move_profiles?.username === profile?.username)}
+        loadingAction={loadingAction}
+        onJoinLeave={(id, joined) => handleJoinLeave(id, joined)}
+        onEdit={(act) => {
+          setSelectedDetailActivity(null);
+          setEditActivity(act);
+          setInitialDate(new Date(act.start_datetime));
+          setIsModalOpen(true);
         }}
       />
     </div>

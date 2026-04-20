@@ -125,12 +125,12 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
         />
       )}
       
-      <div className="relative w-full max-w-md bg-[var(--color-surface)] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+      <div className="relative w-full h-full sm:h-auto sm:max-w-md bg-[var(--color-surface)] sm:border sm:border-white/10 sm:rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-xl transition-all z-10"
+          className="absolute top-6 right-6 p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-2xl transition-all z-20"
         >
-          <X size={20} />
+          <X size={24} />
         </button>
 
         <div className="p-8 pt-12 text-center">
@@ -267,7 +267,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full bg-white text-black font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-[var(--color-accent)] hover:text-white transition-all disabled:opacity-50"
+                className="w-full bg-[var(--color-text)] text-[var(--color-bg)] dark:bg-white dark:text-black font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-[var(--color-accent)] hover:text-white transition-all disabled:opacity-50"
               >
                 Crea el compte
               </button>

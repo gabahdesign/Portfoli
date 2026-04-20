@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2, Map } from "lucide-react";
+import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2, Map, MessageCircle } from "lucide-react";
 import { clsx } from "clsx";
 import { saveActivity, deleteActivity, geocodeLocation } from "@/app/actions/activities";
+import { getSubcategories, addSubcategory, deleteSubcategory } from "@/app/actions/subcategories";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
@@ -59,6 +60,13 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  
+  // Subcategories management
+  const [subcategories, setSubcategories] = useState<any[]>([]);
+  const [newSubName, setNewSubName] = useState("");
+  const [isManagingSubs, setIsManagingSubs] = useState(false);
+  const [isLoadingSubs, setIsLoadingSubs] = useState(false);
+
   const router = useRouter();
 
   const filteredCategories = useMemo(() => {
@@ -86,7 +94,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     lng: "",
     distance: "",
     elevation: "",
-    difficulty: ""
+    difficulty: "",
+    whatsapp_link: "",
+    subcategory_id: ""
   });
   
   const [mounted, setMounted] = useState(false);
@@ -125,7 +135,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           lng: editActivity.location_coords?.lng?.toString() || "",
           distance: editActivity.metadata?.distance?.toString() || "",
           elevation: editActivity.metadata?.elevation?.toString() || "",
-          difficulty: editActivity.metadata?.difficulty || ""
+          difficulty: editActivity.metadata?.difficulty || "",
+          whatsapp_link: editActivity.whatsapp_link || "",
+          subcategory_id: editActivity.subcategory_id || ""
         });
       } else {
         setStep('group');
@@ -151,11 +163,48 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           lng: "",
           distance: "",
           elevation: "",
-          difficulty: ""
+          difficulty: "",
+          whatsapp_link: "",
+          subcategory_id: ""
         });
       }
     }
   }, [isOpen, editActivity, initialDate, categories, groups]);
+
+  // Handle category change: fetch subcategories
+  useEffect(() => {
+    if (selectedCategory) {
+      const fetchSubs = async () => {
+        setIsLoadingSubs(true);
+        const res = await getSubcategories(selectedCategory.id);
+        if (res.success) setSubcategories(res.data || []);
+        setIsLoadingSubs(false);
+      };
+      fetchSubs();
+    }
+  }, [selectedCategory]);
+
+  const handleAddSub = async () => {
+    if (!selectedCategory || !newSubName.trim()) return;
+    const res = await addSubcategory(selectedCategory.id, newSubName.trim());
+    if (res.success) {
+      setSubcategories([...subcategories, res.data]);
+      setNewSubName("");
+      showNotification("Subcategoria afegida", "success");
+    } else {
+      showNotification("Error: " + res.error, "error");
+    }
+  };
+
+  const handleDelSub = async (id: string) => {
+    if (!confirm("Eliminar aquesta subcategoria?")) return;
+    const res = await deleteSubcategory(id);
+    if (res.success) {
+      setSubcategories(subcategories.filter(s => s.id !== id));
+      if (formData.subcategory_id === id) setFormData({ ...formData, subcategory_id: "" });
+      showNotification("Subcategoria eliminada", "success");
+    }
+  };
 
   const handleSave = async () => {
     if (!selectedCategory) return;
@@ -343,6 +392,81 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     className="w-full bg-transparent border-b border-[var(--color-border)] py-4 text-2xl font-display font-black outline-none focus:border-[var(--color-accent)] transition-all"
                   />
+
+                  {/* Subcategories Selector */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Subcategoria (Opcional)</label>
+                      <button 
+                        type="button"
+                        onClick={() => setIsManagingSubs(!isManagingSubs)}
+                        className="text-[10px] text-[var(--color-accent)] font-bold hover:underline"
+                      >
+                        {isManagingSubs ? "Tancar gestió" : "Gestionar Subcategories"}
+                      </button>
+                    </div>
+
+                    {isManagingSubs ? (
+                      <div className="bg-[var(--color-surface-2)] p-4 rounded-2xl border border-[var(--color-accent)]/20 space-y-3 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex gap-2">
+                          <input 
+                            type="text"
+                            placeholder="Nova subcategoria..."
+                            value={newSubName}
+                            onChange={e => setNewSubName(e.target.value)}
+                            className="flex-1 bg-black/20 border border-[var(--color-border)] rounded-xl px-3 py-2 text-xs outline-none"
+                          />
+                          <button onClick={handleAddSub} className="p-2 bg-[var(--color-accent)] text-white rounded-xl"><Plus size={16} /></button>
+                        </div>
+                        <div className="max-h-32 overflow-y-auto space-y-1 pr-2 no-scrollbar">
+                           {subcategories.map(s => (
+                             <div key={s.id} className="flex justify-between items-center p-2 bg-black/10 rounded-lg">
+                               <span className="text-[10px] font-medium">{s.name}</span>
+                               <button onClick={() => handleDelSub(s.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={12} /></button>
+                             </div>
+                           ))}
+                           {subcategories.length === 0 && <p className="text-[10px] text-center text-[var(--color-muted)] italic">No hi ha subcategories.</p>}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {subcategories.map(s => (
+                          <button
+                            key={s.id}
+                            onClick={() => setFormData({ ...formData, subcategory_id: s.id === formData.subcategory_id ? "" : s.id })}
+                            className={clsx(
+                              "px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all border",
+                              formData.subcategory_id === s.id 
+                                ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-white shadow-lg" 
+                                : "bg-[var(--color-surface-2)] border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-accent)]"
+                            )}
+                          >
+                            {s.name}
+                          </button>
+                        ))}
+                        {subcategories.length === 0 && !isLoadingSubs && (
+                           <p className="text-[10px] text-[var(--color-muted)] italic">No hi ha subcategories creades.</p>
+                        )}
+                        {isLoadingSubs && <Loader2 size={12} className="animate-spin text-[var(--color-muted)]" />}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                       <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">WhatsApp Link (Opcional)</label>
+                       <div className="relative">
+                          <MessageCircle size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#25D366]" />
+                          <input 
+                            type="text" 
+                            placeholder="https://chat.whatsapp.com/..." 
+                            value={formData.whatsapp_link}
+                            onChange={e => setFormData({...formData, whatsapp_link: e.target.value})}
+                            className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none focus:border-[#25D366]" 
+                          />
+                       </div>
+                    </div>
+                  </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -486,6 +610,19 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                        </div>
                     </div>
                   )}
+                   <div className="space-y-2">
+                       <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] flex justify-between items-center">
+                          <span>Descripció del plan</span>
+                          <span className="text-[9px] lowercase italic opacity-60">**negreta** · *cursiva*</span>
+                       </label>
+                       <textarea 
+                         rows={4}
+                         placeholder="Explica de què tracta el plan..." 
+                         value={formData.description}
+                         onChange={e => setFormData({...formData, description: e.target.value})}
+                         className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl p-4 text-xs outline-none focus:border-[var(--color-accent)] transition-all resize-none no-scrollbar" 
+                       />
+                   </div>
                 </div>
              </div>
           )}
