@@ -40,11 +40,14 @@ export default async function WorkPage({
     .from("access_tokens")
     .select("company_ids, active")
     .eq("token", token)
-    .single();
+    .maybeSingle();
 
-  if (!tokenData || !tokenData.active) notFound();
+  const isActive = tokenData?.active ?? false;
   
-  if (tokenData.company_ids && tokenData.company_ids.length > 0) {
+  // No longer blocking access to works by token validity here. 
+  // Portfolio is now public. 
+  
+  if (tokenData && tokenData.active && tokenData.company_ids && tokenData.company_ids.length > 0) {
     // Note: work.companies is the joined company record
     if (!tokenData.company_ids.includes(work.company_id) && !work.companies?.is_freelance) {
       notFound();

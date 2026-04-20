@@ -30,7 +30,7 @@ export default async function PortfolioHome({
     allCompanies = companiesRes.data || [];
   } else {
     const [tokenRes, aboutRes, companiesRes] = await Promise.all([
-      supabase.from("access_tokens").select("company_ids").eq("token", token).single(),
+      supabase.from("access_tokens").select("company_ids").eq("token", token).maybeSingle(),
       supabase.from("about_me").select("*").single(),
       supabase.from("companies").select("*").order("start_date", { ascending: false }),
     ]);

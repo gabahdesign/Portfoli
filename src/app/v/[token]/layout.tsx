@@ -57,13 +57,14 @@ export default async function TokenLayout({
       .from("access_tokens")
       .select("welcome_message, active")
       .eq("token", token)
-      .single();
+      .maybeSingle();
 
-    if (!tokenData || !tokenData.active) {
-      notFound();
-    }
+    const isActive = tokenData?.active ?? false;
+    
+    // We no longer call notFound() here. 
+    // Validation for private sections like /blog will happen in their own layout.
 
-    const welcome_msg = tokenData.welcome_message as Record<string, string> | null;
+    const welcome_msg = tokenData?.welcome_message as Record<string, string> | null;
     const defaultMsg = welcome_msg ? (welcome_msg as Record<string, string>)["ca"] : undefined;
     welcomeMessage = welcome_msg 
       ? (welcome_msg as Record<string, string>)[locale] || defaultMsg
