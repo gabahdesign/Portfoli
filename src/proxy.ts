@@ -72,6 +72,28 @@ export async function proxy(request: NextRequest) {
     response.cookies.set('current_token', token, { path: '/', maxAge: 60 * 60 * 24 * 7 })
   }
 
+  // SECURITZACIÓ (Hardenning)
+  const headers = response.headers
+  headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+  headers.set('X-Content-Type-Options', 'nosniff')
+  headers.set('X-Frame-Options', 'SAMEORIGIN')
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)')
+
+  const cspValue = `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google-analytics.com https://*.googletagmanager.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com;
+    img-src 'self' blob: data: https://*.supabase.co https://*.googleusercontent.com https://drive.google.com https://*.tile.openstreetmap.org https://unpkg.com;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com;
+    frame-src 'self' https://www.youtube.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+  `.replace(/\s+/g, ' ').trim();
+  headers.set('Content-Security-Policy', cspValue)
+
   return response
 }
 
