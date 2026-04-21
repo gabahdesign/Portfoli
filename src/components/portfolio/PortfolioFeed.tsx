@@ -91,7 +91,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
   return (
     <div className="space-y-12">
       {/* Search Bar Section */}
-      <div className="relative max-w-2xl mx-auto -mt-10 mb-16 z-30">
+      <div className="relative max-w-4xl mx-auto -mt-10 mb-16 z-30">
         <div className="relative group">
           <div className="absolute inset-0 bg-black/20 blur-2xl rounded-full opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
           <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full p-2 flex items-center shadow-2xl backdrop-blur-3xl">
@@ -165,7 +165,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
         </div>
 
         {filteredWorks.length > 0 ? (
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 3xl:columns-6 gap-8 space-y-8">
             {filteredWorks.map((work) => (
               <div key={work.slug} className="break-inside-avoid">
                 <FeaturedWorkCard

@@ -69,17 +69,19 @@ export function FeaturedWorkCard({
                 className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
               />
             ) : isPdf ? (
-              <div className="relative w-full aspect-[3/4] bg-[var(--color-surface-2)] flex items-center justify-center">
-                <object 
-                  data={`${coverUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
-                  type="application/pdf" 
-                  className="w-full h-full pointer-events-none scale-110 opacity-70"
-                >
-                   <div className="flex flex-col items-center gap-2">
-                     <FileText className="w-8 h-8 opacity-20" />
-                     <span className="text-[10px] font-black uppercase tracking-widest opacity-20">Document</span>
+              <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="relative flex flex-col items-center gap-6 p-8 transition-transform duration-500 group-hover:scale-105">
+                   <div className="w-20 h-20 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] shadow-2xl border border-[var(--color-accent)]/20">
+                      <FileText className="w-10 h-10" />
                    </div>
-                </object>
+                   <div className="text-center space-y-2">
+                      <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)] opacity-60">Projecte PDF</span>
+                      <span className="block text-xs font-bold text-[var(--color-text)] opacity-80 max-w-[200px] line-clamp-1">{title}</span>
+                   </div>
+                </div>
+                {/* Decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--color-accent)]/10 to-transparent blur-3xl opacity-30" />
               </div>
             ) : (
               <img
@@ -90,19 +92,18 @@ export function FeaturedWorkCard({
             )}
           </div>
         ) : pdfUrl ? (
-          <div className="relative w-full aspect-[3/4] bg-[var(--color-surface-2)] flex items-center justify-center overflow-hidden">
-             {/* PDF Preview Frame (using object to show first page) */}
-             <object 
-               data={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
-               type="application/pdf" 
-               className="w-full h-full pointer-events-none scale-110 opacity-60 group-hover:opacity-100 transition-opacity"
-             >
-                <div className="flex flex-col items-center gap-3 p-8 text-center text-[var(--color-muted)]">
-                   <svg className="w-12 h-12 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
-                   <span className="text-[10px] font-black uppercase tracking-widest">Document PDF</span>
-                </div>
-             </object>
-             <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)]/80 to-transparent" />
+          <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative flex flex-col items-center gap-6 p-8 transition-transform duration-500 group-hover:scale-105">
+                 <div className="w-20 h-20 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] shadow-2xl border border-[var(--color-accent)]/20">
+                    <FileText className="w-10 h-10" />
+                 </div>
+                 <div className="text-center space-y-2">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)] opacity-60">Projecte PDF</span>
+                    <span className="block text-xs font-bold text-[var(--color-text)] opacity-80 max-w-[200px] line-clamp-1">{title}</span>
+                 </div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)]/80 to-transparent pointer-events-none" />
           </div>
         ) : (
           <div className="w-full aspect-video flex items-center justify-center text-[var(--color-border)] bg-[var(--color-surface)]">

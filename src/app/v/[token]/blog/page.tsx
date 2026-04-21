@@ -24,7 +24,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
   return (
     <div className="min-h-screen pt-28 bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-accent)] selection:text-white">
       {/* 1. NEWSPAPER HEADER (MASTHEAD) */}
-      <header className="border-b-4 border-[var(--color-text)] border-double pt-12 pb-6 px-6 max-w-7xl mx-auto">
+      <header className="border-b-4 border-[var(--color-text)] border-double pt-12 pb-6 px-6 max-w-[2000px] mx-auto">
         <div className="flex justify-between items-end border-b border-[var(--color-border)] pb-2 mb-4">
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">{today}</span>
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">descobreix &middot; Gastronomia · Disseny · Tecnologia · Vida</span>
@@ -49,7 +49,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-[2000px] mx-auto px-6 py-16">
         {!posts || posts.length === 0 ? (
           <div className="text-center py-32 border-2 border-dashed border-[var(--color-border)] rounded-3xl">
              <Newspaper size={48} className="mx-auto mb-4 opacity-10" />
@@ -167,7 +167,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
       </main>
 
       <footer className="border-t border-[var(--color-border)] py-12 px-6 bg-[var(--color-surface)]">
-         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+         <div className="max-w-[2000px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <p className="font-serif text-2xl font-black text-[var(--color-text)]">marc<span className="text-[var(--color-accent)]">.</span></p>
             <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">
                <span>Linkedin</span>

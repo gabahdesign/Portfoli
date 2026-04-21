@@ -101,7 +101,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         {/* Global PDF Presentation Overlay */}
         <PdfPresentationMode works={visibleWorks.filter(w => !!w.pdf_url) as any} />
 
-        <div className="max-w-7xl mx-auto px-6 pb-32 mt-12">
+        <div className="max-w-[2000px] mx-auto px-6 pb-32 mt-12">
           
           {/* 2. PORTFOLIO FEED */}
           { }

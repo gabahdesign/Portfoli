@@ -59,6 +59,15 @@ async function uploadMedia(filePath: string, companySlug: string, projectSlug: s
   const fileName = path.basename(filePath);
   const targetPath = `content/${companySlug}/${projectSlug}/${fileName}`;
   
+  const stats = fs.statSync(filePath);
+  const fileSizeInBytes = stats.size;
+  const MAX_SIZE = 50 * 1024 * 1024; // 50MB limit
+
+  if (fileSizeInBytes > MAX_SIZE) {
+    console.warn(`  ⚠ Skipping ${fileName}: File too large (${(fileSizeInBytes / 1024 / 1024).toFixed(2)}MB). Max allowed: 50MB.`);
+    return null;
+  }
+
   const fileBuffer = fs.readFileSync(filePath);
   
   const { data, error } = await supabase.storage
@@ -93,59 +102,74 @@ function getContentType(ext: string) {
 }
 
 async function processDirectory(dir: string, depth: number = 0, context: { companyId: string | null, companySlug: string } = { companyId: null, companySlug: '' }) {
-  const items = fs.readdirSync(dir);
-  const files = items.filter(i => fs.statSync(path.join(dir, i)).isFile());
-  const folders = items.filter(i => fs.statSync(path.join(dir, i)).isDirectory());
-
-  const mediaFiles = files.filter(f => ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.mp4'].includes(path.extname(f).toLowerCase()));
-
-  // 1. If this folder has media files, it's a PROJECT
-  if (mediaFiles.length > 0 && context.companyId) {
-    const projectName = path.basename(dir);
-    const projectSlug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    
-    console.log(`[PROJECT] Importing ${projectName}...`);
-    
-    // Upload media and build content
-    const uploadedUrls: string[] = [];
-    for (const file of mediaFiles) {
-      const url = await uploadMedia(path.join(dir, file), context.companySlug, projectSlug);
-      if (url) uploadedUrls.push(url);
-    }
-
-    const tipTapContent = {
-      type: 'doc',
-      content: uploadedUrls.map(url => ({
-        type: 'image',
-        attrs: { src: url, alt: projectName }
-      }))
-    };
-
-    const { error: workError } = await supabase.from('works').insert([{
-      company_id: context.companyId,
-      title: projectName,
-      slug: `${context.companySlug}-${projectSlug}`,
-      content: tipTapContent,
-      cover_url: uploadedUrls[0] || null,
-      status: 'published',
-      featured: false,
-      protected: false
-    }]);
-
-    if (workError) console.error(`Error creating work ${projectName}:`, workError.message);
-    else console.log(`✓ Project ${projectName} imported.`);
-    
-    // Don't recurse into project subfolders if they are just media assets (unless you want to)
-    // return; 
+  const folderName = path.basename(dir);
+  
+  // Rule 0: Skip unwanted folders
+  if (folderName.toLowerCase() === 'altres' || folderName.startsWith('.') || folderName === 'node_modules') {
+    return;
   }
 
-  // 2. Otherwise, folders here are Companies or Subcompanies
-  for (const folder of folders) {
-    if (folder.startsWith('.') || folder === 'node_modules') continue;
+  const items = fs.readdirSync(dir);
+  const folders = items.filter(i => fs.statSync(path.join(dir, i)).isDirectory());
+  const files = items.filter(i => fs.statSync(path.join(dir, i)).isFile());
 
+  const isAAFF = folderName.toLowerCase().includes('aaff') || folderName.toLowerCase().includes('final');
+
+  // 1. If this IS an AAFF/Finals folder, import its contents as a PROJECT
+  if (isAAFF && context.companyId) {
+    const mediaFiles = files.filter(f => ['.jpg', '.jpeg', '.png', '.gif', '.pdf', '.mp4'].includes(path.extname(f).toLowerCase()));
+    
+    if (mediaFiles.length > 0) {
+      // The PROJECT name is actually the PARENT folder name
+      const projectName = path.basename(path.dirname(dir));
+      const projectSlug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const uniqueSuffix = folderName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      
+      console.log(`[PROJECT FOUND] ${projectName} (in ${folderName})`);
+      
+      if (process.env.DRY_RUN === 'true') {
+        console.log(`  -> Would import ${mediaFiles.length} files into project ${projectName}`);
+        return;
+      }
+
+      // Real Import Logic
+      const uploadedUrls: string[] = [];
+      for (const file of mediaFiles) {
+        const url = await uploadMedia(path.join(dir, file), context.companySlug, projectSlug);
+        if (url) uploadedUrls.push(url);
+      }
+
+      const tipTapContent = {
+        type: 'doc',
+        content: uploadedUrls.map(url => ({
+          type: 'image',
+          attrs: { src: url, alt: projectName }
+        }))
+      };
+
+      const { error: workError } = await supabase.from('works').insert([{
+        company_id: context.companyId,
+        title: projectName,
+        slug: `${context.companySlug}-${projectSlug}-${uniqueSuffix}`,
+        content: tipTapContent,
+        cover_url: uploadedUrls[0] || null,
+        status: 'published',
+        featured: false,
+        protected: false
+      }]);
+
+      if (workError) console.error(`  ✖ Error creating work ${projectName}:`, workError.message);
+      else console.log(`  ✓ Project ${projectName} imported.`);
+      
+      return; // Stop recursion for this project branch
+    }
+  }
+
+  // 2. Traversal Logic
+  for (const folder of folders) {
     const folderPath = path.join(dir, folder);
     
-    // Level 0 is always Company
+    // Level 0: The root folders are Companies
     if (depth === 0) {
       const companyId = await getOrCreateCompany(folder);
       if (companyId) {
@@ -153,26 +177,19 @@ async function processDirectory(dir: string, depth: number = 0, context: { compa
         await processDirectory(folderPath, depth + 1, { companyId, companySlug: slug });
       }
     } 
-    // Level 1 could be Sub-company or Year/Month folder
+    // Deep recursion looking for AAFF/Finals
     else {
-      // If it looks like a year (4 digits), we skip making it a "Company" record, 
-      // just pass through the current company context
-      if (/^\d{4}$/.test(folder) || ['gener', 'febrer', 'marc', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre'].includes(folder.toLowerCase())) {
-         await processDirectory(folderPath, depth + 1, context);
-      } else {
-        // Treat as Sub-company
-        const subId = await getOrCreateCompany(folder, context.companyId);
-        if (subId) {
-           await processDirectory(folderPath, depth + 1, { companyId: subId, companySlug: context.companySlug });
-        }
-      }
+      await processDirectory(folderPath, depth + 1, context);
     }
   }
 }
 
-console.log(`Starting bulk import from: ${IMPORT_ROOT}...`);
+const isDryRun = process.argv.includes('--dry-run');
+if (isDryRun) process.env.DRY_RUN = 'true';
+
+console.log(`Starting bulk import from: ${IMPORT_ROOT} ${isDryRun ? '[DRY RUN MODE]' : ''}...`);
 processDirectory(IMPORT_ROOT).then(() => {
-  console.log("Bulk import finished.");
+  console.log("\nBulk import finished.");
 }).catch(err => {
   console.error("Import failed:", err);
 });

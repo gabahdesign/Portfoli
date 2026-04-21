@@ -110,7 +110,7 @@ export default async function WorkPage({
         if (items.length === 0) return null;
         return (
           <div key={block.id} style={blockStyle}>
-            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-7xl")}>
+            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-[2000px]")}>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {items.map((url: string, idx: number) => (
                     <div key={idx} className="aspect-square rounded-2xl overflow-hidden border border-white/5 shadow-lg group">
