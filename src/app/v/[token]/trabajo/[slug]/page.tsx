@@ -94,7 +94,7 @@ export default async function WorkPage({
         if (!content.url) return null;
         return (
           <div key={block.id} style={blockStyle}>
-            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
+            <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-[1400px]")}>
                <div className={clsx("relative rounded-2xl overflow-hidden shadow-2xl border border-white/5")}>
                   {content.mimeType?.startsWith('video') ? (
                     <video src={content.url} controls className="w-full h-auto block" />
@@ -122,7 +122,7 @@ export default async function WorkPage({
         if (content.display === 'embed') {
            return (
              <div key={block.id} style={blockStyle}>
-               <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
+               <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-[1400px]")}>
                  <div className="relative w-full min-h-[500px] md:min-h-[800px] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 group">
                     {/* Clean Viewer Wrapper */}
                     <iframe 

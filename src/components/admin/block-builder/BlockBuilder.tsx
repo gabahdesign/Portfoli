@@ -221,6 +221,7 @@ function renderBlockContent(
         if (isPdf && file.type !== 'application/pdf') return;
         
         const url = await handleUpload(file);
+        if (!url) return;
         const updates: any = { ...block.content, url };
         if (isPdf) updates.title = file.name.replace('.pdf', '');
         else updates.mimeType = file.type;
@@ -229,7 +230,9 @@ function renderBlockContent(
       } else if (block.type === 'gallery') {
         const imageFiles = files.filter(f => f.type.startsWith('image/'));
         if (imageFiles.length > 0) {
-          const urls = await Promise.all(imageFiles.map(handleUpload));
+          const results = await Promise.all(imageFiles.map(handleUpload));
+          const urls = results.filter((url): url is string => !!url);
+          if (urls.length === 0) return;
           const currentItems = block.content.items || [];
           onUpdate({ ...block.content, items: [...currentItems, ...urls] });
         }
@@ -285,7 +288,9 @@ function renderBlockContent(
                     const file = e.target.files?.[0];
                     if (file) {
                       const url = await handleUpload(file);
-                      onUpdate({ ...block.content, url, mimeType: file.type });
+                      if (url) {
+                        onUpdate({ ...block.content, url, mimeType: file.type });
+                      }
                     }
                   }}
                 />
@@ -341,8 +346,11 @@ function renderBlockContent(
                        accept="image/*" 
                        onChange={async (e) => {
                          const files = Array.from(e.target.files || []);
-                         const urls = await Promise.all(files.map(handleUpload));
-                         onUpdate({ ...block.content, items: [...items, ...urls] });
+                         const results = await Promise.all(files.map(handleUpload));
+                         const urls = results.filter((url): url is string => !!url);
+                         if (urls.length > 0) {
+                           onUpdate({ ...block.content, items: [...items, ...urls] });
+                         }
                        }}
                      />
                   </label>
@@ -360,8 +368,11 @@ function renderBlockContent(
                   accept="image/*"
                   onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
-                    const urls = await Promise.all(files.map(handleUpload));
-                    onUpdate({ ...block.content, items: urls });
+                    const results = await Promise.all(files.map(handleUpload));
+                    const urls = results.filter((url): url is string => !!url);
+                    if (urls.length > 0) {
+                      onUpdate({ ...block.content, items: urls });
+                    }
                   }}
                 />
                 <div className={clsx("p-4 rounded-2xl bg-[var(--color-surface)] shadow-lg transition-transform", dragActive && "scale-110")}>
@@ -425,7 +436,9 @@ function renderBlockContent(
                        const file = e.target.files?.[0];
                        if (file) {
                          const url = await handleUpload(file);
-                         onUpdate({ ...block.content, url, title: file.name.replace('.pdf', '') });
+                         if (url) {
+                           onUpdate({ ...block.content, url, title: file.name.replace('.pdf', '') });
+                         }
                        }
                      }}
                    />
@@ -494,16 +507,82 @@ export function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
     setToast({ message, type });
   };
 
+  const compressImage = (file: File): Promise<File | Blob> => {
+    return new Promise((resolve) => {
+      if (!file.type.startsWith('image/') || file.type === 'image/gif') {
+        return resolve(file);
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          
+          const MAX_SIZE = 3500;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+          }
+          
+          canvas.toBlob((blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(new File([blob], file.name, { type: "image/jpeg" }));
+            } else {
+              resolve(file);
+            }
+          }, "image/jpeg", 0.9);
+        };
+      };
+    });
+  };
+
   const handleUpload = async (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    
+    // Check file size limit (Supabase Free Plan is typically 50MB)
+    const MAX_MB = 48;
+    if (file.size > MAX_MB * 1024 * 1024) {
+      showNotification(`El fitxer és massa gran (${(file.size / 1024 / 1024).toFixed(1)}MB). El límit és de ${MAX_MB}MB.`, "error");
+      return null;
+    }
+
     const supabase = createClient();
-    const ext = file.name.split(".").pop();
+    
+    let fileToUpload = file;
+    if (isImage) {
+      showNotification("Optimitzant imatge...", "loading");
+      fileToUpload = await compressImage(file) as File;
+    }
+
+    const ext = fileToUpload.name.split(".").pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const filePath = `blocks/${fileName}`;
     
     showNotification("Pujant fitxer...", "loading");
     
     try {
-      const { error } = await supabase.storage.from("portfolio-media").upload(filePath, file);
+      const { error } = await supabase.storage.from("portfolio-media").upload(filePath, fileToUpload);
       if (error) throw error;
       
       const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);

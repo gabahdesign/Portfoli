@@ -201,8 +201,70 @@ export default function EditWorkPage() {
     setSaving(false);
   };
 
+  const compressImage = (file: File): Promise<File | Blob> => {
+    return new Promise((resolve) => {
+      // Only compress images
+      if (!file.type.startsWith('image/') || file.type === 'image/gif') {
+        return resolve(file);
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          
+          // Max size for high-quality web display (3500px is very generous)
+          const MAX_SIZE = 3500;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            // Use better image smoothing
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+          }
+          
+          canvas.toBlob((blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(new File([blob], file.name, { type: "image/jpeg" }));
+            } else {
+              // If compression actually made it larger or failed, return original
+              resolve(file);
+            }
+          }, "image/jpeg", 0.9); // 90% quality is visually indistinguishable
+        };
+      };
+    });
+  };
+
   const processFileUpload = async (file: File, field: 'cover_url' | 'pdf_url') => {
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    
+    // Check file size limit (Supabase Free Plan is typically 50MB)
+    const MAX_MB = 48; // A bit less than 50 to be safe
+    if (file.size > MAX_MB * 1024 * 1024 && isPdf) {
+      alert(`El fitxer és massa gran (${(file.size / 1024 / 1024).toFixed(1)}MB). El límit és de ${MAX_MB}MB. Si us plau, optimitza el PDF abans de pujar-lo.`);
+      return;
+    }
+
     if (field === 'cover_url' && isPdf) {
       if (confirm("Vols posar aquest PDF com a ARXIU adjunt en lloc de portada?")) {
         return processFileUpload(file, 'pdf_url');
@@ -213,11 +275,18 @@ export default function EditWorkPage() {
     else setUploadingPdf(true);
 
     try {
-      const ext = file.name.split(".").pop();
+      // Compress if it's an image
+      let fileToUpload = file;
+      if (field === 'cover_url' && !isPdf) {
+        showToast("Optimitzant imatge...", "success");
+        fileToUpload = await compressImage(file) as File;
+      }
+
+      const ext = fileToUpload.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const filePath = `works/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage.from("portfolio-media").upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from("portfolio-media").upload(filePath, fileToUpload);
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
