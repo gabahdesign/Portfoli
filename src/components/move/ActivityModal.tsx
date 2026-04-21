@@ -517,13 +517,13 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                             onChange={e => setNewSubName(e.target.value)}
                             className="flex-1 bg-black/20 border border-[var(--color-border)] rounded-xl px-3 py-2 text-xs outline-none"
                           />
-                          <button onClick={handleAddSub} className="p-2 bg-[var(--color-accent)] text-white rounded-xl"><Plus size={16} /></button>
+                          <button type="button" onClick={handleAddSub} className="p-2 bg-[var(--color-accent)] text-white rounded-xl"><Plus size={16} /></button>
                         </div>
                         <div className="max-h-32 overflow-y-auto space-y-1 pr-2 no-scrollbar">
                            {subcategories.map(s => (
                              <div key={s.id} className="flex justify-between items-center p-2 bg-black/10 rounded-lg">
                                <span className="text-[10px] font-medium">{s.name}</span>
-                               <button onClick={() => handleDelSub(s.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={12} /></button>
+                               <button type="button" onClick={() => handleDelSub(s.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={12} /></button>
                              </div>
                            ))}
                            {subcategories.length === 0 && <p className="text-[10px] text-center text-[var(--color-muted)] italic">No hi ha subcategories.</p>}
@@ -770,6 +770,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
         <div className="p-8 bg-[var(--color-surface-2)]/50 border-t border-[var(--color-border)] flex justify-between gap-4">
            {step !== 'group' && (
              <button 
+              type="button"
               onClick={() => step === 'category' ? setStep('group') : setStep('category')}
               className="px-6 py-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-all flex items-center gap-2 shadow-sm"
              >
@@ -781,6 +782,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
              <div className="flex items-center gap-3">
                {editActivity && (
                  <button 
+                  type="button"
                   onClick={handleDelete}
                   disabled={isDeleting || loading}
                   className="bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-3 rounded-2xl transition-all disabled:opacity-50 flex items-center justify-center shadow-sm"
@@ -790,6 +792,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                  </button>
                )}
                <button 
+                type="button"
                 onClick={handleSave}
                 disabled={loading || isDeleting}
                 className="bg-[var(--color-accent)] text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all disabled:opacity-50 flex items-center gap-2"

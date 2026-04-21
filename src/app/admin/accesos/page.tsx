@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Trash2, Copy, Check, EyeOff, Eye, MousePointerClick } from "lucide-react";
 
@@ -10,7 +10,9 @@ export default function AdminTokens() {
   const [copied, setCopied] = useState<string | null>(null);
   const supabase = createClient();
 
-  const fetchTokens = async () => {
+  const fetchTokens = useCallback(async () => {
+    // Prevent synchronous state update inside effect
+    await Promise.resolve();
     setLoading(true);
     const { data } = await supabase
       .from("access_tokens")
@@ -28,11 +30,11 @@ export default function AdminTokens() {
       setTokens(tokensWithCount);
     }
     setLoading(false);
-  };
+  }, [supabase]);
 
   useEffect(() => {
     fetchTokens();
-  }, []);
+  }, [fetchTokens]);
 
   const handleCreateToken = async () => {
     const rawLabel = window.prompt("Nombre de la Empresa o Reclutador (Ej: Google, Netflix...)");
