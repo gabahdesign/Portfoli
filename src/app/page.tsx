@@ -104,7 +104,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         <div className="max-w-7xl mx-auto px-6 pb-32 mt-12">
           
           {/* 2. PORTFOLIO FEED */}
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          { }
           <PortfolioFeed 
             works={visibleWorks.map(w => ({
               ...w,

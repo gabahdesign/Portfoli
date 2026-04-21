@@ -1,18 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Edit2, Trash2, X, ChevronDown, ChevronRight, GripVertical, Building2, Landmark, ArrowUp, ArrowDown, Sparkles } from "lucide-react";
+import { Company } from "@/lib/types";
+
+// Extended type for hierarchical display
+type CompanyWithDepth = Company & { depth: number };
 
 export default function AdminEmpresas() {
-  const [empresas, setEmpresas] = useState<any[]>([]);
-  const [orderedEmpresas, setOrderedEmpresas] = useState<any[]>([]);
+  const [empresas, setEmpresas] = useState<Company[]>([]);
+  const [orderedEmpresas, setOrderedEmpresas] = useState<CompanyWithDepth[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCompany, setEditingCompany] = useState<any>(null);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -30,34 +34,12 @@ export default function AdminEmpresas() {
 
   const supabase = createClient();
 
-  const fetchEmpresas = async () => {
-    setLoading(true);
-    let query = supabase.from("companies").select("*");
-    
-    if (sortBy === "name") {
-      query = query.order("name", { ascending: true });
-    } else if (sortBy === "date") {
-      query = query.order("start_date", { ascending: false });
-    }
-
-    const { data } = await query;
-    if (data) {
-      setEmpresas(data);
-      if (sortBy === "custom") {
-        buildHierarchy(data);
-      } else {
-        setOrderedEmpresas(data);
-      }
-    }
-    setLoading(false);
-  };
-
-  const buildHierarchy = (flatData: any[]) => {
+  const buildHierarchy = useCallback((flatData: Company[]) => {
     // We sort parents by name or date, but keep children under them
     const parents = flatData.filter(e => !e.parent_id).sort((a,b) => a.name.localeCompare(b.name));
     const children = flatData.filter(e => e.parent_id);
     
-    const result: any[] = [];
+    const result: CompanyWithDepth[] = [];
     
     parents.forEach(parent => {
       result.push({ ...parent, depth: 0 });
@@ -74,11 +56,33 @@ export default function AdminEmpresas() {
     const activeIds = new Set(result.map(r => r.id));
     const orphans = flatData.filter(e => !activeIds.has(e.id));
     setOrderedEmpresas([...result, ...orphans]);
-  };
+  }, []);
+
+  const fetchEmpresas = useCallback(async () => {
+    setLoading(true);
+    let query = supabase.from("companies").select("*");
+    
+    if (sortBy === "name") {
+      query = query.order("name", { ascending: true });
+    } else if (sortBy === "date") {
+      query = query.order("start_date", { ascending: false });
+    }
+
+    const { data } = await query;
+    if (data) {
+      setEmpresas(data);
+      if (sortBy === "custom") {
+        buildHierarchy(data);
+      } else {
+        setOrderedEmpresas((data as Company[]).map(e => ({ ...e, depth: 0 })));
+      }
+    }
+    setLoading(false);
+  }, [supabase, sortBy, buildHierarchy]);
 
   useEffect(() => {
     fetchEmpresas();
-  }, [sortBy]);
+  }, [fetchEmpresas]);
 
   // Reordering Logic
   const moveItem = (index: number, direction: 'up' | 'down') => {
@@ -173,7 +177,7 @@ export default function AdminEmpresas() {
     <div className="p-4 md:p-8 animate-in fade-in duration-500 relative">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[var(--color-border)] pb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight">Directori d'Empreses</h1>
+          <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight">Directori d&apos;Empreses</h1>
           <div className="flex gap-4 mt-2">
             <button 
               onClick={() => setSortBy("custom")}
@@ -304,8 +308,8 @@ export default function AdminEmpresas() {
                <Sparkles className="w-4 h-4" />
             </div>
             <div>
-               <p className="text-sm font-bold text-[var(--color-text)]">Consell d'organització</p>
-               <p className="text-xs text-[var(--color-muted)]">Pots arrossegar les files per canviar l'ordre visual en el mode Jerarquia.</p>
+               <p className="text-sm font-bold text-[var(--color-text)]">Consell d&apos;organització</p>
+               <p className="text-xs text-[var(--color-muted)]">Pots arrossegar les files per canviar l&apos;ordre visual en el mode Jerarquia.</p>
             </div>
          </div>
       </div>
@@ -329,7 +333,7 @@ export default function AdminEmpresas() {
             <form onSubmit={handleSave} className="overflow-y-auto flex-1 p-6 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-[var(--color-muted)] mb-2 uppercase tracking-wider">Nom de l'Empresa</label>
+                  <label className="block text-xs font-bold text-[var(--color-muted)] mb-2 uppercase tracking-wider">Nom de l&apos;Empresa</label>
                   <input 
                     type="text" 
                     required

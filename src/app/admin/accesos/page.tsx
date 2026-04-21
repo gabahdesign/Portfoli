@@ -3,9 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Trash2, Copy, Check, EyeOff, Eye, MousePointerClick } from "lucide-react";
+import { AccessToken } from "@/lib/types";
+
+// Extended type for UI with visit count
+type TokenWithStats = AccessToken & { visits: number };
 
 export default function AdminTokens() {
-  const [tokens, setTokens] = useState<any[]>([]);
+  const [tokens, setTokens] = useState<TokenWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const supabase = createClient();
@@ -84,7 +88,7 @@ export default function AdminTokens() {
   return (
     <div className="p-4 md:p-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-8 border-b border-[var(--color-border)] pb-4">
-        <h1 className="text-3xl font-display font-bold text-[var(--color-text)]">Gestió d'Enllaços d'Accés</h1>
+        <h1 className="text-3xl font-display font-bold text-[var(--color-text)]">Gestió d&apos;Enllaços d&apos;Accés</h1>
         <button onClick={handleCreateToken} className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-5 py-2.5 rounded-lg flex items-center justify-center transition-colors font-bold shadow-lg shadow-[var(--color-accent-glow)]">
           <Plus className="w-5 h-5 mr-2" /> Nou Enllaç
         </button>
@@ -128,6 +132,11 @@ export default function AdminTokens() {
                 </div>
 
                 <div className="space-y-2 mb-6 text-[13px]">
+                  <div className="flex justify-between">
+                    <p className="text-xs text-yellow-500 font-medium leading-relaxed">
+                      La gestió de contrasenyes es realitza directament mitjançant el sistema d&apos;identificació de Supabase.
+                    </p>
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--color-muted)]">Visites Registrades:</span>
                     <span className="text-[var(--color-accent)] font-bold flex items-center gap-1">

@@ -142,7 +142,7 @@ export default async function PortfolioHome({
       <div className="max-w-7xl mx-auto px-6 pb-32">
         
         {/* 2. PORTFOLIO FEED (Search + Filtered Works Grid) */}
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        { }
         <PortfolioFeed 
           works={visibleWorks.map(w => ({
             ...w,

@@ -65,7 +65,7 @@ export default async function AdminDashboard() {
 
   // Aggregate work views
   const workViewCounts: Record<string, { title: string; count: number }> = {};
-  (topWorks ?? []).forEach((e: any) => {
+  (topWorks ?? []).forEach((e: { work_id: string | null; works: { title: string } | null }) => {
     if (!e.work_id) return;
     const title = e.works?.title ?? e.work_id;
     if (!workViewCounts[e.work_id]) workViewCounts[e.work_id] = { title, count: 0 };
@@ -78,7 +78,7 @@ export default async function AdminDashboard() {
   // Average read duration
   const avgDuration = recentEvents?.length
     ? Math.round(
-        (recentEvents.reduce((sum: number, e: any) => sum + (e.duration_sec ?? 0), 0) /
+        (recentEvents.reduce((sum: number, e: { duration_sec: number | null }) => sum + (e.duration_sec ?? 0), 0) /
           recentEvents.length) as number
       )
     : 0;
@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
       {/* Header */}
       <div className="mb-10 border-b border-[var(--color-border)] pb-6">
         <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2 tracking-tight">Panel de Control</h1>
-        <p className="text-[var(--color-muted)]">Vista general de l'activitat i rendiment del portfolio.</p>
+        <p className="text-[var(--color-muted)]">Vista general de l&apos;activitat i rendiment del portfolio.</p>
       </div>
 
       {/* KPI Cards */}

@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { 
-  X, Mail, Lock, User, Phone, MapPin, 
-  ArrowRight, CheckCircle2, ShieldCheck, 
-  LogIn, UserPlus, LogOut, ChevronRight
+  X, Mail, Lock, CheckCircle2, ShieldCheck, 
+  LogIn, UserPlus, ChevronRight
 } from "lucide-react";
-import { clsx } from "clsx";
 import { 
   initiateMoveRegistration, 
   verifyAndCompleteSignUp, 

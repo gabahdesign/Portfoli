@@ -1,10 +1,24 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+export interface RegistrationFormData {
+  email: string;
+  username: string;
+  password: string;
+  name: string;
+  surname?: string;
+  phone?: string;
+  location?: string;
+}
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 // Validation Regex for secure password
 // 8+ chars, number, symbol, upper, lower
@@ -14,7 +28,7 @@ const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._\-\/,#])[A
  * Initiates the registration process.
  * Verifies username uniqueness and sends a 6-digit code.
  */
-export async function initiateMoveRegistration(formData: any) {
+export async function initiateMoveRegistration(formData: RegistrationFormData) {
   const { email, username, password } = formData;
   const supabase = await createClient();
 
@@ -166,7 +180,7 @@ export async function verifyAndCompleteSignUp(email: string, code: string) {
 /**
  * Simple Login
  */
-export async function loginMoveUser(formData: any) {
+export async function loginMoveUser(formData: LoginFormData) {
   const { email, password } = formData;
   const supabase = await createClient();
 

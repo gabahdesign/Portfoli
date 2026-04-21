@@ -385,7 +385,7 @@ export default function EditWorkPage() {
                         <svg className="w-6 h-6 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
                       </div>
                       <audio src={formData.cover_url} controls className="w-full" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">Fitxer d'Àudio</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">Fitxer d&apos;Àudio</span>
                     </div>
                   ) : formData.cover_url.match(/\.pdf$/i) ? (
                     <div className="flex flex-col items-center gap-3 p-6">
@@ -410,7 +410,7 @@ export default function EditWorkPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider text-left">Color d'Accent del Projecte</label>
+              <label className="block text-xs font-bold text-[var(--color-muted)] mb-1.5 uppercase tracking-wider text-left">Color d&apos;Accent del Projecte</label>
               <div className="flex items-center gap-3">
                 <input 
                   type="color" 
@@ -426,7 +426,7 @@ export default function EditWorkPage() {
                   placeholder="#5e6efc"
                 />
               </div>
-              <p className="text-[9px] text-[var(--color-muted)] mt-2 opacity-60">Aquest color personalitzarà els botons i detalls quan l'usuari vegi aquest projecte.</p>
+              <p className="text-[9px] text-[var(--color-muted)] mt-2 opacity-60">Aquest color personalitzarà els botons i detalls quan l&apos;usuari vegi aquest projecte.</p>
             </div>
 
             <div className="pt-4 border-t border-[var(--color-border)] space-y-5">

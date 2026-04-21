@@ -3,7 +3,26 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function saveActivity(formData: any, categoryId: string) {
+export interface ActivityFormData {
+  id?: string;
+  title: string;
+  description: string;
+  whatsapp_link?: string;
+  subcategory_id?: string;
+  date: string;
+  time?: string;
+  endTime?: string;
+  isAllDay: boolean;
+  location: string;
+  location_coords?: { lat: number; lng: number } | null;
+  distance?: number;
+  elevation?: number;
+  difficulty?: string;
+  isLocked?: boolean;
+  unlockAt?: string;
+}
+
+export async function saveActivity(formData: ActivityFormData, categoryId: string) {
   const supabase = await createClient();
   
   const { data: { session } } = await supabase.auth.getSession();

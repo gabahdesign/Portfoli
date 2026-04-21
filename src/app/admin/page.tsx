@@ -36,7 +36,7 @@ export default function AdminLogin() {
       <div className="max-w-md w-full bg-[var(--color-surface)] border border-[var(--color-border)] p-10 rounded-2xl shadow-2xl">
         <div className="text-center mb-10">
           <h1 className="font-display text-4xl font-black text-[var(--color-text)] mb-3 tracking-tight">Accés Privat</h1>
-          <p className="text-[var(--color-muted)] text-sm font-medium">Identifica't per gestionar el teu portfolio.</p>
+          <p className="text-[var(--color-muted)] text-sm font-medium">Identifica&apos;t per gestionar el teu portfolio.</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
@@ -47,7 +47,7 @@ export default function AdminLogin() {
           )}
           
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 px-1">Email de l'Administrador</label>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 px-1">Email de l&apos;Administrador</label>
             <input
               type="email"
               value={email}

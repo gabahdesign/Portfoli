@@ -85,5 +85,5 @@ export async function getActivityParticipants(activityId: string) {
     return [];
   }
 
-  return data.map((d: any) => d.profile.username);
+  return (data as Array<{ profile: { username: string } }>).map((d) => d.profile.username);
 }

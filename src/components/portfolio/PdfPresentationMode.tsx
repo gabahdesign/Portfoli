@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, ChevronLeft, ChevronRight, Maximize2, ExternalLink, Download } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 interface WorkWithPdf {

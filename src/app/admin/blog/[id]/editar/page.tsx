@@ -172,7 +172,7 @@ export default function EditBlogPostPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">Data de l'Article</label>
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">Data de l&apos;Article</label>
                 <input 
                   type="date" 
                   value={formData.published_at} 

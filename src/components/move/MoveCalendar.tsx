@@ -9,7 +9,6 @@ import {
   Search,
   LayoutGrid,
   List as ListIcon,
-  Map as MapIcon,
   Activity,
   User as UserIcon,
   LogOut,
@@ -38,7 +37,7 @@ interface MoveCalendarProps {
   activities: any[];
 }
 
-export function MoveCalendar({ isAdmin, user, profile, groups, categories, activities }: MoveCalendarProps) {
+export function MoveCalendar({ isAdmin, profile, groups, categories, activities }: MoveCalendarProps) {
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
@@ -124,7 +123,7 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
         showNotification("T'has apuntat!", "success");
       }
       router.refresh();
-    } catch (err) {
+    } catch (_err) {
       showNotification("S'ha produït un error", "error");
     } finally {
       setLoadingAction(null);

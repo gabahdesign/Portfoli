@@ -1,31 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Edit2, Trash2, Copy, Lock, Star, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Work } from "@/lib/types";
+
+// Extended type for admin view with company relation
+type WorkWithCompany = Work & { 
+  companies: { name: string } | null;
+};
 
 export default function AdminTrabajos() {
-  const [works, setWorks] = useState<any[]>([]);
+  const [works, setWorks] = useState<WorkWithCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [companyFilter, setCompanyFilter] = useState("all");
   const supabase = createClient();
   const router = useRouter();
 
-  const fetchWorks = async () => {
+  const fetchWorks = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
       .from("works")
       .select("*, companies(name)")
       .order("created_at", { ascending: false });
-    if (data) setWorks(data);
+    if (data) setWorks(data as WorkWithCompany[]);
     setLoading(false);
-  };
+  }, [supabase]);
 
   useEffect(() => {
     fetchWorks();
-  }, []);
+  }, [fetchWorks]);
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`¿Estás seguro de que quieres eliminar el trabajo "${title}" permanentemente?`)) return;

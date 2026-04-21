@@ -29,7 +29,7 @@ export function Heatmap({ activities }: { activities?: any[] }) {
     const dayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1;
     
     // Go back 51 full weeks plus the days into the current week
-    let currentDate = new Date(today);
+    const currentDate = new Date(today);
     currentDate.setDate(currentDate.getDate() - (51 * 7) - dayOfWeek);
 
     for (let w = 0; w < 52; w++) {

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Lock, ArrowUpRight, FileText } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 interface FeaturedWorkCardProps {
   slug: string;
@@ -31,20 +30,18 @@ export function FeaturedWorkCard({
 }: FeaturedWorkCardProps) {
   const locale = useLocale();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
+
 
   const isVideo = coverUrl?.match(/\.(mp4|webm|mov)$/i);
   const isPdf = coverUrl?.match(/\.pdf$/i);
 
   const handleMouseEnter = () => {
-    setIsHovered(true);
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
