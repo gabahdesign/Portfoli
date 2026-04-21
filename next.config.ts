@@ -5,8 +5,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   typescript: {
-  ignoreBuildErrors: true,
-},
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
