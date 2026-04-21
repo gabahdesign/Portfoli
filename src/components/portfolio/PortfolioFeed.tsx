@@ -2,9 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { FeaturedWorkCard } from "./FeaturedWorkCard";
-import { Search, X } from "lucide-react";
+import { Search, X, Hash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTracker } from "@/hooks/useTracker";
+import { PREDEFINED_TAGS } from "@/lib/constants";
 
 interface Work {
   slug: string;
@@ -53,19 +54,8 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
     return companies.find(c => c.id === activeCompanyId)?.name || null;
   }, [activeCompanyId, companies]);
 
-  // Get most used tags from all works
-  const suggestedTags = useMemo(() => {
-    const counts: Record<string, number> = {};
-    works.forEach(w => {
-      (w.tags || []).forEach(tag => {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
-    });
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
-      .map(entry => entry[0]);
-  }, [works]);
+  // Use Predefined Tags for the primary filter row
+  const tagsToDisplay = PREDEFINED_TAGS;
 
   const filteredWorks = useMemo(() => {
     return works.filter(w => {
@@ -73,7 +63,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
       const matchesSearch = 
         w.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
         w.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
+        (w.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesTag = !activeTag || (w.tags || []).includes(activeTag);
       const matchesCompany = !activeCompanyId || w.company_id === activeCompanyId;
@@ -91,51 +81,66 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
   return (
     <div className="space-y-12">
       {/* Search Bar Section */}
-      <div className="relative max-w-4xl mx-auto -mt-10 mb-16 z-30">
-        <div className="relative group">
+      <div className="relative max-w-6xl mx-auto -mt-10 mb-16 z-30 space-y-8">
+        <div className="relative group max-w-4xl mx-auto">
           <div className="absolute inset-0 bg-black/20 blur-2xl rounded-full opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
-          <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full p-2 flex items-center shadow-2xl backdrop-blur-3xl">
+          <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full p-2 flex items-center shadow-2xl backdrop-blur-3xl transition-all group-focus-within:border-[var(--color-accent)]/50 group-focus-within:ring-4 group-focus-within:ring-[var(--color-accent)]/5">
             <div className="pl-6 text-[var(--color-muted)]">
               <Search className="w-5 h-5" />
             </div>
             <input 
               type="text" 
-              placeholder={locale === 'ca' ? 'Busca projectes o tecnologies...' : 'Search projects or tech...'}
+              placeholder={locale === 'ca' ? 'Projectes, marques, tecnologies...' : 'Projects, brands, tech...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)]/50"
+              className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm text-[var(--color-text)] font-medium placeholder:text-[var(--color-muted)]/50 placeholder:font-normal"
             />
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery("")}
-                className="p-2 text-[var(--color-muted)] hover:text-white transition-colors mr-2"
+                className="p-2 text-[var(--color-muted)] hover:text-white transition-colors mr-2 hover:bg-white/5 rounded-full"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
             <div className="hidden sm:block border-l border-[var(--color-border)] h-8 mx-2" />
-            <div className="hidden sm:flex items-center px-6 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-50">
+            <div className="hidden sm:flex items-center px-6 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-50 whitespace-nowrap">
               {filteredWorks.length} Results
             </div>
           </div>
         </div>
 
-        {/* Suggested Tags */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-40">Suggested:</span>
-          {suggestedTags.map(tag => (
-            <button
-              key={tag}
-              onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all border ${
-                activeTag === tag 
-                  ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-[0_0_15px_var(--color-accent-glow)]' 
-                  : 'bg-[var(--color-surface)]/50 text-[var(--color-muted)] border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:text-white'
-              }`}
-            >
-              {tag}
-            </button>
-          ))}
+        {/* Tag Filters Row */}
+        <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-700 delay-300">
+           <div className="w-full overflow-x-auto pb-4 px-4 scrollbar-hide">
+              <div className="flex items-center justify-center min-w-max gap-3">
+                 <button
+                   onClick={() => setActiveTag(null)}
+                   className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border flex items-center gap-2 ${
+                     activeTag === null 
+                       ? 'bg-white text-black border-white shadow-xl scale-105' 
+                       : 'bg-[var(--color-bg)]/40 text-[var(--color-muted)] border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:text-white'
+                   }`}
+                 >
+                   All Projects
+                 </button>
+                 <div className="w-px h-6 bg-[var(--color-border)] mx-2" />
+                 {tagsToDisplay.map(tag => (
+                   <button
+                     key={tag}
+                     onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                     className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border flex items-center gap-2 ${
+                       activeTag === tag 
+                         ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-[0_0_20px_var(--color-accent-glow)] scale-105' 
+                         : 'bg-[var(--color-surface)]/20 text-[var(--color-muted)] border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:text-white'
+                     }`}
+                   >
+                     <Hash size={12} className={activeTag === tag ? "opacity-100" : "opacity-30"} />
+                     {tag}
+                   </button>
+                 ))}
+              </div>
+           </div>
         </div>
       </div>
 

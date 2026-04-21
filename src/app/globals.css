@@ -226,3 +226,12 @@ h3 {
 .zen-mode h1 {
   font-size: 5rem !important;
 }
+
+/* Scrollbar Hide Utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

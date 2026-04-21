@@ -66,15 +66,11 @@ export function AdminSidebar() {
             </AdminNavLink>
             
             <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Contingut</div>
-            <AdminNavLink href="/admin/empresas" onClick={() => setMobileOpen(false)}>
-              <Building2 className="w-4 h-4 mr-3" />
-              Empreses i Clients
-            </AdminNavLink>
             <AdminNavLink href="/admin/trabajos" onClick={() => setMobileOpen(false)}>
               <div className="flex justify-between items-center w-full pr-2">
                 <div className="flex items-center">
                   <LayoutGrid className="w-4 h-4 mr-3" />
-                  Projectes
+                  Projectes i Clients
                 </div>
                 {draftCount > 0 && (
                   <span className="bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]">
@@ -167,15 +163,11 @@ export function AdminSidebar() {
               </AdminNavLink>
               
               <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Contingut</div>
-              <AdminNavLink href="/admin/empresas" onClick={() => setMobileOpen(false)}>
-                <Building2 className="w-4 h-4 mr-3" />
-                Empreses i Clients
-              </AdminNavLink>
               <AdminNavLink href="/admin/trabajos" onClick={() => setMobileOpen(false)}>
                 <div className="flex justify-between items-center w-full pr-2">
                   <div className="flex items-center">
                     <LayoutGrid className="w-4 h-4 mr-3" />
-                    Projectes
+                    Projectes i Clients
                   </div>
                   {draftCount > 0 && (
                     <span className="bg-[var(--color-accent)] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-[0_0_8px_var(--color-accent-glow)]">

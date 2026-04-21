@@ -190,14 +190,52 @@ function SortableBlock({
     </div>
   );
 }
-
 function renderBlockContent(
   block: Block, 
   onUpdate: (content: any) => void, 
   isEditing: boolean,
   handleUpload: (file: File) => Promise<string>
 ) {
-  // Inner upload handling removed - now passed from parent
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const files = Array.from(e.dataTransfer.files);
+      if (block.type === 'media' || block.type === 'pdf') {
+        const file = files[0];
+        const isPdf = block.type === 'pdf';
+        if (isPdf && file.type !== 'application/pdf') return;
+        
+        const url = await handleUpload(file);
+        const updates: any = { ...block.content, url };
+        if (isPdf) updates.title = file.name.replace('.pdf', '');
+        else updates.mimeType = file.type;
+        
+        onUpdate(updates);
+      } else if (block.type === 'gallery') {
+        const imageFiles = files.filter(f => f.type.startsWith('image/'));
+        if (imageFiles.length > 0) {
+          const urls = await Promise.all(imageFiles.map(handleUpload));
+          const currentItems = block.content.items || [];
+          onUpdate({ ...block.content, items: [...currentItems, ...urls] });
+        }
+      }
+    }
+  };
 
   switch (block.type) {
     case 'text':
@@ -211,7 +249,13 @@ function renderBlockContent(
       );
     case 'media':
       return (
-        <div className="group relative">
+        <div 
+          className="group relative"
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
            {block.content.url ? (
              <div className="rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-xl bg-black/20 aspect-video flex items-center justify-center">
                 {block.content.mimeType?.startsWith('video') ? (
@@ -229,7 +273,10 @@ function renderBlockContent(
                 )}
              </div>
            ) : (
-             <label className="flex flex-col items-center gap-4 py-12 border-2 border-dashed border-[var(--color-border)] rounded-3xl cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-all">
+             <label className={clsx(
+               "flex flex-col items-center gap-4 py-12 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
+               dragActive ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 scale-[1.02]" : "border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent)]/5"
+             )}>
                 <input 
                   type="file" 
                   className="hidden" 
@@ -242,10 +289,14 @@ function renderBlockContent(
                     }
                   }}
                 />
-                <Upload className="text-[var(--color-muted)] animate-bounce" size={32} />
+                <div className={clsx("p-4 rounded-2xl bg-[var(--color-surface)] shadow-lg transition-transform", dragActive && "scale-110")}>
+                   <Upload className={clsx("transition-colors", dragActive ? "text-[var(--color-accent)]" : "text-[var(--color-muted)]")} size={32} />
+                </div>
                 <div className="text-center">
-                  <p className="text-xs font-black uppercase tracking-widest text-[var(--color-text)]">Pujar Mèdia</p>
-                  <p className="text-[10px] text-[var(--color-muted)]">Imatges o Vídeos</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-[var(--color-text)]">
+                    {dragActive ? "Deixa-ho anar!" : "Pujar Mèdia"}
+                  </p>
+                  <p className="text-[10px] text-[var(--color-muted)]">Arrossega o clica per seleccionar imatges/vídeos</p>
                 </div>
              </label>
            )}
@@ -254,16 +305,22 @@ function renderBlockContent(
     case 'gallery':
       const items = block.content.items || [];
       return (
-        <div className="space-y-4">
+        <div 
+          className="space-y-4"
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
            {items.length > 0 ? (
-             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {items.map((url: string, idx: number) => (
-                  <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-[var(--color-border)] relative group">
+                  <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-[var(--color-border)] relative group shadow-sm hover:shadow-xl transition-all hover:scale-[1.02] duration-500">
                      <img src={url} className="w-full h-full object-cover" alt="" />
                      {isEditing && (
                        <button 
                         onClick={() => onUpdate({ ...block.content, items: items.filter((_: any, i: number) => i !== idx) })}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                        >
                          <Trash2 size={12} />
                        </button>
@@ -271,8 +328,12 @@ function renderBlockContent(
                   </div>
                 ))}
                 {isEditing && (
-                  <label className="aspect-square rounded-xl border-2 border-dashed border-[var(--color-border)] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-all">
-                     <Plus size={20} className="text-[var(--color-muted)]" />
+                  <label className={clsx(
+                    "aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all",
+                    dragActive ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 scale-105" : "border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent)]/5"
+                  )}>
+                     <Plus size={24} className={clsx(dragActive ? "text-[var(--color-accent)]" : "text-[var(--color-muted)]")} />
+                     <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-muted)]">Més fotos</span>
                      <input 
                        type="file" 
                        multiple 
@@ -288,7 +349,10 @@ function renderBlockContent(
                 )}
              </div>
            ) : (
-              <label className="flex flex-col items-center gap-4 py-12 border-2 border-dashed border-[var(--color-border)] rounded-3xl cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-all">
+              <label className={clsx(
+                "flex flex-col items-center gap-4 py-12 border-2 border-dashed rounded-3xl cursor-pointer transition-all",
+                dragActive ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10 scale-[1.02]" : "border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-accent)]/5"
+              )}>
                 <input 
                   type="file" 
                   multiple 
@@ -300,10 +364,14 @@ function renderBlockContent(
                     onUpdate({ ...block.content, items: urls });
                   }}
                 />
-                <LayoutGrid className="text-[var(--color-muted)]" size={32} />
+                <div className={clsx("p-4 rounded-2xl bg-[var(--color-surface)] shadow-lg transition-transform", dragActive && "scale-110")}>
+                   <LayoutGrid className={clsx("transition-colors", dragActive ? "text-[var(--color-accent)]" : "text-[var(--color-muted)]")} size={32} />
+                </div>
                 <div className="text-center">
-                  <p className="text-xs font-black uppercase tracking-widest text-[var(--color-text)]">Crear Galeria</p>
-                  <p className="text-[10px] text-[var(--color-muted)]">Selecciona múltiples imatges</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-[var(--color-text)]">
+                    {dragActive ? "Deixa anar les fotos!" : "Crear Galeria"}
+                  </p>
+                  <p className="text-[10px] text-[var(--color-muted)]">Selecciona o arrossega múltiples imatges</p>
                 </div>
               </label>
            )}
@@ -311,13 +379,27 @@ function renderBlockContent(
       );
     case 'pdf':
       return (
-        <div className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:border-[var(--color-accent)]/30 transition-all">
+        <div 
+          className={clsx(
+            "bg-[var(--color-surface-2)] border rounded-2xl p-6 flex flex-col gap-4 shadow-sm transition-all",
+            dragActive ? "border-[var(--color-accent)] ring-4 ring-[var(--color-accent)]/5 scale-[1.01]" : "border-[var(--color-border)] hover:border-[var(--color-accent)]/30"
+          )}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
            <div className="flex items-center gap-6">
-              <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 shrink-0">
+              <div className={clsx(
+                "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-lg transition-transform",
+                dragActive ? "bg-[var(--color-accent)] text-white scale-110" : "bg-red-500/10 text-red-500"
+              )}>
                  <FileText size={24} />
               </div>
               <div className="flex-1 min-w-0">
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-1">Document PDF</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-1">
+                    {dragActive ? "S'estan detectant fitxers..." : "Document PDF"}
+                 </p>
                  {block.content.url ? (
                    <input 
                      type="text" 
@@ -327,11 +409,13 @@ function renderBlockContent(
                      className="w-full bg-transparent border-none text-sm font-bold text-[var(--color-text)] focus:outline-none p-0"
                    />
                  ) : (
-                   <p className="text-sm font-bold text-[var(--color-muted)]">Cap fitxer seleccionat</p>
+                   <p className="text-sm font-bold text-[var(--color-muted)]">
+                     {dragActive ? "Deixa anar el PDF aquí" : "Cap fitxer seleccionat"}
+                   </p>
                  )}
               </div>
               {!block.content.url ? (
-                <label className="bg-[var(--color-accent)] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-lg shadow-[var(--color-accent-glow)]">
+                <label className="bg-[var(--color-accent)] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95 transition-all">
                    Pujar PDF
                    <input 
                      type="file" 

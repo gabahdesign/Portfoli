@@ -50,26 +50,50 @@ export function FeaturedWorkCard({
 
   return (
     <div className="group flex flex-col animate-in fade-in duration-700">
-      {/* 1. Mèdia (The Shot) */}
-      <Link 
-        href={`/v/${token}/trabajo/${slug}`}
-        className="relative rounded-3xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl group block transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {coverUrl ? (
-          <div className="relative w-full h-full overflow-hidden">
-            {isVideo ? (
-              <video
-                ref={videoRef}
-                src={coverUrl}
-                muted
-                loop
-                playsInline
-                className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
-              />
-            ) : isPdf ? (
-              <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
+      {/* 1. Mèdia (The Shot) - Hidden if no coverUrl and no pdfUrl */}
+      {(coverUrl || pdfUrl) && (
+        <Link 
+          href={`/v/${token}/trabajo/${slug}`}
+          className="relative rounded-3xl overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xl group block transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] mb-6"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {coverUrl ? (
+            <div className="relative w-full h-full overflow-hidden">
+              {isVideo ? (
+                <video
+                  ref={videoRef}
+                  src={coverUrl}
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : isPdf ? (
+                <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="relative flex flex-col items-center gap-6 p-8 transition-transform duration-500 group-hover:scale-105">
+                     <div className="w-20 h-20 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] shadow-2xl border border-[var(--color-accent)]/20">
+                        <FileText className="w-10 h-10" />
+                     </div>
+                     <div className="text-center space-y-2">
+                        <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)] opacity-60">Projecte PDF</span>
+                        <span className="block text-xs font-bold text-[var(--color-text)] opacity-80 max-w-[200px] line-clamp-1">{title}</span>
+                     </div>
+                  </div>
+                  {/* Decoration */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--color-accent)]/10 to-transparent blur-3xl opacity-30" />
+                </div>
+              ) : (
+                <img
+                  src={coverUrl}
+                  alt={title}
+                  className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
+                />
+              )}
+            </div>
+          ) : (
+            <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                 <div className="relative flex flex-col items-center gap-6 p-8 transition-transform duration-500 group-hover:scale-105">
                    <div className="w-20 h-20 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] shadow-2xl border border-[var(--color-accent)]/20">
@@ -80,61 +104,30 @@ export function FeaturedWorkCard({
                       <span className="block text-xs font-bold text-[var(--color-text)] opacity-80 max-w-[200px] line-clamp-1">{title}</span>
                    </div>
                 </div>
-                {/* Decoration */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--color-accent)]/10 to-transparent blur-3xl opacity-30" />
-              </div>
-            ) : (
-              <img
-                src={coverUrl}
-                alt={title}
-                className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
-              />
-            )}
-          </div>
-        ) : pdfUrl ? (
-          <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-surface)] flex flex-col items-center justify-center overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="relative flex flex-col items-center gap-6 p-8 transition-transform duration-500 group-hover:scale-105">
-                 <div className="w-20 h-20 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] shadow-2xl border border-[var(--color-accent)]/20">
-                    <FileText className="w-10 h-10" />
-                 </div>
-                 <div className="text-center space-y-2">
-                    <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)] opacity-60">Projecte PDF</span>
-                    <span className="block text-xs font-bold text-[var(--color-text)] opacity-80 max-w-[200px] line-clamp-1">{title}</span>
-                 </div>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)]/80 to-transparent pointer-events-none" />
-          </div>
-        ) : (
-          <div className="w-full aspect-video flex items-center justify-center text-[var(--color-border)] bg-[var(--color-surface)]">
-             <div className="flex flex-col items-center gap-2 opacity-20">
-                <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-[10px] font-black uppercase tracking-widest">No Content</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg)]/80 to-transparent pointer-events-none" />
+            </div>
+          )}
+          
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[1px]">
+             <div className="p-3 bg-white text-black rounded-full scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl">
+                <ArrowUpRight className="w-5 h-5" />
              </div>
           </div>
-        )}
-        
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[1px]">
-           <div className="p-3 bg-white text-black rounded-full scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl">
-              <ArrowUpRight className="w-5 h-5" />
-           </div>
-        </div>
 
-        {pdfUrl && (
-          <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[9px] font-black text-white uppercase tracking-widest">
-            PDF Doc
-          </div>
-        )}
+          {pdfUrl && (
+            <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[9px] font-black text-white uppercase tracking-widest">
+              PDF Doc
+            </div>
+          )}
 
-        {protectedNode && (
-          <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-xl p-2 rounded-xl border border-white/20 shadow-xl">
-             <Lock className="w-3.5 h-3.5 text-white" />
-          </div>
-        )}
-      </Link>
+          {protectedNode && (
+            <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-xl p-2 rounded-xl border border-white/20 shadow-xl">
+               <Lock className="w-3.5 h-3.5 text-white" />
+            </div>
+          )}
+        </Link>
+      )}
 
       {/* 2. Info (The Metadata) */}
       <div className="mt-6 px-2">
@@ -156,7 +149,9 @@ export function FeaturedWorkCard({
         {workDate && (
           <div className="flex items-center gap-1.5 mt-2.5 mb-1 text-[10px] font-bold text-[var(--color-muted)] uppercase tracking-widest opacity-40">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)]" />
-            {new Date(workDate).toLocaleDateString(locale === 'ca' ? 'ca-ES' : 'en-US', { month: 'short', year: 'numeric' })}
+            {workDate.endsWith('-01-01') 
+              ? workDate.split('-')[0]
+              : new Date(workDate).toLocaleDateString(locale === 'ca' ? 'ca-ES' : 'en-US', { month: 'short', year: 'numeric' })}
           </div>
         )}
 
