@@ -312,6 +312,18 @@ export default function EditWorkPage() {
         </div>
       </div>
 
+      {/* CONTENT BLOCKS BENTO SECTION */}
+      <div className="space-y-6">
+         <div className="flex items-center gap-4 text-[var(--color-text)]">
+            <Maximize2 size={20} className="text-[var(--color-accent)]" />
+            <h2 className="text-xl font-display font-black tracking-tight uppercase">Arquitectura del Contingut</h2>
+            <div className="flex-1 h-px bg-gradient-to-r from-[var(--color-border)] to-transparent" />
+         </div>
+         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[3rem] p-8 md:p-16 shadow-2xl relative">
+            <BlockBuilder blocks={formData.content} onChange={(blocks) => setFormData({...formData, content: blocks})} />
+         </div>
+      </div>
+
       {/* CONTEXT GRID BI-BENTO */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -325,12 +337,12 @@ export default function EditWorkPage() {
             
             <div className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Portada Principal</label>
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Miniatura del Projecte (Llistat)</label>
                 {!formData.cover_url ? (
                   <DropZone 
                     onFileDrop={(f) => processFileUpload(f, 'cover_url')} 
                     isUploading={uploadingCover} 
-                    label="Pujar Portada"
+                    label="Pujar Miniatura"
                     icon={Upload}
                   />
                 ) : (
@@ -532,18 +544,6 @@ export default function EditWorkPage() {
              </div>
           </div>
         </div>
-      </div>
-
-      {/* CONTENT BLOCKS BENTO SECTION */}
-      <div className="space-y-6">
-         <div className="flex items-center gap-4 text-[var(--color-text)]">
-            <Maximize2 size={20} className="text-[var(--color-accent)]" />
-            <h2 className="text-xl font-display font-black tracking-tight uppercase">Arquitectura del Contingut</h2>
-            <div className="flex-1 h-px bg-gradient-to-r from-[var(--color-border)] to-transparent" />
-         </div>
-         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[3rem] p-8 md:p-16 shadow-2xl relative">
-            <BlockBuilder blocks={formData.content} onChange={(blocks) => setFormData({...formData, content: blocks})} />
-         </div>
       </div>
 
       {/* VERSION HISTORY BENTO (SMALL) */}

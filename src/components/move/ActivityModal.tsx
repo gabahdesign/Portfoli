@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { X, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search, Trash2, Map, MessageCircle, Lock } from "lucide-react";
 import { clsx } from "clsx";
 import { saveActivity, deleteActivity, geocodeLocation } from "@/app/actions/activities";
@@ -111,8 +111,18 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // Use a ref to track the previous isOpen state and editActivity ID
+  const prevOpenRef = useRef(false);
+  const prevEditIdRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (isOpen) {
+    // Only initialize/reset when:
+    // 1. The modal is being opened (false -> true)
+    // 2. The activity being edited has changed
+    const isOpening = isOpen && !prevOpenRef.current;
+    const activityChanged = editActivity?.id !== prevEditIdRef.current;
+
+    if (isOpening || (isOpen && activityChanged)) {
       if (editActivity) {
         setStep('details');
         
@@ -151,6 +161,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           unlockAt: editActivity.metadata?.unlockAt || ""
         });
       } else {
+        // Only reset to step 1 if we are opening a NEW activity creation
         setStep('group');
         setSelectedGroup(null);
         setSelectedCategory(null);
@@ -182,6 +193,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
         });
       }
     }
+    
+    prevOpenRef.current = isOpen;
+    prevEditIdRef.current = editActivity?.id || null;
   }, [isOpen, editActivity, initialDate, categories, groups]);
 
   // Handle category change: fetch subcategories
@@ -255,12 +269,14 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     try {
       const activityData = {
         ...formData,
+        distance: formData.distance ? parseFloat(formData.distance) : undefined,
+        elevation: formData.elevation ? parseFloat(formData.elevation) : undefined,
         location_coords: (formData.lat && formData.lng) 
            ? { lat: parseFloat(formData.lat), lng: parseFloat(formData.lng) } 
            : null
       };
       
-      const res = await saveActivity(activityData, selectedCategory.id);
+      const res = await saveActivity(activityData as any, selectedCategory.id);
       if (res.success) {
         showNotification("Activitat guardada correctament", "success");
         onClose();
@@ -384,6 +400,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                  return (
                    <button 
                     key={g.id}
+                    type="button"
                     onClick={() => { setSelectedGroup(g); setStep('category'); }}
                     className="flex flex-col items-center gap-4 p-6 rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)]/5 transition-all group"
                    >
@@ -416,6 +433,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                    />
                  </div>
                  <button 
+                  type="button"
                   onClick={() => { setIsAddingCategory(true); setEditingCategoryId(null); setCategoryName(""); }}
                   className="p-4 bg-[var(--color-accent)] text-white rounded-2xl hover:scale-105 transition-all shadow-lg shadow-[var(--color-accent-glow)]"
                  >
@@ -429,7 +447,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                        <h4 className="text-xs font-black uppercase tracking-widest text-[var(--color-accent)]">
                           {editingCategoryId ? "Editar Categoria" : "Nova Categoria"}
                        </h4>
-                       <button onClick={() => { setIsAddingCategory(false); setEditingCategoryId(null); }} className="text-[var(--color-muted)] hover:text-white"><X size={14} /></button>
+                       <button type="button" onClick={() => { setIsAddingCategory(false); setEditingCategoryId(null); }} className="text-[var(--color-muted)] hover:text-white"><X size={14} /></button>
                     </div>
                     <div className="flex gap-2">
                        <input 
@@ -455,6 +473,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                   {filteredCategories.map(c => (
                     <div key={c.id} className="relative group">
                       <button 
+                        type="button"
                         onClick={() => { setSelectedCategory(c); setStep('details'); }}
                         className="w-full flex items-center justify-between p-4 pr-10 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] transition-all"
                       >
@@ -464,12 +483,14 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                       
                       <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                          <button 
+                          type="button"
                           onClick={(e) => { e.stopPropagation(); setEditingCategoryId(c.id); setCategoryName(c.name); }}
                           className="p-1.5 bg-[var(--color-surface-2)] text-[var(--color-muted)] hover:text-[var(--color-accent)] rounded-lg"
                          >
                            <Info size={12} />
                          </button>
                          <button 
+                          type="button"
                           onClick={(e) => { e.stopPropagation(); handleDeleteCategory(c.id); }}
                           className="p-1.5 bg-[var(--color-surface-2)] text-red-500/50 hover:text-red-500 rounded-lg"
                          >

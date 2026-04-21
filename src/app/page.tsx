@@ -44,7 +44,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         
         {/* 1. BLOG-STYLE BANNER (Latest Project Background) */}
         <section className="relative w-full h-[450px] md:h-[550px] flex items-center justify-center overflow-hidden">
-          {latestWorkCover ? (
+          {latestWorkCover && !latestWorkCover.toLowerCase().endsWith('.pdf') ? (
             <div className="absolute inset-0 z-0">
               <Image 
                 src={latestWorkCover} 
@@ -99,7 +99,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         </section>
 
         {/* Global PDF Presentation Overlay */}
-        <PdfPresentationMode works={visibleWorks.filter(w => !!w.pdf_url) as any} />
+        <PdfPresentationMode works={visibleWorks as any} />
 
         <div className="max-w-[2000px] mx-auto px-6 pb-32 mt-12">
           

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -49,6 +49,13 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const [selectedDetailActivity, setSelectedDetailActivity] = useState<any>(null);
+
+  // Default to list view on mobile
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setViewMode('list');
+    }
+  }, []);
 
   const showNotification = (message: string, type: ToastType) => {
     setToast({ message, type });
@@ -136,6 +143,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
       <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-6 bg-[var(--color-surface)] p-4 sm:p-6 rounded-3xl border border-[var(--color-border)] shadow-xl">
         <div className="flex items-center justify-between xl:justify-start gap-4">
           <button 
+            type="button"
             onClick={handlePrevMonth}
             className="p-2 hover:bg-[var(--color-surface-2)] rounded-xl transition-colors border border-[var(--color-border)]"
           >
@@ -147,6 +155,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             </h2>
           </div>
           <button 
+            type="button"
             onClick={handleNextMonth}
             className="p-2 hover:bg-[var(--color-surface-2)] rounded-xl transition-colors border border-[var(--color-border)]"
           >
@@ -156,6 +165,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
 
         <div className="flex items-center gap-2 bg-[var(--color-surface-2)] p-1.5 rounded-2xl border border-[var(--color-border)]">
           <button 
+            type="button"
             onClick={() => setViewMode('grid')}
             className={clsx(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
@@ -165,6 +175,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             <LayoutGrid size={14} /> Graella
           </button>
           <button 
+            type="button"
             onClick={() => setViewMode('list')}
             className={clsx(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
@@ -174,6 +185,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             <ListIcon size={14} /> Agenda
           </button>
           <button 
+            type="button"
             onClick={() => setViewMode('map')}
             className={clsx(
               "flex-1 xl:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
@@ -203,6 +215,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                    <span className="text-xs font-bold text-white">{profile.username}</span>
                 </div>
                 <button 
+                  type="button"
                   onClick={handleLogout}
                   className="p-2 text-[var(--color-muted)] hover:text-red-500 transition-colors"
                   title="Tancar sessió"

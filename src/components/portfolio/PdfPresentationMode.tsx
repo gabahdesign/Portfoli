@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-interface WorkWithPdf {
+interface WorkForPresentation {
   slug: string;
   title: string;
-  pdf_url: string;
+  pdf_url?: string;
+  cover_url?: string;
 }
 
 interface PdfPresentationModeProps {
-  works: WorkWithPdf[];
+  works: WorkForPresentation[];
 }
 
 export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
@@ -21,7 +22,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
   const [loading, setLoading] = useState(true);
 
   const isOpen = searchParams.get("mode") === "present";
-  const pdfWorks = works.filter(w => !!w.pdf_url);
+  const presentationWorks = works;
 
   const close = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -29,28 +30,46 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  const next = () => setCurrentIndex((prev) => (prev + 1) % pdfWorks.length);
-  const prev = () => setCurrentIndex((prev) => (prev - 1 + pdfWorks.length) % pdfWorks.length);
+  const next = () => {
+    setLoading(true);
+    setCurrentIndex((prev) => (prev + 1) % presentationWorks.length);
+  };
+  
+  const prev = () => {
+    setLoading(true);
+    setCurrentIndex((prev) => (prev - 1 + presentationWorks.length) % presentationWorks.length);
+  };
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") close();
+        if (e.key === "ArrowRight") next();
+        if (e.key === "ArrowLeft") prev();
+      };
+      
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "auto";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     } else {
       document.body.style.overflow = "auto";
     }
-    return () => { document.body.style.overflow = "auto"; };
-  }, [isOpen]);
+  }, [isOpen, presentationWorks.length]);
 
-  if (!isOpen || pdfWorks.length === 0) return null;
+  if (!isOpen || presentationWorks.length === 0) return null;
 
-  const currentWork = pdfWorks[currentIndex];
+  const currentWork = presentationWorks[currentIndex];
 
   return (
     <div className="fixed inset-0 z-[200] bg-[#09090b] text-white flex flex-col animate-in fade-in duration-500">
       {/* Header Area */}
       <div className="flex items-center justify-between p-6 border-b border-white/10 backdrop-blur-md bg-black/20">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-accent)] mb-1">Presentació de Projectes ({currentIndex + 1} / {pdfWorks.length})</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-accent)] mb-1">Presentació de Projectes ({currentIndex + 1} / {presentationWorks.length})</span>
           <h2 className="text-xl font-bold font-display tracking-tight">{currentWork.title}</h2>
         </div>
 
@@ -66,15 +85,17 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
              <button onClick={next} className="p-2 hover:bg-white/10 rounded-lg transition-colors"><ChevronRight size={20} /></button>
           </div>
 
-          <a 
-            href={currentWork.pdf_url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="p-3 bg-white/5 border border-white/10 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-xl transition-all"
-            title="Obrir en pestanya nova"
-          >
-            <ExternalLink size={20} />
-          </a>
+          {currentWork.pdf_url && (
+            <a 
+              href={currentWork.pdf_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-3 bg-white/5 border border-white/10 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-xl transition-all"
+              title="Obrir PDF en pestanya nova"
+            >
+              <ExternalLink size={20} />
+            </a>
+          )}
 
           <button 
             onClick={close}
@@ -87,20 +108,47 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
 
       {/* Main Preview Area */}
       <div className="flex-1 relative flex items-center justify-center p-4 md:p-8 overflow-hidden">
-        <div className="w-full h-full max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/40 relative">
+        <div className="w-full h-full max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/40 relative flex items-center justify-center">
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center z-0">
+            <div className="absolute inset-0 flex items-center justify-center z-[5]">
                <div className="flex flex-col items-center gap-4">
                  <div className="w-12 h-12 border-2 border-[var(--color-accent)]/20 border-t-[var(--color-accent)] rounded-full animate-spin" />
-                 <span className="text-xs font-bold text-[var(--color-muted)] uppercase tracking-widest animate-pulse">Carregant Document...</span>
+                 <span className="text-xs font-bold text-[var(--color-muted)] uppercase tracking-widest animate-pulse">Carregant...</span>
                </div>
             </div>
           )}
-          <iframe 
-            src={`${currentWork.pdf_url}#toolbar=1&navpanes=0&scrollbar=1`}
-            className="w-full h-full border-none relative z-10"
-            onLoad={() => setLoading(false)}
-          />
+          
+          {currentWork.pdf_url ? (
+            <iframe 
+              src={`${currentWork.pdf_url}#toolbar=1&navpanes=0&scrollbar=1`}
+              className="w-full h-full border-none relative z-10"
+              onLoad={() => setLoading(false)}
+            />
+          ) : (
+            <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12">
+               {currentWork.cover_url ? (
+                 <div className="relative w-full h-full">
+                    <img 
+                      src={currentWork.cover_url} 
+                      alt={currentWork.title}
+                      className="w-full h-full object-contain relative z-10 rounded-xl"
+                      onLoad={() => setLoading(false)}
+                    />
+                    <div 
+                      className="absolute inset-0 blur-3xl opacity-20 z-0 scale-110"
+                      style={{ backgroundImage: `url(${currentWork.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    />
+                 </div>
+               ) : (
+                 <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-white/5 flex items-center justify-center text-[var(--color-muted)]">
+                       <X size={40} className="opacity-20" />
+                    </div>
+                    <p className="text-[var(--color-muted)] font-bold uppercase tracking-widest text-xs">Sense vista prèvia disponible</p>
+                 </div>
+               )}
+            </div>
+          )}
         </div>
 
         {/* Floating Nav hints */}
@@ -120,7 +168,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
 
       {/* Bottom Thumbnails Strip (Desktop Only) */}
       <div className="h-28 border-t border-white/5 bg-black/40 p-4 hidden md:flex items-center gap-4 overflow-x-auto no-scrollbar">
-        {pdfWorks.map((w, idx) => (
+        {presentationWorks.map((w, idx) => (
           <button
             key={w.slug}
             onClick={() => { setCurrentIndex(idx); setLoading(true); }}

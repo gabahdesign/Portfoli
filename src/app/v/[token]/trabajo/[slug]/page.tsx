@@ -245,35 +245,7 @@ export default async function WorkPage({
         <ZenToggle />
         <BackButton />
 
-        {/* COVER / MEDIA */}
-        <div className="w-full aspect-video relative rounded-2xl overflow-hidden mb-12 border border-color-border shadow-2xl bg-black/20">
-           {work.cover_url ? (
-             work.cover_url.match(/\.(mp4|webm|mov)$|video/i) ? (
-               <video 
-                 src={work.cover_url} 
-                 className="w-full h-full object-cover" 
-                 autoPlay 
-                 muted 
-                 loop 
-                 playsInline 
-               />
-             ) : (
-               <Image src={work.cover_url} alt={work.title} fill className="object-cover" priority />
-             )
-           ) : (
-             <div className="w-full h-full bg-color-surface flex items-center justify-center">
-               <span className="text-color-muted font-display text-2xl opacity-50">Marc Portfolio</span>
-             </div>
-           )}
-           
-           {work.protected && (
-              <div className="absolute top-6 right-6 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 shadow-2xl">
-                <Lock className="w-4 h-4 text-[var(--color-accent)]" />
-                <span className="text-sm font-bold text-white shadow-sm uppercase tracking-widest text-[10px]">Strictly Confidential</span>
-              </div>
-           )}
-        </div>
-
+        {/* TITLE SECTION */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-color-border pb-8">
            <div>
              <div className="flex items-center gap-3 mb-4">
@@ -288,6 +260,13 @@ export default async function WorkPage({
              </div>
               <h1 className="font-display text-4xl md:text-6xl font-black text-[var(--color-text)] leading-tight tracking-tight">{work.title}</h1>
            </div>
+           
+           {work.protected && (
+              <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 shadow-2xl">
+                <Lock className="w-4 h-4 text-[var(--color-accent)]" />
+                <span className="text-sm font-bold text-white shadow-sm uppercase tracking-widest text-[10px]">Strictly Confidential</span>
+              </div>
+           )}
         </div>
 
         <div className="flex flex-wrap gap-2 mb-16">
