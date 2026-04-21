@@ -64,7 +64,6 @@ export default function EditWorkPage() {
             status: wData.status || "draft",
             featured: wData.featured || false,
             protected: wData.protected || false,
-            protected: wData.protected || false,
             visibility_type: wData.visibility_type || "public_token",
             content: Array.isArray(wData.content) ? wData.content : (wData.content?.type === 'doc' ? [{
               id: 'initial',

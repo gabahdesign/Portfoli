@@ -18,13 +18,14 @@ export function CustomCursor() {
       setIsHidden(false);
 
       const target = e.target as HTMLElement;
-      const isPointerElement = 
+      const isPointerElement = !!(
         window.getComputedStyle(target).cursor === "pointer" ||
         target.tagName === "A" ||
         target.tagName === "BUTTON" ||
         target.closest("a") ||
         target.closest("button") ||
-        target.hasAttribute("data-cursor");
+        target.hasAttribute("data-cursor")
+      );
       
       setIsPointer(isPointerElement);
     };
