@@ -99,7 +99,7 @@ export default function AdminTrabajos() {
         </select>
       </div>
 
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-2xl">
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-2xl overflow-hidden">
          {loading ? (
            <div className="p-12 text-center text-[var(--color-muted)]">Carregant treballs...</div>
          ) : filteredWorks.length === 0 ? (
@@ -110,57 +110,61 @@ export default function AdminTrabajos() {
              No hi ha treballs que coincideixin amb els filtres.
            </div>
          ) : (
-           <table className="w-full text-left text-sm">
-             <thead className="bg-[var(--color-bg)] text-[var(--color-muted)] border-b border-[var(--color-border)]">
-               <tr>
-                 <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px]">Títol i Empresa</th>
-                 <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px]">Estat</th>
-                 <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] hidden sm:table-cell">Visibilitat</th>
-                 <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-right">Accions</th>
-               </tr>
-             </thead>
-             <tbody className="divide-y divide-[var(--color-border)]">
-                {filteredWorks.map((wk) => (
-                  <tr key={wk.id} className="hover:bg-[var(--color-surface-2)] transition-colors group">
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-[var(--color-text)] mb-0.5">{wk.title}</p>
-                      <p className="text-[var(--color-muted)] text-xs font-medium">{wk.companies?.name || "Sense associar"}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                        wk.status === 'published' 
-                         ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' 
-                         : wk.status === 'archived' 
-                         ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-500/20' 
-                         : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20'
-                      }`}>
-                        {wk.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 hidden sm:table-cell">
-                       <div className="flex gap-2">
-                         {wk.featured && <span title="Destacat"><Star className="w-4 h-4 text-[var(--color-accent)] fill-[var(--color-accent)]" /></span>}
-                         {wk.protected && <span title="Protegit amb PIN"><Lock className="w-4 h-4 text-[var(--color-muted)]" /></span>}
-                       </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] mr-4 transition-colors opacity-50 group-hover:opacity-100" title="Vista Prèvia">
-                        <Eye className="w-4 h-4 inline" />
-                      </button>
-                      <button onClick={() => handleDuplicate(wk)} className="text-[var(--color-muted)] hover:text-blue-500 mr-4 transition-colors opacity-50 group-hover:opacity-100" title="Duplicar">
-                        <Copy className="w-4 h-4 inline" />
-                      </button>
-                      <button onClick={() => router.push(`/admin/trabajos/${wk.id}/editar`)} className="text-[var(--color-muted)] hover:text-[var(--color-accent)] mr-4 transition-colors opacity-50 group-hover:opacity-100" title="Editar">
-                        <Edit2 className="w-4 h-4 inline" />
-                      </button>
-                      <button onClick={() => handleDelete(wk.id, wk.title)} className="text-[var(--color-muted)] hover:text-red-500 transition-colors opacity-50 group-hover:opacity-100" title="Eliminar">
-                        <Trash2 className="w-4 h-4 inline" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-             </tbody>
-           </table>
+           <div className="overflow-x-auto">
+             <table className="w-full text-left text-sm min-w-[600px]">
+               <thead className="bg-[var(--color-bg)] text-[var(--color-muted)] border-b border-[var(--color-border)]">
+                 <tr>
+                   <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px]">Títol i Empresa</th>
+                   <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px]">Estat</th>
+                   <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] hidden sm:table-cell">Visibilitat</th>
+                   <th className="px-6 py-4 font-black uppercase tracking-widest text-[10px] text-right">Accions</th>
+                 </tr>
+               </thead>
+               <tbody className="divide-y divide-[var(--color-border)]">
+                  {filteredWorks.map((wk) => (
+                    <tr key={wk.id} className="hover:bg-[var(--color-surface-2)] transition-colors group">
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-[var(--color-text)] mb-0.5">{wk.title}</p>
+                        <p className="text-[var(--color-muted)] text-xs font-medium">{wk.companies?.name || "Sense associar"}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                          wk.status === 'published' 
+                           ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' 
+                           : wk.status === 'archived' 
+                           ? 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-500/20' 
+                           : 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20'
+                        }`}>
+                          {wk.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 hidden sm:table-cell">
+                         <div className="flex gap-2">
+                           {wk.featured && <span title="Destacat"><Star className="w-4 h-4 text-[var(--color-accent)] fill-[var(--color-accent)]" /></span>}
+                           {wk.protected && <span title="Protegit amb PIN"><Lock className="w-4 h-4 text-[var(--color-muted)]" /></span>}
+                         </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2 sm:gap-4">
+                          <button className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors opacity-70 sm:opacity-50 group-hover:opacity-100 p-1" title="Vista Prèvia">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDuplicate(wk)} className="text-[var(--color-muted)] hover:text-blue-500 transition-colors opacity-70 sm:opacity-50 group-hover:opacity-100 p-1" title="Duplicar">
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => router.push(`/admin/trabajos/${wk.id}/editar`)} className="text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors opacity-70 sm:opacity-50 group-hover:opacity-100 p-1" title="Editar">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => handleDelete(wk.id, wk.title)} className="text-[var(--color-muted)] hover:text-red-500 transition-colors opacity-70 sm:opacity-50 group-hover:opacity-100 p-1" title="Eliminar">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+               </tbody>
+             </table>
+           </div>
          )}
       </div>
     </div>

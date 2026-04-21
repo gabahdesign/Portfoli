@@ -24,6 +24,10 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Portfolio",
   description: "Mi portfolio personal",
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 

@@ -88,7 +88,7 @@ export async function proxy(request: NextRequest) {
     font-src 'self' https://fonts.gstatic.com;
     connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com;
     frame-src 'self' https://www.youtube.com;
-    object-src 'none';
+    object-src 'self' https://*.supabase.co;
     base-uri 'self';
     form-action 'self';
   `.replace(/\s+/g, ' ').trim();

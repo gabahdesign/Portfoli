@@ -507,7 +507,7 @@ export function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
       {/* ADD BLOCK BUTTONS */}
       <div className="mt-12 p-8 border-2 border-dashed border-[var(--color-border)] rounded-3xl flex flex-col items-center bg-[var(--color-bg)]/30">
          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] mb-8">Afegir nou mòdul de contingut</span>
-         <div className="flex flex-wrap justify-center gap-4">
+         <div className="flex flex-nowrap sm:flex-wrap justify-start sm:justify-center gap-4 w-full overflow-x-auto pb-4 scrollbar-hide">
             {[
               { type: 'text', label: 'Paràgraf', icon: Type },
               { type: 'media', label: 'Imatge/Vídeo', icon: ImageIcon },
@@ -518,7 +518,7 @@ export function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
               <button
                 key={tool.type}
                 onClick={() => addBlock(tool.type as BlockType)}
-                className="flex flex-col items-center gap-3 px-6 py-5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 rounded-2xl transition-all group w-32"
+                className="flex flex-col items-center gap-3 px-6 py-5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 rounded-2xl transition-all group w-32 shrink-0"
               >
                 <div className="w-10 h-10 rounded-xl bg-[var(--color-bg)] flex items-center justify-center text-[var(--color-muted)] group-hover:text-[var(--color-accent)] group-hover:scale-110 transition-all border border-[var(--color-border)]">
                    <tool.icon size={20} />

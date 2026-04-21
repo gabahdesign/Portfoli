@@ -187,23 +187,25 @@ export default function EditWorkPage() {
         </div>
       )}
 
-      <div className="flex items-center gap-4 mb-8 border-b border-[var(--color-border)] pb-4">
-        <button
-          onClick={() => router.back()}
-          className="p-2 border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="text-3xl font-display font-bold text-[var(--color-text)] flex-1">
-          {workId === "nuevo" ? "Crear Nou Projecte" : "Editar Projecte"}
-        </h1>
+      <div className="sticky top-0 z-40 bg-[var(--color-bg)]/80 backdrop-blur-md -mx-4 md:-mx-8 px-4 md:px-8 py-4 border-b border-[var(--color-border)] mb-8 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-4 flex-1 min-w-[200px]">
+          <button
+            onClick={() => router.back()}
+            className="p-2 border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors shrink-0"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-xl md:text-3xl font-display font-bold text-[var(--color-text)] truncate">
+            {workId === "nuevo" ? "Crear Nou" : "Editar Projecte"}
+          </h1>
+        </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-colors font-bold shadow-lg shadow-[var(--color-accent-glow)] disabled:opacity-50"
+          className="w-full sm:w-auto bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors font-bold shadow-lg shadow-[var(--color-accent-glow)] disabled:opacity-50 order-last sm:order-none"
         >
           {saving ? <Activity className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-          Guardar Projecte
+          <span className="sm:inline">{workId === "nuevo" ? "Crear Projecte" : "Guardar Projecte"}</span>
         </button>
       </div>
 

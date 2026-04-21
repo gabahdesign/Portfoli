@@ -130,7 +130,7 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       onDragLeave={() => setIsDragging(false)}
     >
       {/* TOOLBAR */}
-      <div className="flex flex-wrap items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-t-xl px-4 py-3 sticky top-0 z-10 transition-colors">
+      <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-t-xl px-4 py-3 sticky top-0 z-20 transition-colors overflow-x-auto whitespace-nowrap scrollbar-hide">
         <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive("bold"))}><Bold className="w-4 h-4" /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive("italic"))}><Italic className="w-4 h-4" /></button>
         <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={btn(editor.isActive("underline"))}><UnderlineIcon className="w-4 h-4" /></button>
