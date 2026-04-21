@@ -20,12 +20,6 @@ export default async function ContactoPage({ params }: { params: Promise<{ token
       icon: <Link2 className="w-6 h-6" />
     },
     {
-      platform: "GitHub",
-      value: "gabahdesign/Portfoli",
-      link: "https://github.com/gabahdesign/Portfoli",
-      icon: <Globe className="w-6 h-6" />
-    },
-    {
       platform: "Centro Base",
       value: "Baix Llobregat, Anoia, Barcelonès i Vallès Occidental",
       link: null,

@@ -11,23 +11,19 @@ const legalData: Record<string, LegalContent> = {
     sections: [
       { 
         title: "Responsable del Tractament", 
-        content: "Les dades personals recollides a través d'aquest portfolio seran tractades per l'equip de Descobreix, sota la supervisió de Marc, amb la finalitat de gestionar les consultes, contactes professionals i l'enviament de tokens d'accés personalitzat." 
+        content: "El responsable del tractament de les dades recollides en aquest portfolio és en Marc. Totes les dades s'utilitzen exclusivament per gestionar l'accés professional mitjançant tokens i per respondre a les sol·licituds de contacte directes." 
       },
       { 
-        title: "Finalitat del Tractament", 
-        content: "La finalitat principal és facilitar que clients i col·laboradors puguin veure projectes sota NDA de manera segura. També s'utilitzen per respondre a sol·licituds de contacte i per analitzar les visites mitjançant serveis estadístics per millorar l'experiència de l'usuari." 
+        title: "Dades i Finalitat", 
+        content: "Recollim el teu correu electrònic només si decideixes contactar directament. S'utilitza exclusivament per a comunicacions professionals. No cedim dades a tercers, excepte els proveïdors tecnològics necessaris per al servei (Supabase per a la base de dades i Resend per a l'enviament de correus)." 
       },
       { 
-        title: "Dades Recollides", 
-        content: "Recollim exclusivament dades identificatives (com nom o email en cas de contacte directe) i dades de navegació tècnica (IP anonimitzada, tipus de dispositiu, pàgines visitades) per garantir el correcte funcionament dels accessos restringits." 
+        title: "Seguretat", 
+        content: "Apliquem mesures de seguretat tècniques com xifrat de dades i polítiques de Row Level Security (RLS) per blindar el contingut privat del portfolio davant de qualsevol accés no autoritzat." 
       },
       { 
-        title: "Legitimació", 
-        content: "El tractament de les seves dades es basa en el consentiment exprés de l'usuari en sol·licitar accés o en navegar per les seccions del portfolio, així com en l'interès legítim del titular per oferir una versió restringida i segura de la seva feina." 
-      },
-      { 
-        title: "Drets de l'Usuari", 
-        content: "Com a usuari, tens dret a accedir, rectificar i suprimir les teves dades, així com a limitar-ne o oposar-te al seu tractament. Pots exercir aquests drets enviant un correu electrònic a la direcció de contacte proporcionada en el portfolio." 
+        title: "Drets", 
+        content: "Pots exercir els teus drets d'accés, rectificació o supressió enviant un correu electrònic a info@descobreix.com." 
       }
     ]
   },
@@ -35,20 +31,12 @@ const legalData: Record<string, LegalContent> = {
     title: "Política de Cookies",
     sections: [
       { 
-        title: "Què són les cookies?", 
-        content: "Les cookies són petits fitxers de text que s'emmagatzemen al seu navegador quan visita la nostra web. Ajuden a reconèixer el seu dispositiu i a oferir-li una experiència personalitzada i segura." 
+        title: "Ús de Cookies", 
+        content: "Aquest web utilitza cookies tècniques essencials per al funcionament de la sessió privada i per recordar les teves preferències (idioma i mode visual). També podem utilitzar cookies d'anàlisi anonimitzades per millorar l'experiència d'usuari." 
       },
       { 
-        title: "Cookies Tècniques i Necessàries", 
-        content: "Són aquelles imprescindibles pel funcionament de la web. En aquest portfolio, s'utilitzen per mantenir la sessió de l'usuari quan entra amb un token d'accés i per recordar les preferències d'idioma i mode (fosc/clar)." 
-      },
-      { 
-        title: "Cookies d'Anàlisi", 
-        content: "Utilitzem serveis d'anàlisi (com Google Analytics o Vercel Analytics) per obtenir informació agregada sobre el trànsit de la web. Aquesta informació és totalment anonimitzada i ens ajuda a entendre quins projectes desperten més interès." 
-      },
-      { 
-        title: "Com desactivar les cookies?", 
-        content: "Pots configurar el teu navegador per bloquejar totes les cookies o per avisar-te quan se n'estigui enviant una. Tingues en compte que algunes funcionalitats del portfolio (especialment les zones privades) podrien no funcionar correctament sense cookies actives." 
+        title: "Gestió", 
+        content: "Pots configurar el teu navegador per bloquejar-les, però recorda que l'accés privat per token podria no funcionar correctament sense les cookies tècniques." 
       }
     ]
   },
@@ -56,16 +44,12 @@ const legalData: Record<string, LegalContent> = {
     title: "Condicions d'Ús",
     sections: [
       { 
-        title: "Objecte i Acceptació", 
-        content: "Aquestes condicions regulen l'accés i l'ús del portfolio professional de 'Descobreix' gestionat per Marc. L'accés al lloc web implica l'acceptació plena i sense reserves de totes i cadascuna de les disposicions incloses en aquest text." 
+        title: "Ús del Portfolio", 
+        content: "L'accés a aquest portfolio a través de token és personal i intransferible. Queda prohibida la compartició del token amb tercers sense el consentiment d'en Marc." 
       },
       { 
-        title: "Propietat Intel·lectual", 
-        content: "Tot el contingut d'aquest lloc web, incloent projectes, gràfics, codi i logotips, és propietat intel·lectual de Marc o han estat inclosos sota permís per portfoli. Qualsevol reproducció, distribució o comunicació pública total o parcial sense autorització expressa queda totalment prohibida." 
-      },
-      { 
-        title: "Reserva de Drets", 
-        content: "El titular es reserva el dret de retirar l'accés a les zones privades si es detecta un ús indegut del token d'accés proporcionat." 
+        title: "Responsabilitat", 
+        content: "En Marc no es fa responsable de l'ús inadequat que es pugui fer dels continguts un cop extrets d'aquesta plataforma per mètodes no autoritzats." 
       }
     ]
   },
@@ -73,12 +57,25 @@ const legalData: Record<string, LegalContent> = {
     title: "Avís Legal",
     sections: [
       { 
-        title: "Dades Identificatives", 
-        content: "En compliment de l'article 10 de la Llei 34/2002, s'informa que el titular del domini descobreix.com i d'aquest web és l'equip professional liderat per Marc, amb residència a Tarragona/Barcelona." 
+        title: "Titularitat", 
+        content: "En compliment de la Llei 34/2002 (LSSICE), s'informa que el titular d'aquest lloc web és en Marc, amb correu de contacte info@descobreix.com i residència a Catalunya." 
       },
       { 
-        title: "Exclusió de Responsabilitat", 
-        content: "L'autor d'aquest lloc web no pot garantir la inexistència d'errors en l'accés al web, ni que el seu contingut estigui totalment actualitzat, tot i que farà els millors esforços per evitar-los o esmenar-los." 
+        title: "Propietat Intel·lectual", 
+        content: "Tots els projectes i continguts digitals d'aquesta web estan protegits per drets d'autor. El codi d'aquest portfolio i el seu disseny són propietat exclusiva d'en Marc." 
+      }
+    ]
+  },
+  llicencia: {
+    title: "Llicència de Continguts",
+    sections: [
+      { 
+        title: "Reserva de Drets de Propietat", 
+        content: "Tots els drets sobre el contingut, el disseny original, les marques i el codi d'aquesta aplicació estan reservats exclusivament a en Marc. No es permet la reproducció, distribució o transformació d'aquest material sense autorització prèvia." 
+      },
+      { 
+        title: "Projectes sota NDA", 
+        content: "Molts dels treballs visibles a la zona privada estan sota acords de confidencialitat (NDA). Queda totalment prohibida la captura, descàrrega o difusió d'aquests materials en qualsevol mitjà públic o privat." 
       }
     ]
   }

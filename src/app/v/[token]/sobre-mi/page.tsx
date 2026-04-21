@@ -61,12 +61,6 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
       icon: <Link2 className="w-5 h-5" />
     },
     {
-      label: "GitHub",
-      value: "gabahdesign/Portfoli",
-      link: "https://github.com/gabahdesign/Portfoli",
-      icon: <Globe className="w-5 h-5" />
-    },
-    {
       label: "Ubicació",
       value: "Baix Llobregat, Anoia, Barcelonès i Vallès Occidental",
       link: null,
