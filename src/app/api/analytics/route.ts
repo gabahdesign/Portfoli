@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
+
   try {
     // navigator.sendBeacon sends data as a string or Blob
     const bodyText = await request.text();

@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   try {
     const { token } = await request.json();
     if (!token || token === 'preview') return new NextResponse('OK', { status: 200 });
