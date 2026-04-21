@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, 
   ChevronDown, Check, Building2, Upload, FileText, Loader2, Sparkles,
-  Palette, Calendar, Hash, Type, Trash2, Globe, Layout, Maximize2
+  Palette, Calendar, Hash, Type, Trash2, Globe, Layout, Maximize2, X
 } from "lucide-react";
 import { BlockBuilder, Block } from "@/components/admin/block-builder/BlockBuilder";
 import { PREDEFINED_TAGS } from "@/lib/constants";
@@ -96,6 +96,7 @@ export default function EditWorkPage() {
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [newTag, setNewTag] = useState("");
   
   const [formData, setFormData] = useState({
     title: "",
@@ -238,6 +239,14 @@ export default function EditWorkPage() {
         : [...currentTags, tag];
       return { ...prev, tags: newTags };
     });
+  };
+
+  const addCustomTag = () => {
+    const tag = newTag.trim();
+    if (tag && !formData.tags?.includes(tag)) {
+      setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), tag] }));
+      setNewTag("");
+    }
   };
 
   if (loading) return (
@@ -520,8 +529,52 @@ export default function EditWorkPage() {
                     </div>
 
                     <div>
-                        <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest">Selecciona Etiquetes Predefinides</label>
-                        <div className="flex flex-wrap gap-2 overflow-y-auto max-h-[160px] p-1 scrollbar-hide">
+                        <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest flex items-center justify-between">
+                           <span>Etiquetes del Projecte</span>
+                           <span className="opacity-50">{formData.tags?.length || 0} actives</span>
+                        </label>
+                        
+                        {/* Custom Tag Input */}
+                        <div className="flex gap-2 mb-6">
+                           <input 
+                             type="text"
+                             value={newTag}
+                             onChange={(e) => setNewTag(e.target.value)}
+                             onKeyDown={(e) => {
+                               if (e.key === 'Enter') {
+                                 e.preventDefault();
+                                 addCustomTag();
+                               }
+                             }}
+                             placeholder="Escriu i prem Enter..."
+                             className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-[10px] font-bold rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--color-accent)] placeholder-[var(--color-muted)]/30"
+                           />
+                           <button 
+                             onClick={(e) => { e.preventDefault(); addCustomTag(); }}
+                             className="px-4 py-3 bg-[var(--color-accent)] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[var(--color-accent-glow)]"
+                           >
+                              Afegir
+                           </button>
+                        </div>
+
+                        {/* Selected Tags Display (especially for custom ones) */}
+                        {formData.tags?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-6 p-3 bg-[var(--color-bg)] rounded-2xl border border-[var(--color-border)]/50">
+                             {formData.tags.map(tag => (
+                               <button 
+                                 key={tag}
+                                 onClick={() => toggleTag(tag)}
+                                 className="px-2 py-1 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 text-[var(--color-accent)] rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-all group"
+                               >
+                                  {tag}
+                                  <X size={10} className="opacity-50 group-hover:opacity-100" />
+                               </button>
+                             ))}
+                          </div>
+                        )}
+
+                        <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest opacity-50">Sugeriments</label>
+                        <div className="flex flex-wrap gap-2 overflow-y-auto max-h-[120px] p-1 scrollbar-hide">
                            {PREDEFINED_TAGS.map(tag => {
                              const isSelected = formData.tags?.includes(tag);
                              return (

@@ -15,6 +15,7 @@ import { clsx } from "clsx";
 import { Tracker } from "@/components/portfolio/Tracker";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { ZenToggle } from "@/components/portfolio/ZenToggle";
+import { PinterestGallery } from "@/components/portfolio/PinterestGallery";
 
 export default async function WorkPage({
   params,
@@ -94,11 +95,11 @@ export default async function WorkPage({
         return (
           <div key={block.id} style={blockStyle}>
             <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
-               <div className={clsx("relative rounded-2xl overflow-hidden shadow-2xl border border-white/5", !settings.fullWidth && "aspect-video")}>
+               <div className={clsx("relative rounded-2xl overflow-hidden shadow-2xl border border-white/5")}>
                   {content.mimeType?.startsWith('video') ? (
-                    <video src={content.url} controls className="w-full h-full object-cover" />
+                    <video src={content.url} controls className="w-full h-auto block" />
                   ) : (
-                    <img src={content.url} className="w-full h-full object-cover" alt="" />
+                    <img src={content.url} className="w-full h-auto block" alt="" />
                   )}
                </div>
             </div>
@@ -111,17 +112,7 @@ export default async function WorkPage({
         return (
           <div key={block.id} style={blockStyle}>
             <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-[2000px]")}>
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {items.map((url: string, idx: number) => (
-                    <div key={idx} className="aspect-square rounded-2xl overflow-hidden border border-white/5 shadow-lg group">
-                       <img 
-                        src={url} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        alt="" 
-                       />
-                    </div>
-                  ))}
-               </div>
+               <PinterestGallery items={items} />
             </div>
           </div>
         );
@@ -132,13 +123,13 @@ export default async function WorkPage({
            return (
              <div key={block.id} style={blockStyle}>
                <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-6xl")}>
-                  <div className="relative w-full aspect-[1/1.4] md:aspect-[1/1.4142] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 group">
-                     {/* Clean Viewer Wrapper */}
-                     <iframe 
-                       src={`${content.url}#toolbar=0&navpanes=0&scrollbar=0`}
-                       className="w-full h-full border-none pointer-events-none md:pointer-events-auto"
-                       title={content.title}
-                     />
+                 <div className="relative w-full min-h-[500px] md:min-h-[800px] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 group">
+                    {/* Clean Viewer Wrapper */}
+                    <iframe 
+                      src={`${content.url}#toolbar=0&navpanes=0&scrollbar=0`}
+                      className="absolute inset-0 w-full h-full border-none pointer-events-none md:pointer-events-auto"
+                      title={content.title}
+                    />
                      
                      {/* Overlay for mobile or to provide a clean exit/open action */}
                      <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
