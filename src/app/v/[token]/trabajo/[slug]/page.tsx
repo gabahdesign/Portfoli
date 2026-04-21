@@ -12,6 +12,7 @@ import { PinGateWrapper } from "@/components/portfolio/PinGateWrapper";
 import { BackButton } from "@/components/portfolio/BackButton";
 import { VideoNode, AudioNode, IframeNode } from "@/components/admin/TipTapExtensions";
 import { clsx } from "clsx";
+import { Tracker } from "@/components/portfolio/Tracker";
 
 export default async function WorkPage({
   params,
@@ -237,8 +238,8 @@ export default async function WorkPage({
   }
 
   const contentNode = (
-      <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in duration-500">
-        
+    <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in duration-500">
+        <Tracker token={token} eventType="work_view" workId={work.id} />
         <BackButton />
 
         {/* COVER / MEDIA */}

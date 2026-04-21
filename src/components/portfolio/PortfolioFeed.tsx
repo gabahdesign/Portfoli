@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { FeaturedWorkCard } from "./FeaturedWorkCard";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTracker } from "@/hooks/useTracker";
 
 interface Work {
   slug: string;
@@ -28,6 +29,21 @@ interface PortfolioFeedProps {
 
 export function PortfolioFeed({ works, token, locale, initialCompanyId, companies }: PortfolioFeedProps) {
   const t = useTranslations("Index");
+  
+  // Track this page view
+  useTracker(token, "page_view");
+
+  // Notify entry (first time)
+  useEffect(() => {
+    if (token !== 'preview') {
+      fetch('/api/notify/entry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      }).catch(console.error);
+    }
+  }, [token]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeCompanyId, setActiveCompanyId] = useState<string | null>(initialCompanyId || null);
