@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { X, Search, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search as SearchIcon, Trash2, Map, MessageCircle } from "lucide-react";
+import { X, Plus, Check, ChevronRight, ChevronLeft, MapPin, Calendar, Clock, BarChart3, Info, Loader2, Mountain, Waves, Zap, Flag, Music, Users, Cpu, Utensils, Beer, Search, Trash2, Map, MessageCircle, Lock } from "lucide-react";
 import { clsx } from "clsx";
 import { saveActivity, deleteActivity, geocodeLocation } from "@/app/actions/activities";
 import { getSubcategories, addSubcategory, deleteSubcategory } from "@/app/actions/subcategories";
+import { saveCategory, deleteCategory } from "@/app/actions/move_categories";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
@@ -38,7 +39,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Cpu,
   Utensils,
   Beer,
-  Search: SearchIcon
+  Search
 };
 
 interface ActivityModalProps {
@@ -66,6 +67,12 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   const [newSubName, setNewSubName] = useState("");
   const [isManagingSubs, setIsManagingSubs] = useState(false);
   const [isLoadingSubs, setIsLoadingSubs] = useState(false);
+
+  // Category management
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [categoryName, setCategoryName] = useState("");
+  const [isSavingCategory, setIsSavingCategory] = useState(false);
 
   const router = useRouter();
 
@@ -96,7 +103,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     elevation: "",
     difficulty: "",
     whatsapp_link: "",
-    subcategory_id: ""
+    subcategory_id: "",
+    isLocked: false,
+    unlockAt: ""
   });
   
   const [mounted, setMounted] = useState(false);
@@ -137,7 +146,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           elevation: editActivity.metadata?.elevation?.toString() || "",
           difficulty: editActivity.metadata?.difficulty || "",
           whatsapp_link: editActivity.whatsapp_link || "",
-          subcategory_id: editActivity.subcategory_id || ""
+          subcategory_id: editActivity.subcategory_id || "",
+          isLocked: editActivity.metadata?.isLocked || false,
+          unlockAt: editActivity.metadata?.unlockAt || ""
         });
       } else {
         setStep('group');
@@ -165,7 +176,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           elevation: "",
           difficulty: "",
           whatsapp_link: "",
-          subcategory_id: ""
+          subcategory_id: "",
+          isLocked: false,
+          unlockAt: ""
         });
       }
     }
@@ -203,6 +216,35 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
       setSubcategories(subcategories.filter(s => s.id !== id));
       if (formData.subcategory_id === id) setFormData({ ...formData, subcategory_id: "" });
       showNotification("Subcategoria eliminada", "success");
+    }
+  };
+
+  const handleSaveCategory = async () => {
+    if (!selectedGroup || !categoryName.trim()) return;
+    setIsSavingCategory(true);
+    showNotification("Guardant categoria...", "loading");
+    
+    const res = await saveCategory(categoryName.trim(), selectedGroup.id, editingCategoryId || undefined);
+    if (res.success) {
+      showNotification("Categoria guardada", "success");
+      setIsAddingCategory(false);
+      setEditingCategoryId(null);
+      setCategoryName("");
+      router.refresh();
+    } else {
+      showNotification("Error: " + res.error, "error");
+    }
+    setIsSavingCategory(false);
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm("Estàs segur d'eliminar aquesta categoria?")) return;
+    const res = await deleteCategory(id);
+    if (res.success) {
+      showNotification("Categoria eliminada", "success");
+      router.refresh();
+    } else {
+      showNotification(res.error || "No s'ha pogut eliminar", "error");
     }
   };
 
@@ -292,7 +334,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex justify-center md:justify-end items-end md:items-stretch p-2 sm:p-4 md:p-0">
+    <div className="fixed inset-0 z-[9999] flex justify-center md:justify-end items-stretch p-0">
       {toast && (
         <Toast 
           message={toast.message} 
@@ -304,7 +346,10 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
       <div className="absolute inset-0 bg-black/10 transition-opacity duration-500" onClick={onClose} />
       
       {/* Drawer / Modal Content */}
-      <div className="relative w-full md:w-[450px] lg:w-[500px] flex flex-col bg-[var(--color-surface)] border border-[var(--color-border)] md:border-y-0 md:border-r-0 md:border-l rounded-[2.5rem] md:rounded-l-3xl md:rounded-r-none overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 md:slide-in-from-right-full duration-300 max-h-[90vh] md:max-h-screen">
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full md:w-[450px] lg:w-[500px] flex flex-col bg-[var(--color-surface)] border border-[var(--color-border)] md:border-y-0 md:border-r-0 md:border-l rounded-none md:rounded-l-3xl md:rounded-r-none overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 md:slide-in-from-right-full duration-300 h-full md:max-h-screen"
+      >
         
         {/* Header */}
         <div className="p-8 border-b border-[var(--color-border)] flex justify-between items-center bg-[var(--color-surface-2)]/50">
@@ -320,7 +365,11 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                 {step === 'details' && "Pas 3 de 3 · " + selectedCategory?.name}
               </p>
            </div>
-           <button onClick={onClose} className="p-2 hover:bg-[var(--color-surface-2)] rounded-full transition-colors">
+           <button 
+             type="button"
+             onClick={onClose} 
+             className="p-2 hover:bg-[var(--color-surface-2)] rounded-full transition-colors"
+           >
               <X size={20} />
            </button>
         </div>
@@ -354,28 +403,80 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
           {/* STEP 2: SELECT CATEGORY */}
           {step === 'category' && (
             <div className="space-y-6">
-               <div className="relative">
-                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={18} />
-                 <input 
-                   type="text" 
-                   autoFocus
-                   value={search}
-                   onChange={e => setSearch(e.target.value)}
-                   placeholder="Cerca una categoria..." 
-                   className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl pl-12 pr-4 py-4 text-sm outline-none focus:border-[var(--color-accent)] transition-all"
-                 />
+               <div className="flex gap-2">
+                 <div className="relative flex-1">
+                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={18} />
+                   <input 
+                     type="text" 
+                     autoFocus
+                     value={search}
+                     onChange={e => setSearch(e.target.value)}
+                     placeholder="Cerca una categoria..." 
+                     className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl pl-12 pr-4 py-4 text-sm outline-none focus:border-[var(--color-accent)] transition-all"
+                   />
+                 </div>
+                 <button 
+                  onClick={() => { setIsAddingCategory(true); setEditingCategoryId(null); setCategoryName(""); }}
+                  className="p-4 bg-[var(--color-accent)] text-white rounded-2xl hover:scale-105 transition-all shadow-lg shadow-[var(--color-accent-glow)]"
+                 >
+                   <Plus size={24} />
+                 </button>
                </div>
+
+               {isAddingCategory || editingCategoryId ? (
+                 <div className="bg-[var(--color-surface-2)] p-6 rounded-3xl border border-[var(--color-accent)]/30 space-y-4 animate-in zoom-in-95">
+                    <div className="flex justify-between items-center">
+                       <h4 className="text-xs font-black uppercase tracking-widest text-[var(--color-accent)]">
+                          {editingCategoryId ? "Editar Categoria" : "Nova Categoria"}
+                       </h4>
+                       <button onClick={() => { setIsAddingCategory(false); setEditingCategoryId(null); }} className="text-[var(--color-muted)] hover:text-white"><X size={14} /></button>
+                    </div>
+                    <div className="flex gap-2">
+                       <input 
+                         type="text" 
+                         value={categoryName}
+                         onChange={e => setCategoryName(e.target.value)}
+                         placeholder="Nom de la categoria..."
+                         className="flex-1 bg-black/20 border border-[var(--color-border)] rounded-xl px-4 py-3 text-sm outline-none focus:border-[var(--color-accent)]"
+                       />
+                       <button 
+                        type="button"
+                        onClick={handleSaveCategory}
+                        disabled={isSavingCategory}
+                        className="px-6 bg-[var(--color-accent)] text-white rounded-xl text-xs font-bold disabled:opacity-50"
+                       >
+                         {isSavingCategory ? <Loader2 className="animate-spin" size={16} /> : "Ok"}
+                       </button>
+                    </div>
+                 </div>
+               ) : null}
 
                <div className="grid grid-cols-2 gap-3">
                   {filteredCategories.map(c => (
-                    <button 
-                      key={c.id}
-                      onClick={() => { setSelectedCategory(c); setStep('details'); }}
-                      className="flex items-center justify-between p-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] transition-all group"
-                    >
-                       <span className="text-xs font-bold">{c.name}</span>
-                       <ChevronRight size={14} className="text-[var(--color-muted)] group-hover:text-[var(--color-accent)]" />
-                    </button>
+                    <div key={c.id} className="relative group">
+                      <button 
+                        onClick={() => { setSelectedCategory(c); setStep('details'); }}
+                        className="w-full flex items-center justify-between p-4 pr-10 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] hover:border-[var(--color-accent)] transition-all"
+                      >
+                         <span className="text-xs font-bold truncate">{c.name}</span>
+                         <ChevronRight size={14} className="absolute right-4 text-[var(--color-muted)] group-hover:text-[var(--color-accent)]" />
+                      </button>
+                      
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <button 
+                          onClick={(e) => { e.stopPropagation(); setEditingCategoryId(c.id); setCategoryName(c.name); }}
+                          className="p-1.5 bg-[var(--color-surface-2)] text-[var(--color-muted)] hover:text-[var(--color-accent)] rounded-lg"
+                         >
+                           <Info size={12} />
+                         </button>
+                         <button 
+                          onClick={(e) => { e.stopPropagation(); handleDeleteCategory(c.id); }}
+                          className="p-1.5 bg-[var(--color-surface-2)] text-red-500/50 hover:text-red-500 rounded-lg"
+                         >
+                           <Trash2 size={12} />
+                         </button>
+                      </div>
+                    </div>
                   ))}
                </div>
             </div>
@@ -433,6 +534,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                         {subcategories.map(s => (
                           <button
                             key={s.id}
+                            type="button"
                             onClick={() => setFormData({ ...formData, subcategory_id: s.id === formData.subcategory_id ? "" : s.id })}
                             className={clsx(
                               "px-3 py-1.5 rounded-xl text-[10px] font-bold transition-all border",
@@ -610,6 +712,42 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
                        </div>
                     </div>
                   )}
+
+                  {/* Lock & Countdown */}
+                  <div className="p-6 bg-amber-500/5 border border-amber-500/20 rounded-3xl space-y-4">
+                     <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                           <Lock size={16} className="text-amber-500" />
+                           <span className="text-xs font-black uppercase tracking-widest text-amber-500">Bloqueig d&apos;Activitat</span>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                           <input 
+                             type="checkbox" 
+                             checked={formData.isLocked} 
+                             onChange={e => setFormData({...formData, isLocked: e.target.checked})} 
+                             className="sr-only peer" 
+                           />
+                           <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                        </label>
+                     </div>
+                     
+                     {formData.isLocked && (
+                       <div className="space-y-2 animate-in slide-in-from-top-2">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)]">Data i Hora de Desbloqueig (Opcional)</label>
+                          <div className="relative">
+                             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
+                             <input 
+                               type="datetime-local" 
+                               value={formData.unlockAt}
+                               onChange={e => setFormData({...formData, unlockAt: e.target.value})}
+                               className="w-full bg-black/20 border border-[var(--color-border)] rounded-xl pl-9 pr-3 py-2.5 text-xs outline-none focus:border-amber-500" 
+                             />
+                          </div>
+                          <p className="text-[9px] text-[var(--color-muted)] italic">Si s&apos;especifica, l&apos;activitat es desbloquejarà automàticament en aquesta data.</p>
+                       </div>
+                     )}
+                  </div>
+
                    <div className="space-y-2">
                        <label className="text-[10px] uppercase font-black tracking-widest text-[var(--color-muted)] flex justify-between items-center">
                           <span>Descripció del plan</span>

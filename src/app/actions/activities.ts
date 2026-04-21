@@ -32,7 +32,9 @@ export async function saveActivity(formData: any, categoryId: string) {
       distance: formData.distance,
       elevation: formData.elevation,
       difficulty: formData.difficulty,
-      isAllDay: formData.isAllDay
+      isAllDay: formData.isAllDay,
+      isLocked: formData.isLocked || false,
+      unlockAt: formData.unlockAt || null
     },
     status: 'published'
   };

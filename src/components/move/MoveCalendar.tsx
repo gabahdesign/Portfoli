@@ -15,7 +15,8 @@ import {
   LogOut,
   Users,
   Loader2,
-  Map as MapViewIcon
+  Map as MapViewIcon,
+  Lock
 } from "lucide-react";
 import { clsx } from "clsx";
 import { ActivityModal } from "./ActivityModal";
@@ -99,6 +100,20 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
       return;
     }
 
+    const activity = activities.find(a => a.id === activityId);
+    if (!isAdmin && activity) {
+      const isPast = new Date(activity.start_datetime) < new Date();
+      if (isPast && !isJoined) {
+        showNotification("No pots apuntar-te a una activitat passada", "error");
+        return;
+      }
+      
+      if (activity.metadata?.isLocked && !isJoined) {
+        showNotification("Aquesta activitat està bloquejada", "error");
+        return;
+      }
+    }
+
     setLoadingAction(activityId);
     try {
       if (isJoined) {
@@ -119,8 +134,8 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
   return (
     <div className="space-y-8">
       {/* 1. CONTROLS HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-[var(--color-surface)] p-6 rounded-3xl border border-[var(--color-border)] shadow-xl">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-6 bg-[var(--color-surface)] p-4 sm:p-6 rounded-3xl border border-[var(--color-border)] shadow-xl">
+        <div className="flex items-center justify-between xl:justify-start gap-4">
           <button 
             onClick={handlePrevMonth}
             className="p-2 hover:bg-[var(--color-surface-2)] rounded-xl transition-colors border border-[var(--color-border)]"
@@ -162,7 +177,7 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
           <button 
             onClick={() => setViewMode('map')}
             className={clsx(
-              "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+              "flex-1 xl:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
               viewMode === 'map' ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
             )}
           >
@@ -170,20 +185,20 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
           </button>
         </div>
 
-        <div className="flex gap-3">
-           <div className="relative">
+        <div className="flex flex-wrap items-center gap-3">
+           <div className="relative flex-1 min-w-[150px]">
              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
              <input 
                type="text" 
                placeholder="Cerca activitats..." 
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
-               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all w-48"
+               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all w-full"
              />
            </div>
            
            {profile ? (
-             <div className="flex items-center gap-4 bg-[var(--color-surface-2)] pl-4 pr-2 py-1.5 rounded-xl border border-[var(--color-border)]">
+             <div className="flex items-center gap-4 bg-[var(--color-surface-2)] pl-4 pr-2 py-1.5 rounded-xl border border-[var(--color-border)] flex-1 xl:flex-none justify-between">
                 <div className="flex flex-col items-end">
                    <span className="text-[9px] font-black tracking-widest text-[var(--color-accent)] uppercase">Connectat</span>
                    <span className="text-xs font-bold text-white">{profile.username}</span>
@@ -199,9 +214,9 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
            ) : (
              <button 
                 onClick={() => setIsAuthModalOpen(true)}
-                className="flex items-center gap-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:border-[var(--color-accent)]/50 transition-all"
+                className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:border-[var(--color-accent)]/50 transition-all"
              >
-               <UserIcon size={14} /> Registra&apos;t / Entra
+               <UserIcon size={14} /> Entra
              </button>
            )}
 
@@ -212,7 +227,7 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                 setInitialDate(currentDate);
                 setIsModalOpen(true);
               }}
-              className="flex items-center gap-2 bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
+              className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
              >
                <Plus size={16} /> Nou
              </button>
@@ -290,7 +305,10 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                             color: act.move_categories?.move_groups?.accent_color || '#843aea'
                           }}
                         >
-                          {act.title}
+                          <div className="flex items-center gap-1">
+                             {act.title}
+                             {act.metadata?.isLocked && <Lock size={8} className="shrink-0" />}
+                          </div>
                         </div>
                       ))
                     }
@@ -343,8 +361,15 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                                 >
                                    <Activity className="w-6 h-6" style={{ color: act.move_categories?.move_groups?.accent_color || '#843aea' }} />
                                 </div>
-                                <div>
-                                   <h4 className="text-xl font-display font-black text-[var(--color-text)] mb-1.5 tracking-tight">{act.title}</h4>
+                                 <div>
+                                   <div className="flex items-center gap-3 mb-1.5 ">
+                                      <h4 className="text-xl font-display font-black text-[var(--color-text)] tracking-tight">{act.title}</h4>
+                                      {act.metadata?.isLocked && (
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                           <Lock size={10} /> Proximament
+                                        </div>
+                                      )}
+                                   </div>
                                    <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-[10px] text-[var(--color-muted)] font-bold uppercase tracking-widest">
                                       <span style={{ color: act.move_categories?.move_groups?.accent_color }} className="opacity-80">
                                          {act.move_categories?.name}
@@ -384,13 +409,17 @@ export function MoveCalendar({ isAdmin, user, profile, groups, categories, activ
                                         "px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all min-w-[150px] flex items-center justify-center gap-2",
                                         isJoined 
                                           ? "bg-white/5 text-white border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" 
-                                          : "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
+                                          : act.metadata?.isLocked 
+                                            ? "bg-white/5 text-amber-500 border border-amber-500/20 cursor-not-allowed opacity-50"
+                                            : "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
                                       )}
                                     >
                                       {loadingAction === act.id ? (
                                         <Loader2 size={14} className="animate-spin" />
                                       ) : isJoined ? (
                                         "Ja hi estic"
+                                      ) : act.metadata?.isLocked ? (
+                                        "Bloquejat"
                                       ) : (
                                         "M'apunto"
                                       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Calendar, MapPin, Users, Phone, MessageCircle, ArrowRight, Loader2, Info } from "lucide-react";
+import { X, Calendar, MapPin, Users, Phone, MessageCircle, ArrowRight, Loader2, Info, Lock } from "lucide-react";
 import { clsx } from "clsx";
 import { renderMarkdown } from "@/lib/utils/markdown";
 import { createPortal } from "react-dom";
@@ -28,6 +28,10 @@ export function MoveActivityDetailModal({
   onEdit
 }: MoveActivityDetailModalProps) {
   const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+
+  const isLocked = !!activity?.metadata?.isLocked && !isAdmin;
+  const unlockAt = activity?.metadata?.unlockAt;
 
   useEffect(() => {
     setMounted(true);
@@ -38,6 +42,31 @@ export function MoveActivityDetailModal({
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!unlockAt || !isLocked) return;
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const target = new Date(unlockAt).getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setTimeLeft(null);
+        clearInterval(timer);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [unlockAt, isLocked]);
 
   if (!isOpen || !activity || !mounted) return null;
 
@@ -106,42 +135,66 @@ export function MoveActivityDetailModal({
                      </div>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
-                        <MapPin size={18} />
-                     </div>
-                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Ubicació</p>
-                        <p className="text-sm text-white font-medium">{activity.location || "Ubicació no especificada"}</p>
-                     </div>
-                  </div>
+                  {!isLocked ? (
+                    <div className="flex items-start gap-4">
+                       <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
+                          <MapPin size={18} />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Ubicació</p>
+                          <p className="text-sm text-white font-medium">{activity.location || "Ubicació no especificada"}</p>
+                       </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-4 opacity-50">
+                       <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
+                          <Lock size={18} />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Ubicació</p>
+                          <p className="text-sm text-white font-medium italic">Bloquejada</p>
+                       </div>
+                    </div>
+                  )}
                </div>
 
                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                     <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
-                        <Users size={18} />
-                     </div>
-                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Assistents ({participantsCount})</p>
-                        {participantNicks.length > 0 ? (
-                           <div className="flex flex-wrap gap-1.5 mt-1">
-                              {participantNicks.map((nick: string, idx: number) => (
-                                 <span key={idx} className="text-[10px] bg-[var(--color-accent)]/10 text-[var(--color-accent)] px-2 py-0.5 rounded-md font-bold">
-                                    @{nick}
-                                 </span>
-                              ))}
-                           </div>
-                        ) : (
-                           <p className="text-xs text-[var(--color-muted)]">Encara no hi ha ningú apuntat.</p>
-                        )}
-                     </div>
-                  </div>
+                  {!isLocked ? (
+                    <div className="flex items-start gap-4">
+                       <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
+                          <Users size={18} />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Assistents ({participantsCount})</p>
+                          {participantNicks.length > 0 ? (
+                             <div className="flex flex-wrap gap-1.5 mt-1">
+                                {participantNicks.map((nick: string, idx: number) => (
+                                   <span key={idx} className="text-[10px] bg-[var(--color-accent)]/10 text-[var(--color-accent)] px-2 py-0.5 rounded-md font-bold">
+                                      @{nick}
+                                   </span>
+                                ))}
+                             </div>
+                          ) : (
+                             <p className="text-xs text-[var(--color-muted)]">Encara no hi ha ningú apuntat.</p>
+                          )}
+                       </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start gap-4 opacity-50">
+                       <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--color-muted)] shrink-0">
+                          <Lock size={18} />
+                       </div>
+                       <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Assistents</p>
+                          <p className="text-xs text-[var(--color-muted)] italic">Informació bloquejada</p>
+                       </div>
+                    </div>
+                  )}
                </div>
             </div>
 
             {/* 3. BOTÓ WHATSAPP (si existeix) */}
-            {activity.whatsapp_link && (
+            {activity.whatsapp_link && !isLocked && (
                <a 
                  href={activity.whatsapp_link} 
                  target="_blank" 
@@ -156,18 +209,24 @@ export function MoveActivityDetailModal({
             <div className="flex gap-3">
                <button 
                  onClick={() => onJoinLeave(activity.id, isJoined)}
-                 disabled={loadingAction === activity.id}
+                 disabled={loadingAction === activity.id || (isLocked && !isJoined)}
                  className={clsx(
                    "flex-1 flex items-center justify-center gap-3 py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[10px] transition-all hover:scale-[1.02] active:scale-95 shadow-xl",
                    isJoined 
                      ? "bg-white/5 text-white border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" 
-                     : "bg-[var(--color-accent)] text-white shadow-[var(--color-accent-glow)]"
+                     : isLocked
+                       ? "bg-amber-500/10 text-amber-500 border border-amber-500/20 cursor-not-allowed"
+                       : "bg-[var(--color-accent)] text-white shadow-[var(--color-accent-glow)]"
                  )}
                >
                  {loadingAction === activity.id ? (
                    <Loader2 size={16} className="animate-spin" />
                  ) : isJoined ? (
                    "Ja hi estic (Desapuntar-se)"
+                 ) : isLocked ? (
+                   <>
+                     <Lock size={14} /> Bloquejat (Proximament)
+                   </>
                  ) : (
                    "Vull m'apunto al plan"
                  )}
@@ -185,16 +244,33 @@ export function MoveActivityDetailModal({
             </div>
 
             {/* 4. DESCRIPCIÓ (Renderitzada) */}
-            {activity.description && (
-               <div className="pt-8 border-t border-white/10">
-                  <div className="flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">
-                     <Info size={12} /> Descripció del plan
-                  </div>
-                  <div 
-                    className="prose prose-invert prose-sm max-w-none text-[var(--color-muted)] leading-relaxed font-medium"
-                    dangerouslySetInnerHTML={{ __html: renderMarkdown(activity.description) }}
-                  />
-               </div>
+            {!isLocked ? (
+              activity.description && (
+                 <div className="pt-8 border-t border-white/10">
+                    <div className="flex items-center gap-2 mb-4 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">
+                       <Info size={12} /> Descripció del plan
+                    </div>
+                    <div 
+                      className="prose prose-invert prose-sm max-w-none text-[var(--color-muted)] leading-relaxed font-medium"
+                      dangerouslySetInnerHTML={{ __html: renderMarkdown(activity.description) }}
+                    />
+                 </div>
+              )
+            ) : (
+              <div className="pt-12 border-t border-white/10 text-center">
+                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 mb-6 border border-amber-500/20 text-amber-500">
+                    <Lock size={32} />
+                 </div>
+                 <h3 className="text-2xl font-display font-black text-white tracking-tight mb-2">Plan Bloquejat</h3>
+                 <p className="text-sm text-[var(--color-muted)] max-w-xs mx-auto mb-8 font-medium">L&apos;organitzador encara no ha publicat els detalls d&apos;aquest plan. Torna d&apos;aquí a una estona!</p>
+                 
+                 {timeLeft && (
+                   <div className="bg-[var(--color-surface-2)] inline-block px-8 py-4 rounded-3xl border border-white/5 shadow-2xl">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-1">Es desbloqueja en:</p>
+                      <p className="text-3xl font-mono font-black text-white">{timeLeft}</p>
+                   </div>
+                 )}
+              </div>
             )}
           </div>
         </div>
