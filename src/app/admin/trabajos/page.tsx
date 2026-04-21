@@ -16,6 +16,7 @@ export default function AdminTrabajos() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [companyFilter, setCompanyFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("recent"); // "recent" or "alphabetical"
   const supabase = createClient();
   const router = useRouter();
 
@@ -67,6 +68,14 @@ export default function AdminTrabajos() {
     if (statusFilter !== "all" && wk.status !== statusFilter) return false;
     if (companyFilter !== "all" && (wk.company_id || "none") !== companyFilter) return false;
     return true;
+  }).sort((a, b) => {
+    if (sortBy === "alphabetical") {
+      return a.title.localeCompare(b.title);
+    }
+    // Default is already "recent" (ordered by fetch), but we could re-sort if needed.
+    // Since fetchWorks already orders by created_at DESC, we don't strictly need to sort here
+    // unless the user switches back and forth.
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
   });
 
   const uniqueCompanies = Array.from(new Set(works.map(w => w.company_id || "none")));
@@ -80,7 +89,7 @@ export default function AdminTrabajos() {
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-wrap gap-4 mb-6">
         <select 
           value={statusFilter} 
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -102,6 +111,15 @@ export default function AdminTrabajos() {
             const name = id === "none" ? "Sense associar" : works.find(w => w.company_id === id)?.companies?.name || "Desconeguda";
             return <option key={id} value={id}>{name}</option>;
           })}
+        </select>
+
+        <select 
+          value={sortBy} 
+          onChange={(e) => setSortBy(e.target.value)}
+          className="bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-2 rounded-lg focus:outline-none focus:border-[var(--color-accent)] text-sm font-bold border-2"
+        >
+          <option value="recent">Recents primer</option>
+          <option value="alphabetical">Ordre alfabètic (A-Z)</option>
         </select>
       </div>
 
