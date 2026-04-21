@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { FeaturedWorkCard } from "./FeaturedWorkCard";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";

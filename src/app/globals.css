@@ -201,3 +201,28 @@ h3 {
   transition-duration: 150ms;
   transition-timing-function: ease;
 }
+
+/* Zen Mode (Presentation) */
+.zen-mode aside, 
+.zen-mode header, 
+.zen-mode .welcome-banner {
+  display: none !important;
+}
+
+.zen-mode main {
+  margin-left: 0 !important;
+  padding-top: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.zen-mode .prose {
+  max-width: 1200px !important;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.25rem;
+}
+
+.zen-mode h1 {
+  font-size: 5rem !important;
+}

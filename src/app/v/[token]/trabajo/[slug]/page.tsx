@@ -13,6 +13,8 @@ import { BackButton } from "@/components/portfolio/BackButton";
 import { VideoNode, AudioNode, IframeNode } from "@/components/admin/TipTapExtensions";
 import { clsx } from "clsx";
 import { Tracker } from "@/components/portfolio/Tracker";
+import { Maximize2, Minimize2 } from "lucide-react";
+import { ZenToggle } from "@/components/portfolio/ZenToggle";
 
 export default async function WorkPage({
   params,
@@ -240,6 +242,7 @@ export default async function WorkPage({
   const contentNode = (
     <div className="max-w-4xl mx-auto px-6 py-12 animate-in fade-in duration-500">
         <Tracker token={token} eventType="work_view" workId={work.id} />
+        <ZenToggle />
         <BackButton />
 
         {/* COVER / MEDIA */}

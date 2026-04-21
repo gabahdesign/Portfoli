@@ -24,7 +24,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
   }
   const cvSections = Array.from(uniqueSections.values());
 
-  const renderSectionContent = (content: unknown) => {
+  const renderSectionContent = (content: any) => {
     if (!content) return null;
     
     // If array directly (new flat format)
@@ -33,7 +33,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
     }
     
     // If object with language keys {ca:[...], es:[...]}
-    const localizedContent = (content as Record<string, unknown>)[locale] || (content as Record<string, unknown>)["ca"] || (content as Record<string, unknown>)["es"] || (content as Record<string, unknown>)["en"];
+    const localizedContent = content[locale] || content["ca"] || content["es"] || content["en"];
     
     if (Array.isArray(localizedContent)) {
        return renderArrayContent(localizedContent);
@@ -42,7 +42,7 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
     if (typeof localizedContent === "string") {
       return (
         <div 
-          className="prose prose-invert prose-p:text-[var(--color-muted)] max-w-none"
+          className="prose prose-invert prose-p:text-[var(--color-muted)] max-w-none prose-strong:text-[var(--color-text)]"
           dangerouslySetInnerHTML={{ __html: localizedContent }} 
         />
       );
@@ -121,7 +121,9 @@ export default async function CVPage({ params }: { params: Promise<{ token: stri
             className="cv-section scroll-mt-24 grid grid-cols-1 md:grid-cols-4 gap-8"
           >
             <h2 className="font-sans text-sm font-bold text-color-muted uppercase tracking-wider pt-1">
-              {section.title ? (section.title[locale] || section.title["ca"]) : section.type.replace('_', ' ')}
+              {typeof section.title === 'object' && section.title !== null
+                ? (section.title[locale] || section.title["ca"] || section.title["en"] || section.type)
+                : (section.title || section.type.replace('_', ' '))}
             </h2>
             <div className="md:col-span-3 text-color-text">
                {renderSectionContent(section.content)}
