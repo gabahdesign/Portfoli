@@ -5,7 +5,7 @@ import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
 import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
 import Image from "next/image";
 import Link from "next/link";
-import { Move, Maximize2, Activity, Sparkles } from "lucide-react";
+import { Move, Maximize2, Zap, Sparkles } from "lucide-react";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
@@ -15,11 +15,11 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   const supabase = await createClient();
 
   const [aboutRes, companiesRes] = await Promise.all([
-    supabase.from("about_me").select("*").single(),
+    supabase.from("about_me").select("*").limit(1).maybeSingle(),
     supabase.from("companies").select("*").order("start_date", { ascending: false }),
   ]);
-  const aboutData = aboutRes.data;
-  const allCompanies = companiesRes.data || [];
+  const aboutData = aboutRes?.data;
+  const allCompanies = companiesRes?.data || [];
   
   const projectClients = (allCompanies || []).filter(c => c.is_freelance);
   
@@ -33,7 +33,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   // Those that are protected will show a padlock and require PIN in their respective route.
   const visibleWorks = featuredWorks || [];
 
-  const latestWorkCover = visibleWorks.length > 0 ? visibleWorks[0].cover_url : null;
+  const latestWorkCover = (visibleWorks.length > 0 && typeof visibleWorks[0].cover_url === 'string') ? visibleWorks[0].cover_url : null;
   const tagline = (aboutData?.tagline && typeof aboutData.tagline === 'object') 
     ? (aboutData.tagline as any)[locale] || (aboutData.tagline as any)["ca"] || ""
     : (aboutData?.tagline || "");
@@ -194,7 +194,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                       target="_blank"
                       className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
                     >
-                      <Activity size={20} />
+                      <Zap size={20} />
                       <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
                     </a>
                   </div>

@@ -607,14 +607,7 @@ input:focus {
     color: var(--text-primary);
 }
 
-.config-descobreix-logo {
-    width: 150px !important;
-    height: auto;
-    margin-bottom: var(--spacing-lg);
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
+/* Deprecated logo class removed */
 
 .theme-button.selected {
     background: var(--pure-white);

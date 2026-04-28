@@ -1,0 +1,52 @@
+1. Configuración Inicial
+Añadir Jugadores:
+- Ve a la pestaña "Jugadores"
+- Introduce el nombre de cada jugador
+- Necesitas mínimo 3 jugadores
+Seleccionar Temas:
+- Ve a la pestaña "Configuración"
+- Selecciona al menos un tema de las 11 categorías disponibles:
+• Alimentación (frutas, verduras, bebidas, postres...)
+• Animales (mamíferos, aves, acuáticos, insectos...)
+• Lugares del Mundo (ciudades, países, monumentos...)
+• Objetos Cotidianos (tecnología, hogar, herramientas...)
+• Personas y Roles (profesiones, oficios, personajes...)
+• Ocio y Cultura (deportes, música, cine, arte...)
+• Deportes (deportes olímpicos, extremos, acuáticos...)
+• Emociones y Estados (sentimientos, estados de ánimo...)
+• Acciones (verbos, actividades cotidianas...)
+• Características (colores, tamaños, texturas...)
+• Adultos (+18) (requiere verificación de edad)
+- Puedes seleccionar múltiples categorías si lo deseas
+Configurar Impostores:
+- En la pestaña "Jugadores"
+- Elige el número de impostores (desde 1 hasta total de jugadores - 1)
+- O activa "Número aleatorio" para sorpresa
+2. Comenzar Partida
+Presiona "Comenzar Juego" en la pestaña Jugadores
+El juego asignará roles aleatoriamente
+Seleccionará un tema y palabra al azar
+3. Revelación de Roles
+Pasa el dispositivo al primer jugador
+El jugador presiona "Ver mi Rol"
+El jugador verá:
+- Si es Civil: El tema y la palabra secreta
+- Si es Impostor: Solo el tema, NO la palabra
+El jugador presiona "Siguiente Jugador"
+Repite hasta que todos vean su rol
+4. Fase de Discusión
+Los jugadores discuten sobre el tema
+Los civiles intentan demostrar que conocen la palabra sin revelarla
+El impostor intenta descubrir la palabra o confundir a los demás
+No uses la app en esta fase, ¡solo hablad!
+5. Votación
+1. Ve a la pestaña "Votación"
+2. Vota por el jugador que crees que es el impostor
+3. El jugador eliminado se revela:
+- Si era impostor: ¡Se muestra!
+- Si era civil: El juego continúa
+4. Continúa votando hasta que haya un ganador
+5. Condiciones de Victoria
+- Civiles ganan: Eliminan a todos los impostores
+- Impostores ganan: Quedan igual o más impostores que civiles
+- Impostores ganan: Adivinan la palabra
