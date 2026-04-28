@@ -9,7 +9,7 @@ import { Move, Maximize2, Activity, Sparkles } from "lucide-react";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
-  const locale = await getLocale();
+  const locale = await getLocale() as any;
   const t = await getTranslations("Index");
   const navT = await getTranslations("Navigation");
   const supabase = await createClient();
@@ -34,7 +34,9 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   const visibleWorks = featuredWorks || [];
 
   const latestWorkCover = visibleWorks.length > 0 ? visibleWorks[0].cover_url : null;
-  const tagline = aboutData?.tagline ? aboutData.tagline[locale] || aboutData.tagline["ca"] : "";
+  const tagline = (aboutData?.tagline && typeof aboutData.tagline === 'object') 
+    ? (aboutData.tagline as any)[locale] || (aboutData.tagline as any)["ca"] || ""
+    : (aboutData?.tagline || "");
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] flex w-full">
@@ -187,14 +189,14 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                   </p>
                   
                   <div className="pt-4">
-                    <Link 
+                    <a 
                       href="/webs/impostor/index.html" 
                       target="_blank"
                       className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
                     >
                       <Activity size={20} />
                       <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
-                    </Link>
+                    </a>
                   </div>
                 </div>
                 

@@ -505,7 +505,7 @@ function generarTemasCheckboxes() {
 
         // Añadir icono del tema
         const icon = document.createElement('img');
-        icon.src = `icons/temas/${tema}.svg`;
+        icon.src = `/webs/impostor/icons/temas/${tema}.svg`;
         icon.alt = tema;
         icon.className = 'theme-icon';
 

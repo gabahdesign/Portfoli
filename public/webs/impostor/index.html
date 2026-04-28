@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -24,10 +24,10 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/screens.css">
+    <link rel="stylesheet" href="/webs/impostor/css/base.css">
+    <link rel="stylesheet" href="/webs/impostor/css/layout.css">
+    <link rel="stylesheet" href="/webs/impostor/css/components.css">
+    <link rel="stylesheet" href="/webs/impostor/css/screens.css">
 </head>
 <body>
     <!-- Main Container -->
@@ -37,15 +37,15 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="header-logo-section">
-                    <img src="icons/logo.svg" alt="Logo" class="header-logo">
-                    <span class="header-subtitle" data-i18n="homeSubtitle">¿QUIÉN ES EL IMPOSTOR?</span>
+                    <img src="/webs/impostor/icons/logo.svg" alt="Logo" class="header-logo">
+                    <span class="header-subtitle" data-i18n="homeSubtitle">Â¿QUIÃ‰N ES EL IMPOSTOR?</span>
                 </div>
                 <div class="header-buttons">
                     <button id="header-help-btn" class="header-icon-btn" data-screen="help" aria-label="Ayuda">
-                        <img src="icons/help.svg" alt="">
+                        <img src="/webs/impostor/icons/help.svg" alt="">
                     </button>
-                    <button id="header-config-btn" class="header-icon-btn" data-screen="config" aria-label="Configuración">
-                        <img src="icons/config.svg" alt="">
+                    <button id="header-config-btn" class="header-icon-btn" data-screen="config" aria-label="ConfiguraciÃ³n">
+                        <img src="/webs/impostor/icons/config.svg" alt="">
                     </button>
                 </div>
             </div>
@@ -57,45 +57,45 @@
             <!-- Home Screen -->
             <section id="screen-home" class="screen active">
                 <div class="home-container-new">
-                    <!-- Logo y título central -->
+                    <!-- Logo y tÃ­tulo central -->
                     <div class="home-logo-section">
                         <div class="home-logo-circle">
-                            <img src="icons/logo.svg" alt="Logo Impostor" class="home-logo-svg">
+                            <img src="/webs/impostor/icons/logo.svg" alt="Logo Impostor" class="home-logo-svg">
                         </div>
                         <h1 class="home-title" data-i18n="homeTitle">EL JUEGO DEL IMPOSTOR</h1>
-                        <p class="home-subtitle" data-i18n="homeSubtitle">¿Quién es el impostor?</p>
+                        <p class="home-subtitle" data-i18n="homeSubtitle">Â¿QuiÃ©n es el impostor?</p>
                     </div>
 
-                    <!-- Botones de acción -->
+                    <!-- Botones de acciÃ³n -->
                     <div class="home-buttons">
                         <button id="btn-new-game" class="btn-home btn-home-primary">
                             <span data-i18n="newGame">Nueva Partida</span>
                         </button>
 
-                        <button id="btn-online-game" class="btn-home btn-home-secondary" hidden aria-label="Partida En Línea (no disponible)">
-                            <span data-i18n="onlineGame">Partida En Línea</span>
+                        <button id="btn-online-game" class="btn-home btn-home-secondary" hidden aria-label="Partida En LÃ­nea (no disponible)">
+                            <span data-i18n="onlineGame">Partida En LÃ­nea</span>
                         </button>
 
                         <div class="home-support-card">
                             <div class="support-content">
                                 <div class="support-text">
-                                    <p class="support-question" data-i18n="enjoyingGame">¿Te está gustando el juego?</p>
+                                    <p class="support-question" data-i18n="enjoyingGame">Â¿Te estÃ¡ gustando el juego?</p>
                                     <a href="https://revolut.me/gabah1998" target="_blank" class="support-link">
-                                        <span data-i18n="inviteCoffee">Invítame a un café</span>
+                                        <span data-i18n="inviteCoffee">InvÃ­tame a un cafÃ©</span>
                                     </a>
                                 </div>
-                                <img src="icons/dinero.svg" alt="Donar" class="support-icon">
+                                <img src="/webs/impostor/icons/dinero.svg" alt="Donar" class="support-icon">
                             </div>
-                            <p class="support-description" data-i18n="supportDescription">El dinero se destinará exclusivamente a mantener los servidores y hacer que el juego siga siendo gratis</p>
+                            <p class="support-description" data-i18n="supportDescription">El dinero se destinarÃ¡ exclusivamente a mantener los servidores y hacer que el juego siga siendo gratis</p>
                         </div>
                     </div>
 
                     <!-- Footer con contacto -->
                     <div class="home-footer">
-                        <img src="icons/help.svg" alt="Contacto" class="footer-icon">
+                        <img src="/webs/impostor/icons/help.svg" alt="Contacto" class="footer-icon">
                         <p class="footer-text">
-                            <span data-i18n="suggestion">¿Alguna sugerencia?</span>
-                            <a href="mailto:gabahdesign98@gmail.com" class="footer-link" data-i18n="talkToUs">¡Hablemos!</a>
+                            <span data-i18n="suggestion">Â¿Alguna sugerencia?</span>
+                            <a href="mailto:gabahdesign98@gmail.com" class="footer-link" data-i18n="talkToUs">Â¡Hablemos!</a>
                         </p>
                     </div>
                 </div>
@@ -111,23 +111,23 @@
                         <input type="text" id="input-player-name" placeholder="Nombre del jugador"
                                data-i18n-placeholder="playerNamePlaceholder" maxlength="20" list="player-names-suggestions">
                         <button id="btn-add-player" class="btn btn-primary">
-                            <span data-i18n="addPlayer">Añadir</span>
+                            <span data-i18n="addPlayer">AÃ±adir</span>
                         </button>
                     </div>
 
                     <div class="players-list" id="players-list">
-                        <p class="empty-state" data-i18n="noPlayers">No hay jugadores aún</p>
+                        <p class="empty-state" data-i18n="noPlayers">No hay jugadores aÃºn</p>
                     </div>
 
                     <div class="impostor-config">
-                        <label for="impostor-count" data-i18n="impostorCount">Número de impostores:</label>
+                        <label for="impostor-count" data-i18n="impostorCount">NÃºmero de impostores:</label>
                         <select id="impostor-count" class="select-input">
                             <option value="1">1</option>
                         </select>
 
                         <label class="checkbox-label">
                             <input type="checkbox" id="random-impostors" class="checkbox-input">
-                            <span data-i18n="randomImpostors">Número aleatorio</span>
+                            <span data-i18n="randomImpostors">NÃºmero aleatorio</span>
                         </label>
                     </div>
 
@@ -140,23 +140,23 @@
             <!-- Config Screen -->
             <section id="screen-config" class="screen">
                 <div class="screen-content">
-                    <h2 data-i18n="configTitle">Configuración</h2>
+                    <h2 data-i18n="configTitle">ConfiguraciÃ³n</h2>
 
-                    <!-- Configuración del Juego -->
+                    <!-- ConfiguraciÃ³n del Juego -->
                     <div class="config-section">
-                        <h3 data-i18n="gameSettingsTitle">Configuración del Juego</h3>
+                        <h3 data-i18n="gameSettingsTitle">ConfiguraciÃ³n del Juego</h3>
 
                         <!-- Temas -->
                         <div class="config-subsection">
                             <h4 data-i18n="themesTitle">Temas</h4>
                             <div class="themes-grid" id="themes-grid">
-                                <!-- Temas generados dinámicamente -->
+                                <!-- Temas generados dinÃ¡micamente -->
                             </div>
                         </div>
 
                         <!-- Impostor sin pistas -->
                         <div class="config-subsection">
-                            <h4 data-i18n="impostorSettingsTitle">Configuración de Impostor</h4>
+                            <h4 data-i18n="impostorSettingsTitle">ConfiguraciÃ³n de Impostor</h4>
                             <label class="toggle-container">
                                 <input type="checkbox" id="hide-theme-toggle">
                                 <span class="toggle-slider"></span>
@@ -180,16 +180,16 @@
                         <h3 data-i18n="languageTitle">Idioma</h3>
                         <div class="language-selector-custom">
                             <div class="language-option" data-lang="es">
-                                <img src="icons/banderas/spanish.svg" alt="Español" class="flag-icon">
-                                <span>Español</span>
+                                <img src="icons/banderas/spanish.svg" alt="EspaÃ±ol" class="flag-icon">
+                                <span>EspaÃ±ol</span>
                             </div>
                             <div class="language-option" data-lang="en">
                                 <img src="icons/banderas/english.svg" alt="English" class="flag-icon">
                                 <span>English</span>
                             </div>
                             <div class="language-option" data-lang="ca">
-                                <img src="icons/banderas/catalan.svg" alt="Català" class="flag-icon">
-                                <span>Català</span>
+                                <img src="icons/banderas/catalan.svg" alt="CatalÃ " class="flag-icon">
+                                <span>CatalÃ </span>
                             </div>
                         </div>
                     </div>
@@ -199,10 +199,10 @@
                         <h3 data-i18n="legalTitle">Legal</h3>
                         <div class="legal-buttons">
                             <button class="btn btn-secondary btn-legal" id="btn-privacy-policy">
-                                <span data-i18n="privacyPolicy">Política de Privacidad</span>
+                                <span data-i18n="privacyPolicy">PolÃ­tica de Privacidad</span>
                             </button>
                             <button class="btn btn-secondary btn-legal" id="btn-cookies">
-                                <span data-i18n="cookiesPolicy">Política de Cookies</span>
+                                <span data-i18n="cookiesPolicy">PolÃ­tica de Cookies</span>
                             </button>
                             <button class="btn btn-secondary btn-legal" id="btn-legal-notice">
                                 <span data-i18n="legalNotice">Aviso Legal</span>
@@ -215,22 +215,22 @@
             <!-- Privacy Policy Screen -->
             <section id="screen-privacy-policy" class="screen legal-screen">
                 <div class="legal-content">
-                    <button class="close-legal-btn" id="close-privacy-policy">×</button>
-                    <h2 data-i18n="privacyPolicy">Política de Privacidad</h2>
+                    <button class="close-legal-btn" id="close-privacy-policy">Ã—</button>
+                    <h2 data-i18n="privacyPolicy">PolÃ­tica de Privacidad</h2>
                     <div class="legal-text">
-                        <h3 data-i18n="legalPrivacy1">1. Información General</h3>
-                        <p data-i18n="legalPrivacy1Text">Esta aplicación web ("Juego del Impostor") respeta tu privacidad y se compromete a proteger cualquier información personal que puedas proporcionar.</p>
+                        <h3 data-i18n="legalPrivacy1">1. InformaciÃ³n General</h3>
+                        <p data-i18n="legalPrivacy1Text">Esta aplicaciÃ³n web ("Juego del Impostor") respeta tu privacidad y se compromete a proteger cualquier informaciÃ³n personal que puedas proporcionar.</p>
 
                         <h3 data-i18n="legalPrivacy2">2. Datos Recopilados</h3>
-                        <p data-i18n="legalPrivacy2Text">Esta aplicación NO recopila, almacena ni transmite datos personales a servidores externos. Toda la información se almacena localmente en tu dispositivo mediante LocalStorage.</p>
+                        <p data-i18n="legalPrivacy2Text">Esta aplicaciÃ³n NO recopila, almacena ni transmite datos personales a servidores externos. Toda la informaciÃ³n se almacena localmente en tu dispositivo mediante LocalStorage.</p>
 
                         <h3 data-i18n="legalPrivacy3">3. Almacenamiento Local</h3>
-                        <p data-i18n="legalPrivacy3Text">La aplicación utiliza LocalStorage del navegador para guardar preferencias, temas y configuraciones. Estos datos permanecen en tu dispositivo.</p>
+                        <p data-i18n="legalPrivacy3Text">La aplicaciÃ³n utiliza LocalStorage del navegador para guardar preferencias, temas y configuraciones. Estos datos permanecen en tu dispositivo.</p>
 
                         <h3 data-i18n="legalPrivacy4">4. Cookies</h3>
-                        <p data-i18n="legalPrivacy4Text">Esta aplicación NO utiliza cookies de terceros ni de seguimiento. Solo almacenamiento local.</p>
+                        <p data-i18n="legalPrivacy4Text">Esta aplicaciÃ³n NO utiliza cookies de terceros ni de seguimiento. Solo almacenamiento local.</p>
 
-                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Ãšltima actualizaciÃ³n: Diciembre 2024</p>
                     </div>
                 </div>
             </section>
@@ -238,26 +238,26 @@
             <!-- Help Screen -->
             <section id="screen-help" class="screen">
                 <div class="screen-content help-content">
-                    <h2 data-i18n="helpTitle">Cómo Jugar</h2>
+                    <h2 data-i18n="helpTitle">CÃ³mo Jugar</h2>
 
                     <div class="help-section">
                         <h3 data-i18n="helpObjective">Objetivo del Juego</h3>
-                        <p data-i18n="helpObjectiveText">Los civiles deben descubrir quién es el impostor mediante preguntas y deducciones. El impostor debe pasar desapercibido sin revelar que no conoce la palabra secreta.</p>
+                        <p data-i18n="helpObjectiveText">Los civiles deben descubrir quiÃ©n es el impostor mediante preguntas y deducciones. El impostor debe pasar desapercibido sin revelar que no conoce la palabra secreta.</p>
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpSetup">Preparación</h3>
+                        <h3 data-i18n="helpSetup">PreparaciÃ³n</h3>
                         <ol>
-                            <li data-i18n="helpSetupStep1">Añade al menos 3 jugadores</li>
-                            <li data-i18n="helpSetupStep2">Selecciona el número de impostores (o activa aleatorio)</li>
-                            <li data-i18n="helpSetupStep3">Elige uno o más temas</li>
+                            <li data-i18n="helpSetupStep1">AÃ±ade al menos 3 jugadores</li>
+                            <li data-i18n="helpSetupStep2">Selecciona el nÃºmero de impostores (o activa aleatorio)</li>
+                            <li data-i18n="helpSetupStep3">Elige uno o mÃ¡s temas</li>
                             <li data-i18n="helpSetupStep4">Pulsa "Comenzar Juego"</li>
                         </ol>
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpRevelation">Revelación de Roles</h3>
-                        <p data-i18n="helpRevelationText">Cada jugador verá su rol en privado. Los civiles recibirán una palabra secreta y el tema. Los impostores solo verán que son impostores (y opcionalmente el tema).</p>
+                        <h3 data-i18n="helpRevelation">RevelaciÃ³n de Roles</h3>
+                        <p data-i18n="helpRevelationText">Cada jugador verÃ¡ su rol en privado. Los civiles recibirÃ¡n una palabra secreta y el tema. Los impostores solo verÃ¡n que son impostores (y opcionalmente el tema).</p>
                     </div>
 
                     <div class="help-section">
@@ -266,14 +266,14 @@
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpVoting">Votación</h3>
+                        <h3 data-i18n="helpVoting">VotaciÃ³n</h3>
                         <p data-i18n="helpVotingText">Cuando sospechen de alguien, pueden votar para eliminarlo. Se revela si era impostor o civil.</p>
                     </div>
 
                     <div class="help-section">
                         <h3 data-i18n="helpVictory">Victoria</h3>
                         <ul>
-                            <li data-i18n="helpVictoryImpostors">Impostores ganan: Si quedan igual o más impostores que civiles</li>
+                            <li data-i18n="helpVictoryImpostors">Impostores ganan: Si quedan igual o mÃ¡s impostores que civiles</li>
                             <li data-i18n="helpVictoryCivilians">Civiles ganan: Si eliminan a todos los impostores</li>
                         </ul>
                     </div>
@@ -281,9 +281,9 @@
                     <div class="help-section">
                         <h3 data-i18n="helpTips">Consejos</h3>
                         <ul>
-                            <li data-i18n="helpTip1">Como civil: Haz preguntas específicas sin revelar la palabra</li>
-                            <li data-i18n="helpTip2">Como impostor: Escucha atentamente y sé vago en tus respuestas</li>
-                            <li data-i18n="helpTip3">No reveles tu rol directamente, mantén el misterio</li>
+                            <li data-i18n="helpTip1">Como civil: Haz preguntas especÃ­ficas sin revelar la palabra</li>
+                            <li data-i18n="helpTip2">Como impostor: Escucha atentamente y sÃ© vago en tus respuestas</li>
+                            <li data-i18n="helpTip3">No reveles tu rol directamente, mantÃ©n el misterio</li>
                         </ul>
                     </div>
                 </div>
@@ -292,19 +292,19 @@
             <!-- Cookies Policy Screen -->
             <section id="screen-cookies" class="screen legal-screen">
                 <div class="legal-content">
-                    <button class="close-legal-btn" id="close-cookies">×</button>
-                    <h2 data-i18n="cookiesPolicy">Política de Cookies</h2>
+                    <button class="close-legal-btn" id="close-cookies">Ã—</button>
+                    <h2 data-i18n="cookiesPolicy">PolÃ­tica de Cookies</h2>
                     <div class="legal-text">
-                        <h3 data-i18n="legalCookies1">1. ¿Qué son las cookies?</h3>
-                        <p data-i18n="legalCookies1Text">Las cookies son pequeños archivos de texto que los sitios web almacenan en tu dispositivo para recordar información sobre tu visita.</p>
+                        <h3 data-i18n="legalCookies1">1. Â¿QuÃ© son las cookies?</h3>
+                        <p data-i18n="legalCookies1Text">Las cookies son pequeÃ±os archivos de texto que los sitios web almacenan en tu dispositivo para recordar informaciÃ³n sobre tu visita.</p>
 
-                        <h3 data-i18n="legalCookies2">2. Uso en esta Aplicación</h3>
-                        <p data-i18n="legalCookies2Text">Esta aplicación NO utiliza cookies tradicionales, sino LocalStorage, una tecnología similar.</p>
+                        <h3 data-i18n="legalCookies2">2. Uso en esta AplicaciÃ³n</h3>
+                        <p data-i18n="legalCookies2Text">Esta aplicaciÃ³n NO utiliza cookies tradicionales, sino LocalStorage, una tecnologÃ­a similar.</p>
 
                         <h3 data-i18n="legalCookies3">3. LocalStorage vs Cookies</h3>
-                        <p data-i18n="legalCookies3Text">LocalStorage es diferente porque los datos nunca se envían al servidor y no tienen fecha de expiración.</p>
+                        <p data-i18n="legalCookies3Text">LocalStorage es diferente porque los datos nunca se envÃ­an al servidor y no tienen fecha de expiraciÃ³n.</p>
 
-                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Ãšltima actualizaciÃ³n: Diciembre 2024</p>
                     </div>
                 </div>
             </section>
@@ -312,16 +312,16 @@
             <!-- Legal Notice Screen -->
             <section id="screen-legal-notice" class="screen legal-screen">
                 <div class="legal-content">
-                    <button class="close-legal-btn" id="close-legal-notice">×</button>
+                    <button class="close-legal-btn" id="close-legal-notice">Ã—</button>
                     <h2 data-i18n="legalNotice">Aviso Legal</h2>
                     <div class="legal-text">
-                        <h3 data-i18n="legalNotice1">1. Información General</h3>
-                        <p data-i18n="legalNotice1Text">Esta aplicación web es un proyecto de portfolio desarrollado con fines educativos y de entretenimiento.</p>
+                        <h3 data-i18n="legalNotice1">1. InformaciÃ³n General</h3>
+                        <p data-i18n="legalNotice1Text">Esta aplicaciÃ³n web es un proyecto de portfolio desarrollado con fines educativos y de entretenimiento.</p>
 
                         <h3 data-i18n="legalNotice2">2. Titularidad</h3>
-                        <p data-i18n="legalNotice2Text">Esta aplicación es propiedad de su desarrollador.</p>
+                        <p data-i18n="legalNotice2Text">Esta aplicaciÃ³n es propiedad de su desarrollador.</p>
 
-                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Ãšltima actualizaciÃ³n: Diciembre 2024</p>
                     </div>
                 </div>
             </section>
@@ -369,7 +369,7 @@
                                 </div>
                             </div>
 
-                            <!-- Botón siguiente jugador -->
+                            <!-- BotÃ³n siguiente jugador -->
                             <button id="btn-next-player" class="btn btn-primary btn-large" style="margin-top: 2rem; display: none;">
                                 <span data-i18n="nextPlayer">Siguiente Jugador</span>
                             </button>
@@ -379,7 +379,7 @@
                     <!-- Playing State -->
                     <div id="game-playing" class="game-state" style="display: none;">
                         <div class="info-box success">
-                            <h2 data-i18n="discussPhase">¡Fase de Discusión!</h2>
+                            <h2 data-i18n="discussPhase">Â¡Fase de DiscusiÃ³n!</h2>
                             <p data-i18n="discussMessage">Todos conocen su rol. Discutan y descubran al impostor.</p>
                         </div>
 
@@ -387,7 +387,7 @@
                             <p><strong data-i18n="impostorsRemaining">Impostores restantes:</strong> <span id="impostors-remaining-count-game">0</span></p>
                         </div>
 
-                        <h3 data-i18n="votingTitle" style="margin-top: 24px; margin-bottom: 16px;">Votación</h3>
+                        <h3 data-i18n="votingTitle" style="margin-top: 24px; margin-bottom: 16px;">VotaciÃ³n</h3>
                         <div class="info-box warning">
                             <p data-i18n="votingInstructions">Vota por quien creas que es el impostor</p>
                         </div>
@@ -412,7 +412,7 @@
                                     <h2 id="vote-result-title" class="player-name"></h2>
                                 </div>
 
-                                <!-- Revelación del rol con efecto dramático -->
+                                <!-- RevelaciÃ³n del rol con efecto dramÃ¡tico -->
                                 <div class="vote-result-role" id="vote-result-role">
                                     <div class="role-reveal-text" data-i18n="wasRole">Era</div>
                                     <div class="role-type" id="vote-result-message"></div>
@@ -474,10 +474,10 @@
             <!-- Voting Screen -->
             <section id="screen-voting" class="screen">
                 <div class="screen-content voting-screen-modern">
-                    <!-- Header con título -->
+                    <!-- Header con tÃ­tulo -->
                     <div class="voting-header">
                         <div class="voting-icon"><i data-lucide="vote"></i></div>
-                        <h2 data-i18n="votingTitle">Votación</h2>
+                        <h2 data-i18n="votingTitle">VotaciÃ³n</h2>
                     </div>
 
                     <!-- Card de instrucciones -->
@@ -495,7 +495,7 @@
                         <div class="counter-value" id="impostors-remaining-count">0</div>
                     </div>
 
-                    <!-- Lista de votación moderna -->
+                    <!-- Lista de votaciÃ³n moderna -->
                     <div id="voting-list" class="voting-list-modern">
                         <!-- Lista de jugadores para votar -->
                     </div>
@@ -508,17 +508,17 @@
                     <h2 data-i18n="historyTitle">Resultados</h2>
 
                     <div id="history-content" class="history-content">
-                        <!-- Podio de Estadísticas Totales -->
+                        <!-- Podio de EstadÃ­sticas Totales -->
                         <div class="total-stats-section">
                             <div class="stats-header">
-                                <h3 data-i18n="totalStats">Estadísticas Totales</h3>
+                                <h3 data-i18n="totalStats">EstadÃ­sticas Totales</h3>
                                 <button id="btn-reset-stats" class="btn btn-danger btn-small">
                                     <i data-lucide="refresh-cw"></i>
                                     <span data-i18n="resetStats">Reiniciar</span>
                                 </button>
                             </div>
                             <div id="stats-podium">
-                                <p class="empty-state" data-i18n="noStatsYet">No hay estadísticas aún</p>
+                                <p class="empty-state" data-i18n="noStatsYet">No hay estadÃ­sticas aÃºn</p>
                             </div>
                         </div>
 
@@ -535,7 +535,7 @@
                         <div class="eliminated-players">
                             <h3 data-i18n="eliminatedPlayers">Jugadores Eliminados</h3>
                             <div id="eliminated-list">
-                                <p class="empty-state" data-i18n="noEliminated">Nadie ha sido eliminado aún</p>
+                                <p class="empty-state" data-i18n="noEliminated">Nadie ha sido eliminado aÃºn</p>
                             </div>
                         </div>
                     </div>
@@ -551,22 +551,22 @@
                         <h3 data-i18n="podium">Podio</h3>
                         <div class="podium">
                             <div class="podium-place second" id="podium-2">
-                                <div class="podium-rank">2º</div>
+                                <div class="podium-rank">2Âº</div>
                                 <div class="podium-player"></div>
                             </div>
                             <div class="podium-place first" id="podium-1">
-                                <div class="podium-rank">1º</div>
+                                <div class="podium-rank">1Âº</div>
                                 <div class="podium-player"></div>
                             </div>
                             <div class="podium-place third" id="podium-3">
-                                <div class="podium-rank">3º</div>
+                                <div class="podium-rank">3Âº</div>
                                 <div class="podium-player"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="rankings-list">
-                        <h3 data-i18n="position">Clasificación</h3>
+                        <h3 data-i18n="position">ClasificaciÃ³n</h3>
                         <div id="rankings-content"></div>
                     </div>
                     <button id="btn-back-home" class="btn btn-primary btn-large">
@@ -601,7 +601,7 @@
                         </div>
 
                         <div class="folders-list" id="folders-list">
-                            <!-- Lista de carpetas generadas dinámicamente -->
+                            <!-- Lista de carpetas generadas dinÃ¡micamente -->
                         </div>
                     </div>
 
@@ -638,10 +638,10 @@
             </div>
         </div>
 
-        <!-- Modal de Éxito -->
+        <!-- Modal de Ã‰xito -->
         <div id="success-modal" class="modal-overlay">
             <div class="modal-content success-modal">
-                <h3 data-i18n="successTitle">Éxito</h3>
+                <h3 data-i18n="successTitle">Ã‰xito</h3>
                 <p id="success-message"></p>
                 <button id="success-ok-btn" class="btn btn-success" data-i18n="okButton">Entendido</button>
             </div>
@@ -650,7 +650,7 @@
         <!-- Confirm Modal -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content confirm-modal">
-                <h3 data-i18n="confirmTitle">Esta página dice</h3>
+                <h3 data-i18n="confirmTitle">Esta pÃ¡gina dice</h3>
                 <p id="confirm-message"></p>
                 <div class="modal-buttons">
                     <button id="confirm-accept-btn" class="btn btn-primary" data-i18n="acceptButton">Aceptar</button>
@@ -687,10 +687,10 @@
             <div class="modal-content">
                 <h2 id="adult-modal-title">Contenido para Adultos (+18)</h2>
                 <div class="modal-warning"><i data-lucide="alert-circle" style="width: 48px; height: 48px;"></i></div>
-                <p id="adult-modal-warning" class="modal-text">Esta categoría contiene contenido explícito y sugerente para mayores de 18 años.</p>
-                <p id="adult-modal-confirm" class="modal-text"><strong>¿Confirmas que eres mayor de 18 años y deseas activar este contenido?</strong></p>
+                <p id="adult-modal-warning" class="modal-text">Esta categorÃ­a contiene contenido explÃ­cito y sugerente para mayores de 18 aÃ±os.</p>
+                <p id="adult-modal-confirm" class="modal-text"><strong>Â¿Confirmas que eres mayor de 18 aÃ±os y deseas activar este contenido?</strong></p>
                 <div class="modal-buttons">
-                    <button id="adult-modal-yes" class="btn btn-danger">Sí, soy mayor de 18</button>
+                    <button id="adult-modal-yes" class="btn btn-danger">SÃ­, soy mayor de 18</button>
                     <button id="adult-modal-no" class="btn btn-secondary">No, cancelar</button>
                 </div>
             </div>
@@ -698,7 +698,7 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="/webs/impostor/js/app.js"></script>
 
     <script>
         // Initialize Lucide icons
