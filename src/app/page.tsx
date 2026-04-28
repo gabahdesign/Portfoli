@@ -5,7 +5,7 @@ import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
 import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
 import Image from "next/image";
 import Link from "next/link";
-import { Move, Maximize2, Gamepad2, Sparkles } from "lucide-react";
+import { Move, Maximize2, Activity, Sparkles } from "lucide-react";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
@@ -192,7 +192,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                       target="_blank"
                       className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
                     >
-                      <Gamepad2 size={20} />
+                      <Activity size={20} />
                       <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
                     </Link>
                   </div>
@@ -205,9 +205,6 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                       src="/webs/impostor/icons/logo.svg" 
                       alt="Impostor Logo" 
                       className="w-full h-auto max-w-[150px] drop-shadow-2xl animate-pulse"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/ghost.svg';
-                      }}
                     />
                   </div>
                 </div>
