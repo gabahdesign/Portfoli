@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AdminNavLink } from "./AdminNavLink";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { LogOut, Menu, X, Settings, LayoutDashboard, Building2, LayoutGrid, User2, FileText, KeyRound, BookOpen } from "lucide-react";
+import { LogOut, Menu, X, Settings, LayoutDashboard, Building2, LayoutGrid, User2, FileText, KeyRound, BookOpen, Globe } from "lucide-react";
 
 /**
  * REGLA D'OR: Aquest menú i tota l'interfície d'administració HA D'ESTAR SEMPRE EN CATALÀ.
@@ -82,6 +82,10 @@ export function AdminSidebar() {
             <AdminNavLink href="/admin/blog" onClick={() => setMobileOpen(false)}>
               <BookOpen className="w-4 h-4 mr-3" />
               Blog
+            </AdminNavLink>
+            <AdminNavLink href="/admin/webs" onClick={() => setMobileOpen(false)}>
+              <Globe className="w-4 h-4 mr-3" />
+              Projectes Web
             </AdminNavLink>
             
             <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Personal</div>
@@ -179,6 +183,10 @@ export function AdminSidebar() {
               <AdminNavLink href="/admin/blog" onClick={() => setMobileOpen(false)}>
                 <BookOpen className="w-4 h-4 mr-3" />
                 Blog
+              </AdminNavLink>
+              <AdminNavLink href="/admin/webs" onClick={() => setMobileOpen(false)}>
+                <Globe className="w-4 h-4 mr-3" />
+                Projectes Web
               </AdminNavLink>
               
               <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Personal</div>

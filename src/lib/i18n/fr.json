@@ -15,7 +15,9 @@
     "cv": "Curriculum",
     "projectes": "Projets",
     "back": "Retour",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "move": "Move",
+    "webs": "Projets Web"
   },
   "Settings": {
     "title": "Paramètres",

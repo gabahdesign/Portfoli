@@ -6,10 +6,10 @@
     --black:     #0a0a0a;
     --white:     #ffffff;
 
-    --bg-0:      #0a0a0a;
-    --bg-1:      #161616;
-    --bg-2:      #222222;
-    --bg-3:      #2e2e2e;
+    --bg-0:      #09090b;
+    --bg-1:      #141416;
+    --bg-2:      #1c1c1f;
+    --bg-3:      #27272a;
 
     --text-1:    #ffffff;
     --text-2:    #cccccc;
@@ -18,7 +18,7 @@
     --border:    rgba(255,255,255,0.10);
 
     --accent:    #ffffff;
-    --primary:   #6366f1;
+    --primary:   #156EF6;
     --danger:    #ff3b30;
     --warning:   #ffcc00;
     --success:   #30d158;
@@ -65,7 +65,7 @@ body.light-mode {
 }
 
 body {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-0);
     color: var(--text-1);
     line-height: 1.55;
@@ -77,7 +77,12 @@ body {
 
 img, svg { display: block; max-width: 100%; }
 
-h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; color: var(--text-1); }
+h1, h2, h3, h4 { 
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; 
+    letter-spacing: -0.02em; 
+    color: var(--text-1); 
+}
 
 p { color: var(--text-2); }
 

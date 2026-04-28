@@ -654,6 +654,10 @@ const config = {
 
     // Cargar configuración desde localStorage
     cargar() {
+        // Verificar parámetro de idioma en la URL (para sincronizar con el portfoli)
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get('lang');
+
         const guardado = localStorage.getItem('impostor-config');
         if (guardado) {
             try {
@@ -662,7 +666,7 @@ const config = {
                     console.warn('Versión antigua de config. Actualizando a versión ' + STORAGE_VERSION);
                     this.guardar();
                 } else {
-                    this.idioma = datos.idioma || 'es';
+                    this.idioma = langParam || datos.idioma || 'es';
                     this.modoOscuro = datos.modoOscuro || false;
                     this.temasSeleccionados = datos.temasSeleccionados || ['alimentacion', 'animales', 'lugares'];
                     this.adultosBloqueado = datos.adultosBloqueado !== false;
@@ -672,7 +676,10 @@ const config = {
             } catch (error) {
                 console.error('Error al cargar configuración:', error);
             }
+        } else if (langParam) {
+            this.idioma = langParam;
         }
+        
         this.aplicar();
     },
 

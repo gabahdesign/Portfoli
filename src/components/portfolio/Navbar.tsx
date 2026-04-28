@@ -60,6 +60,14 @@ const languages = [
   { code: "fr", label: "Français", Flag: FlagFR },
 ];
 
+function WebIcon({ className }: { className?: string }) {
+  return (
+    <div className={`flex items-center justify-center font-black rounded-lg border-2 border-current transition-all ${className}`} style={{ width: '20px', height: '20px', fontSize: '11px', lineHeight: '1' }}>
+      W
+    </div>
+  );
+}
+
 function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void; currentLocale: string; token: string }) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isPending, startTransition] = useTransition();
@@ -228,6 +236,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     { href: `/v/${token}/cv`, label: t("cv"), icon: FileText },
     { href: `/v/${token}/blog`, label: "Blog", icon: BookOpen },
     { href: `/v/${token}/move`, label: t("move"), icon: Calendar },
+    { href: `/v/${token}/webs`, label: t("webs"), icon: WebIcon },
   ];
 
   const isActive = (href: string) => {
@@ -387,6 +396,12 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
           descobreix<span style={{ color: "var(--color-accent)" }}>.</span>
         </Link>
         <div className="flex items-center gap-2 -mr-2">
+          <Link
+            href={`/v/${token}/webs`}
+            className={`p-2 transition-colors ${pathname.includes('/webs') ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}
+          >
+            <WebIcon />
+          </Link>
           {isAdmin && (
             <Link
               href="/admin/dashboard"

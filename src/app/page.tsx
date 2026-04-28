@@ -5,7 +5,7 @@ import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
 import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
 import Image from "next/image";
 import Link from "next/link";
-import { Move, Maximize2, Zap, Sparkles } from "lucide-react";
+import { Move, Maximize2, Zap, Sparkles, Download } from "lucide-react";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
@@ -189,14 +189,25 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                   </p>
                   
                   <div className="pt-4">
-                    <a 
-                      href="/webs/impostor/index.html" 
-                      target="_blank"
-                      className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
-                    >
-                      <Zap size={20} />
-                      <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
-                    </a>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                      <a 
+                        href={`/webs/impostor/index.html?lang=${locale}`} 
+                        target="_blank"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                      >
+                        <Zap size={20} />
+                        <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
+                      </a>
+                      
+                      <a 
+                        href="/webs/impostor/impostor-game.zip" 
+                        download
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                      >
+                        <Download size={20} />
+                        <span>{locale === 'ca' ? 'Descarregar App' : 'Download App'}</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
                 
@@ -206,7 +217,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                     <img 
                       src="/webs/impostor/icons/logo.svg" 
                       alt="Impostor Logo" 
-                      className="w-full h-auto max-w-[150px] drop-shadow-2xl animate-pulse"
+                      className="w-full h-auto max-w-[150px] drop-shadow-2xl animate-pulse dark:invert"
                     />
                   </div>
                 </div>

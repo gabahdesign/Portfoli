@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,10 +7,10 @@
     <meta name="theme-color" content="#000000">
     <title>Impostor</title>
 
-    <!-- Google Fonts: Outfit -->
+    <!-- Google Fonts: Space Grotesk and Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -38,13 +38,13 @@
             <div class="header-content">
                 <div class="header-logo-section">
                     <img src="/webs/impostor/icons/logo.svg" alt="Logo" class="header-logo">
-                    <span class="header-subtitle" data-i18n="homeSubtitle">Ã‚Â¿QUIÃƒâ€°N ES EL IMPOSTOR?</span>
+                    <span class="header-subtitle" data-i18n="homeSubtitle">¿QUIÉN ES EL IMPOSTOR?</span>
                 </div>
                 <div class="header-buttons">
                     <button id="header-help-btn" class="header-icon-btn" data-screen="help" aria-label="Ayuda">
                         <img src="/webs/impostor/icons/help.svg" alt="">
                     </button>
-                    <button id="header-config-btn" class="header-icon-btn" data-screen="config" aria-label="ConfiguraciÃ³n">
+                    <button id="header-config-btn" class="header-icon-btn" data-screen="config" aria-label="Configuración">
                         <img src="/webs/impostor/icons/config.svg" alt="">
                     </button>
                 </div>
@@ -63,7 +63,7 @@
                             <img src="/webs/impostor/icons/logo.svg" alt="Logo Impostor" class="home-logo-svg">
                         </div>
                         <h1 class="home-title" data-i18n="homeTitle">EL JUEGO DEL IMPOSTOR</h1>
-                        <p class="home-subtitle" data-i18n="homeSubtitle">Ã‚Â¿QuiÃ©n es el impostor?</p>
+                        <p class="home-subtitle" data-i18n="homeSubtitle">¿Quién es el impostor?</p>
                     </div>
 
                     <!-- Botones de acciÃ³n -->
@@ -79,7 +79,7 @@
                         <div class="home-support-card">
                             <div class="support-content">
                                 <div class="support-text">
-                                    <p class="support-question" data-i18n="enjoyingGame">Ã‚Â¿Te estÃ¡ gustando el juego?</p>
+                                    <p class="support-question" data-i18n="enjoyingGame">¿Te está gustando el juego?</p>
                                     <a href="https://revolut.me/gabah1998" target="_blank" class="support-link">
                                         <span data-i18n="inviteCoffee">InvÃ­tame a un cafÃ©</span>
                                     </a>
@@ -94,8 +94,8 @@
                     <div class="home-footer">
                         <img src="/webs/impostor/icons/help.svg" alt="Contacto" class="footer-icon">
                         <p class="footer-text">
-                            <span data-i18n="suggestion">Ã‚Â¿Alguna sugerencia?</span>
-                            <a href="mailto:gabahdesign98@gmail.com" class="footer-link" data-i18n="talkToUs">Ã‚Â¡Hablemos!</a>
+                            <span data-i18n="suggestion">¿Alguna sugerencia?</span>
+                            <a href="mailto:gabahdesign98@gmail.com" class="footer-link" data-i18n="talkToUs">¡Hablemos!</a>
                         </p>
                     </div>
                 </div>
@@ -110,8 +110,8 @@
                         <datalist id="player-names-suggestions"></datalist>
                         <input type="text" id="input-player-name" placeholder="Nombre del jugador"
                                data-i18n-placeholder="playerNamePlaceholder" maxlength="20" list="player-names-suggestions">
-                        <button id="btn-add-player" class="btn btn-primary">
-                            <span data-i18n="addPlayer">AÃ±adir</span>
+                        <button id="btn-add-player" class="btn btn-primary btn-icon-only">
+                            <span data-i18n="addPlayer">Añadir</span>
                         </button>
                     </div>
 
@@ -140,23 +140,23 @@
             <!-- Config Screen -->
             <section id="screen-config" class="screen">
                 <div class="screen-content">
-                    <h2 data-i18n="configTitle">ConfiguraciÃ³n</h2>
+                    <h2 data-i18n="configTitle">Configuración</h2>
 
                     <!-- ConfiguraciÃ³n del Juego -->
                     <div class="config-section">
-                        <h3 data-i18n="gameSettingsTitle">ConfiguraciÃ³n del Juego</h3>
+                        <h3 data-i18n="gameSettingsTitle">Configuración del Juego</h3>
 
                         <!-- Temas -->
                         <div class="config-subsection">
                             <h4 data-i18n="themesTitle">Temas</h4>
                             <div class="themes-grid" id="themes-grid">
-                                <!-- Temas generados dinÃ¡micamente -->
+                                <!-- Temas generados dinámicamente -->
                             </div>
                         </div>
 
                         <!-- Impostor sin pistas -->
                         <div class="config-subsection">
-                            <h4 data-i18n="impostorSettingsTitle">ConfiguraciÃ³n de Impostor</h4>
+                            <h4 data-i18n="impostorSettingsTitle">Configuración de Impostor</h4>
                             <label class="toggle-container">
                                 <input type="checkbox" id="hide-theme-toggle">
                                 <span class="toggle-slider"></span>
@@ -180,16 +180,16 @@
                         <h3 data-i18n="languageTitle">Idioma</h3>
                         <div class="language-selector-custom">
                             <div class="language-option" data-lang="es">
-                                <img src="/webs/impostor/icons/banderas/spanish.svg" alt="EspaÃ±ol" class="flag-icon">
-                                <span>EspaÃ±ol</span>
+                                <img src="/webs/impostor/icons/banderas/spanish.svg" alt="Español" class="flag-icon">
+                                <span>Español</span>
                             </div>
                             <div class="language-option" data-lang="en">
                                 <img src="/webs/impostor/icons/banderas/english.svg" alt="English" class="flag-icon">
                                 <span>English</span>
                             </div>
                             <div class="language-option" data-lang="ca">
-                                <img src="/webs/impostor/icons/banderas/catalan.svg" alt="CatalÃ " class="flag-icon">
-                                <span>CatalÃ </span>
+                                <img src="/webs/impostor/icons/banderas/catalan.svg" alt="Català" class="flag-icon">
+                                <span>Català</span>
                             </div>
                         </div>
                     </div>
@@ -199,10 +199,10 @@
                         <h3 data-i18n="legalTitle">Legal</h3>
                         <div class="legal-buttons">
                             <button class="btn btn-secondary btn-legal" id="btn-privacy-policy">
-                                <span data-i18n="privacyPolicy">PolÃ­tica de Privacidad</span>
+                                <span data-i18n="privacyPolicy">Política de Privacidad</span>
                             </button>
                             <button class="btn btn-secondary btn-legal" id="btn-cookies">
-                                <span data-i18n="cookiesPolicy">PolÃ­tica de Cookies</span>
+                                <span data-i18n="cookiesPolicy">Política de Cookies</span>
                             </button>
                             <button class="btn btn-secondary btn-legal" id="btn-legal-notice">
                                 <span data-i18n="legalNotice">Aviso Legal</span>
@@ -216,21 +216,21 @@
             <section id="screen-privacy-policy" class="screen legal-screen">
                 <div class="legal-content">
                     <button class="close-legal-btn" id="close-privacy-policy">Ã—</button>
-                    <h2 data-i18n="privacyPolicy">PolÃ­tica de Privacidad</h2>
+                    <h2 data-i18n="privacyPolicy">Política de Privacidad</h2>
                     <div class="legal-text">
-                        <h3 data-i18n="legalPrivacy1">1. InformaciÃ³n General</h3>
-                        <p data-i18n="legalPrivacy1Text">Esta aplicaciÃ³n web ("Juego del Impostor") respeta tu privacidad y se compromete a proteger cualquier informaciÃ³n personal que puedas proporcionar.</p>
+                        <h3 data-i18n="legalPrivacy1">1. Información General</h3>
+                        <p data-i18n="legalPrivacy1Text">Esta aplicación web ("Juego del Impostor") respeta tu privacidad y se compromete a proteger cualquier información personal que puedas proporcionar.</p>
 
                         <h3 data-i18n="legalPrivacy2">2. Datos Recopilados</h3>
-                        <p data-i18n="legalPrivacy2Text">Esta aplicaciÃ³n NO recopila, almacena ni transmite datos personales a servidores externos. Toda la informaciÃ³n se almacena localmente en tu dispositivo mediante LocalStorage.</p>
+                        <p data-i18n="legalPrivacy2Text">Esta aplicación NO recopila, almacena ni transmite datos personales a servidores externos. Toda la información se almacena localmente en tu dispositivo mediante LocalStorage.</p>
 
                         <h3 data-i18n="legalPrivacy3">3. Almacenamiento Local</h3>
-                        <p data-i18n="legalPrivacy3Text">La aplicaciÃ³n utiliza LocalStorage del navegador para guardar preferencias, temas y configuraciones. Estos datos permanecen en tu dispositivo.</p>
+                        <p data-i18n="legalPrivacy3Text">La aplicación utiliza LocalStorage del navegador para guardar preferencias, temas y configuraciones. Estos datos permanecen en tu dispositivo.</p>
 
                         <h3 data-i18n="legalPrivacy4">4. Cookies</h3>
-                        <p data-i18n="legalPrivacy4Text">Esta aplicaciÃ³n NO utiliza cookies de terceros ni de seguimiento. Solo almacenamiento local.</p>
+                        <p data-i18n="legalPrivacy4Text">Esta aplicación NO utiliza cookies de terceros ni de seguimiento. Solo almacenamiento local.</p>
 
-                        <p class="legal-update" data-i18n="legalPrivacyUpdate">ÃƒÅ¡ltima actualizaciÃ³n: Diciembre 2024</p>
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: 28/04/2026</p>
                     </div>
                 </div>
             </section>
@@ -238,26 +238,26 @@
             <!-- Help Screen -->
             <section id="screen-help" class="screen">
                 <div class="screen-content help-content">
-                    <h2 data-i18n="helpTitle">CÃ³mo Jugar</h2>
+                    <h2 data-i18n="helpTitle">Cómo Jugar</h2>
 
                     <div class="help-section">
                         <h3 data-i18n="helpObjective">Objetivo del Juego</h3>
-                        <p data-i18n="helpObjectiveText">Los civiles deben descubrir quiÃ©n es el impostor mediante preguntas y deducciones. El impostor debe pasar desapercibido sin revelar que no conoce la palabra secreta.</p>
+                        <p data-i18n="helpObjectiveText">Los civiles deben descubrir quién es el impostor mediante preguntas y deducciones. El impostor debe pasar desapercibido sin revelar que no conoce la palabra secreta.</p>
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpSetup">PreparaciÃ³n</h3>
+                        <h3 data-i18n="helpSetup">Preparación</h3>
                         <ol>
-                            <li data-i18n="helpSetupStep1">AÃ±ade al menos 3 jugadores</li>
+                            <li data-i18n="helpSetupStep1">Añade al menos 3 jugadores</li>
                             <li data-i18n="helpSetupStep2">Selecciona el nÃºmero de impostores (o activa aleatorio)</li>
-                            <li data-i18n="helpSetupStep3">Elige uno o mÃ¡s temas</li>
+                            <li data-i18n="helpSetupStep3">Elige uno o más temas</li>
                             <li data-i18n="helpSetupStep4">Pulsa "Comenzar Juego"</li>
                         </ol>
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpRevelation">RevelaciÃ³n de Roles</h3>
-                        <p data-i18n="helpRevelationText">Cada jugador verÃ¡ su rol en privado. Los civiles recibirÃ¡n una palabra secreta y el tema. Los impostores solo verÃ¡n que son impostores (y opcionalmente el tema).</p>
+                        <h3 data-i18n="helpRevelation">Revelación de Roles</h3>
+                        <p data-i18n="helpRevelationText">Cada jugador verá su rol en privado. Los civiles recibirán una palabra secreta y el tema. Los impostores solo verán que son impostores (y opcionalmente el tema).</p>
                     </div>
 
                     <div class="help-section">
@@ -266,7 +266,7 @@
                     </div>
 
                     <div class="help-section">
-                        <h3 data-i18n="helpVoting">VotaciÃ³n</h3>
+                        <h3 data-i18n="helpVoting">Votación</h3>
                         <p data-i18n="helpVotingText">Cuando sospechen de alguien, pueden votar para eliminarlo. Se revela si era impostor o civil.</p>
                     </div>
 
@@ -281,7 +281,7 @@
                     <div class="help-section">
                         <h3 data-i18n="helpTips">Consejos</h3>
                         <ul>
-                            <li data-i18n="helpTip1">Como civil: Haz preguntas especÃ­ficas sin revelar la palabra</li>
+                            <li data-i18n="helpTip1">Como civil: Haz preguntas específicas sin revelar la palabra</li>
                             <li data-i18n="helpTip2">Como impostor: Escucha atentamente y sÃ© vago en tus respuestas</li>
                             <li data-i18n="helpTip3">No reveles tu rol directamente, mantÃ©n el misterio</li>
                         </ul>
@@ -304,7 +304,7 @@
                         <h3 data-i18n="legalCookies3">3. LocalStorage vs Cookies</h3>
                         <p data-i18n="legalCookies3Text">LocalStorage es diferente porque los datos nunca se envÃ­an al servidor y no tienen fecha de expiraciÃ³n.</p>
 
-                        <p class="legal-update" data-i18n="legalPrivacyUpdate">ÃƒÅ¡ltima actualizaciÃ³n: Diciembre 2024</p>
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: 28/04/2026</p>
                     </div>
                 </div>
             </section>
@@ -681,22 +681,8 @@
             </div>
         </nav>
 
-        <!-- Adult Content Modal -->
-        <div id="modal-overlay" class="modal-overlay"></div>
-        <div id="adult-content-modal" class="modal adult-modal">
-            <div class="modal-content">
-                <h2 id="adult-modal-title">Contenido para Adultos (+18)</h2>
-                <div class="modal-warning"><i data-lucide="alert-circle" style="width: 48px; height: 48px;"></i></div>
-                <p id="adult-modal-warning" class="modal-text">Esta categorÃ­a contiene contenido explÃ­cito y sugerente para mayores de 18 aÃ±os.</p>
-                <p id="adult-modal-confirm" class="modal-text"><strong>Â¿Confirmas que eres mayor de 18 aÃ±os y deseas activar este contenido?</strong></p>
-                <div class="modal-buttons">
-                    <button id="adult-modal-yes" class="btn btn-danger">SÃ­, soy mayor de 18</button>
-                    <button id="adult-modal-no" class="btn btn-secondary">No, cancelar</button>
-                </div>
-            </div>
-        </div>
     </div>
-
+    
     <!-- Scripts -->
     <script type="module" src="/webs/impostor/js/app.js"></script>
 

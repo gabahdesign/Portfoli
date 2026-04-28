@@ -26,8 +26,8 @@
 .btn:active:not(:disabled) { transform: scale(0.96); }
 .btn:disabled              { opacity: 0.4; cursor: not-allowed; }
 
-.btn-primary   { background: var(--white); color: var(--black); }
-body.light-mode .btn-primary { background: var(--black); color: var(--white); }
+.btn-primary   { background: var(--primary); color: var(--white); }
+body.light-mode .btn-primary { background: var(--primary); color: var(--white); }
 
 .btn-secondary { background: var(--bg-2); color: var(--text-1); border: 1px solid var(--border); }
 
@@ -192,39 +192,60 @@ body.light-mode .select-input {
 .modal-content {
     background: var(--bg-1);
     border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: var(--sp-xl) var(--sp-lg);
-    width: 100%;
-    max-width: 360px;
+    border-radius: 32px;
+    padding: var(--sp-lg) var(--sp-lg);
+    width: 90%;
+    max-width: 400px;
     display: flex;
     flex-direction: column;
-    gap: var(--sp-md);
+    gap: var(--sp-sm);
     box-shadow: var(--shadow2);
+    animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .modal-content h3 {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: var(--text-1);
+    margin-bottom: var(--sp-xs);
+    display: none; /* Hide title by default for simple alerts */
+}
+
+.modal-content.has-title h3 {
+    display: block;
 }
 
 .modal-content p {
-    color: var(--text-2);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    color: var(--text-1);
+    font-size: 1.05rem;
+    line-height: 1.4;
+    text-align: left;
+    margin-bottom: var(--sp-md);
 }
 
 .modal-buttons {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: var(--sp-sm);
-    margin-top: var(--sp-md);
+    margin-top: var(--sp-sm);
 }
 
 .modal-buttons .btn { 
-    flex: 1; 
-    min-width: 140px; 
-    padding: var(--sp-sm) var(--sp-md);
-    font-size: 0.85rem;
+    min-width: 100px; 
+    padding: 12px 28px;
+    font-size: 0.9rem;
+    border-radius: var(--r-full);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.error-modal .btn-primary {
+    background: #8fb9f4; /* Light blue from screenshot */
+    color: #000;
 }
 
 /* Adult modal */
@@ -392,7 +413,7 @@ body.light-mode .select-input {
 /* ---- Themes grid ---- */
 .themes-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: var(--sp-sm);
 }
 

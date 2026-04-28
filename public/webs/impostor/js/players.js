@@ -5,6 +5,7 @@
 
 import { config } from './config.js';
 import { gestorJuego } from './game.js';
+import { modalManager } from './modal.js';
 
 const gestorJugadores = {
     jugadores: [],
@@ -19,12 +20,12 @@ const gestorJugadores = {
 
         // Validaciones
         if (nombre === '') {
-            alert(config.t('playerNameEmpty'));
+            modalManager.showError(config.t('playerNameEmpty'));
             return false;
         }
 
         if (this.existe(nombre)) {
-            alert(config.t('playerExists'));
+            modalManager.showError(config.t('playerExists'));
             return false;
         }
 
@@ -136,7 +137,7 @@ const gestorJugadores = {
         }
 
         if (limpio !== antiguoNombre && this.existe(limpio)) {
-            alert(config.t('playerExists'));
+            modalManager.showError(config.t('playerExists'));
             this.actualizarUI();
             return;
         }
@@ -600,12 +601,12 @@ function initJugadores() {
     const btnIniciar = document.getElementById('btn-start-game');
     btnIniciar.addEventListener('click', () => {
         if (gestorJugadores.cantidad() < 3) {
-            alert(config.t('minPlayersError'));
+            modalManager.showError(config.t('minPlayersError'));
             return;
         }
 
         if (!config.hayTemasSeleccionados()) {
-            alert(config.t('selectThemeError'));
+            modalManager.showError(config.t('selectThemeError'));
             return;
         }
 
