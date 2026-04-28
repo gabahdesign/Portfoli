@@ -3,17 +3,21 @@
  * Permite funcionamiento offline y mejora el rendimiento
  */
 
-const CACHE_NAME = 'impostor-game-v1.0.0';
+const CACHE_NAME = 'impostor-game-v1.0.1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/styles.css',
-    '/js/app.js',
-    '/js/config.js',
-    '/js/data.js',
-    '/js/game.js',
-    '/js/players.js',
-    '/manifest.json'
+    '/webs/impostor/',
+    '/webs/impostor/index.html',
+    '/webs/impostor/css/base.css',
+    '/webs/impostor/css/layout.css',
+    '/webs/impostor/css/components.css',
+    '/webs/impostor/css/screens.css',
+    '/webs/impostor/js/app.js',
+    '/webs/impostor/js/config.js',
+    '/webs/impostor/js/data.js',
+    '/webs/impostor/js/game.js',
+    '/webs/impostor/js/players.js',
+    '/webs/impostor/js/router.js',
+    '/webs/impostor/manifest.json'
 ];
 
 // Instalación del Service Worker

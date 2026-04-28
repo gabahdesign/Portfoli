@@ -623,6 +623,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
     router.init();
 
+    // Inicializar iconos de Lucide
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
     // Mensaje de bienvenida en consola
     console.log('%c🕵️ Juego del Impostor', 'font-size: 24px; font-weight: bold; color: #6366f1;');
     console.log('%cDesarrollado con JavaScript Vanilla', 'font-size: 14px; color: #10b981;');
