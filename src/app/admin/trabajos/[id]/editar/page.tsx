@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, 
   ChevronDown, Check, Building2, Upload, FileText, Loader2, Sparkles,
-  Palette, Calendar, Hash, Type, Trash2, Globe, Layout, Maximize2, X
+  Palette, Calendar, Hash, Type, Trash2, Globe, Layout, Maximize2, X, Plus
 } from "lucide-react";
 import { BlockBuilder, Block } from "@/components/admin/block-builder/BlockBuilder";
 import { PREDEFINED_TAGS } from "@/lib/constants";
@@ -14,19 +14,21 @@ import { clsx } from "clsx";
 
 // REUSABLE DROPZONE COMPONENT
 function DropZone({ 
-  onFileDrop, 
+  onFilesDrop, 
   isUploading, 
   currentUrl, 
   label, 
   accept = "image/*,video/*",
-  icon: Icon = Upload
+  icon: Icon = Upload,
+  multiple = false
 }: { 
-  onFileDrop: (file: File) => void, 
+  onFilesDrop: (files: File[]) => void, 
   isUploading: boolean, 
   currentUrl?: string, 
   label: string,
   accept?: string,
-  icon?: any
+  icon?: any,
+  multiple?: boolean
 }) {
   const [isOver, setIsOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,8 +41,8 @@ function DropZone({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) onFileDrop(file);
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length > 0) onFilesDrop(multiple ? files : [files[0]]);
   };
 
   return (
@@ -55,9 +57,9 @@ function DropZone({
         isOver ? "bg-[var(--color-accent)]/10 border-[var(--color-accent)] scale-[1.02] shadow-2xl" : "bg-[var(--color-surface)]/30 border-[var(--color-border)] hover:border-[var(--color-accent)]/50"
       )}
     >
-      <input type="file" ref={inputRef} accept={accept} className="hidden" onChange={(e) => {
-        const file = e.target.files?.[0];
-        if (file) onFileDrop(file);
+      <input type="file" ref={inputRef} accept={accept} multiple={multiple} className="hidden" onChange={(e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length > 0) onFilesDrop(multiple ? files : [files[0]]);
       }} />
       
       {isUploading ? (
@@ -255,19 +257,24 @@ export default function EditWorkPage() {
     });
   };
 
-  const processFileUpload = async (file: File, field: 'cover_url' | 'pdf_url') => {
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  const processFileUpload = async (files: File | File[], field: 'cover_url' | 'pdf_url') => {
+    const filesArray = Array.isArray(files) ? files : [files];
+    if (filesArray.length === 0) return;
+
+    const isPdf = filesArray[0].type === 'application/pdf' || filesArray[0].name.toLowerCase().endsWith('.pdf');
     
     // Check file size limit (Supabase Free Plan is typically 50MB)
     const MAX_MB = 48; // A bit less than 50 to be safe
-    if (file.size > MAX_MB * 1024 * 1024 && isPdf) {
-      alert(`El fitxer és massa gran (${(file.size / 1024 / 1024).toFixed(1)}MB). El límit és de ${MAX_MB}MB. Si us plau, optimitza el PDF abans de pujar-lo.`);
-      return;
+    for (const file of filesArray) {
+      if (file.size > MAX_MB * 1024 * 1024 && isPdf) {
+        alert(`El fitxer "${file.name}" és massa gran (${(file.size / 1024 / 1024).toFixed(1)}MB). El límit és de ${MAX_MB}MB.`);
+        return;
+      }
     }
 
     if (field === 'cover_url' && isPdf) {
       if (confirm("Vols posar aquest PDF com a ARXIU adjunt en lloc de portada?")) {
-        return processFileUpload(file, 'pdf_url');
+        return processFileUpload(filesArray, 'pdf_url');
       }
     }
 
@@ -275,23 +282,46 @@ export default function EditWorkPage() {
     else setUploadingPdf(true);
 
     try {
-      // Compress if it's an image
-      let fileToUpload = file;
-      if (field === 'cover_url' && !isPdf) {
-        showToast("Optimitzant imatge...", "success");
-        fileToUpload = await compressImage(file) as File;
+      const uploadedUrls: string[] = [];
+
+      for (const fileToProcess of filesArray) {
+        // Compress if it's an image
+        let fileToUpload = fileToProcess;
+        if (field === 'cover_url' && !isPdf) {
+          showToast(`Optimitzant ${fileToProcess.name}...`, "success");
+          fileToUpload = await compressImage(fileToProcess) as File;
+        }
+
+        const ext = fileToUpload.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const filePath = `works/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage.from("portfolio-media").upload(filePath, fileToUpload);
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
+        uploadedUrls.push(data.publicUrl);
       }
 
-      const ext = fileToUpload.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const filePath = `works/${fileName}`;
+      setFormData(prev => {
+        if (field === 'pdf_url') {
+          // Handle multiple PDFs
+          const currentUrls = (() => {
+            if (!prev.pdf_url) return [];
+            try {
+              if (prev.pdf_url.startsWith('[') && prev.pdf_url.endsWith(']')) return JSON.parse(prev.pdf_url);
+              return [prev.pdf_url];
+            } catch { return [prev.pdf_url]; }
+          })();
+          const newUrls = [...currentUrls, ...uploadedUrls];
+          return { ...prev, pdf_url: newUrls.length === 1 ? newUrls[0] : JSON.stringify(newUrls) };
+        } else {
+          // Cover URL (only one)
+          return { ...prev, [field]: uploadedUrls[0] };
+        }
+      });
 
-      const { error: uploadError } = await supabase.storage.from("portfolio-media").upload(filePath, fileToUpload);
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
-      setFormData(prev => ({ ...prev, [field]: data.publicUrl }));
-      showToast("Pujat correctament!", "success");
+      showToast(filesArray.length > 1 ? "Pujats correctament!" : "Pujat correctament!", "success");
     } catch (err: any) {
       showToast("Error: " + err.message, "error");
     } finally {
@@ -418,7 +448,7 @@ export default function EditWorkPage() {
                 <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Miniatura del Projecte (Llistat)</label>
                 {!formData.cover_url ? (
                   <DropZone 
-                    onFileDrop={(f) => processFileUpload(f, 'cover_url')} 
+                    onFilesDrop={(f) => processFileUpload(f, 'cover_url')} 
                     isUploading={uploadingCover} 
                     label="Pujar Miniatura"
                     icon={Upload}
@@ -443,27 +473,51 @@ export default function EditWorkPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Arxiu PDF / Lectura</label>
-                <div className="flex items-center gap-2 mb-4">
-                   <div className={clsx("flex-1 p-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl flex items-center gap-3", !formData.pdf_url && "opacity-30")}>
-                      <FileText size={16} className="text-red-500" />
-                      <span className="text-[10px] font-bold truncate max-w-[200px]">{formData.pdf_url ? "Fitxer Adjunt" : "Cap fitxer"}</span>
-                   </div>
-                   {formData.pdf_url && (
-                     <button onClick={() => setFormData(p => ({...p, pdf_url: ''}))} className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-colors">
-                        <Trash2 size={16} />
-                     </button>
-                   )}
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Arxius PDF / Lectura</label>
+                <div className="space-y-3 mb-6">
+                  {(() => {
+                    const urls = (() => {
+                      if (!formData.pdf_url) return [];
+                      try {
+                        if (formData.pdf_url.startsWith('[') && formData.pdf_url.endsWith(']')) return JSON.parse(formData.pdf_url);
+                        return [formData.pdf_url];
+                      } catch { return [formData.pdf_url]; }
+                    })();
+                    
+                    return urls.map((url: string, idx: number) => (
+                      <div key={idx} className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="flex-1 p-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl flex items-center gap-3 group">
+                           <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
+                             <FileText size={14} />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                             <p className="text-[10px] font-bold truncate text-[var(--color-text)] opacity-80">
+                               {url.split('/').pop()?.split('-').slice(1).join('-') || "Document PDF"}
+                             </p>
+                           </div>
+                           <button 
+                             onClick={() => {
+                               const newUrls = urls.filter((_: any, i: number) => i !== idx);
+                               setFormData(p => ({ ...p, pdf_url: newUrls.length === 0 ? "" : (newUrls.length === 1 ? newUrls[0] : JSON.stringify(newUrls)) }));
+                             }} 
+                             className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-colors opacity-0 group-hover:opacity-100"
+                           >
+                             <Trash2 size={14} />
+                           </button>
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
-                {!formData.pdf_url && (
-                  <DropZone 
-                    onFileDrop={(f) => processFileUpload(f, 'pdf_url')} 
-                    isUploading={uploadingPdf} 
-                    label="Adjuntar PDF"
-                    accept="application/pdf"
-                    icon={FileText}
-                  />
-                )}
+
+                <DropZone 
+                  onFilesDrop={(f) => processFileUpload(f, 'pdf_url')} 
+                  isUploading={uploadingPdf} 
+                  label="Afegir PDF"
+                  accept="application/pdf"
+                  icon={FileText}
+                  multiple={true}
+                />
               </div>
 
               <div>

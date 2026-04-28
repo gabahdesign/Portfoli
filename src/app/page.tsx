@@ -5,7 +5,7 @@ import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
 import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
 import Image from "next/image";
 import Link from "next/link";
-import { Move, Maximize2 } from "lucide-react";
+import { Move, Maximize2, Gamepad2, Sparkles } from "lucide-react";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
@@ -160,6 +160,60 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
               </div>
             </section>
           )}
+
+          {/* 4. IMPOSTOR GAME BANNER */}
+          <section className="mt-40 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-[var(--color-accent)] to-[#AF52F2] rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[2rem] p-8 md:p-12 overflow-hidden">
+              {/* Background Decoration */}
+              <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-[var(--color-accent)]/5 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-64 h-64 bg-[#AF52F2]/5 rounded-full blur-3xl" />
+              
+              <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
+                <div className="flex-1 space-y-6 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-[0.2em]">
+                    <Sparkles size={12} />
+                    <span>Experimental AI Project</span>
+                  </div>
+                  
+                  <h2 className="text-4xl md:text-6xl font-black text-[var(--color-text)] tracking-tighter">
+                    {locale === 'ca' ? "Joc de l'Impostor" : "The Impostor Game"}
+                  </h2>
+                  
+                  <p className="text-lg md:text-xl text-[var(--color-muted)] leading-relaxed max-w-xl mx-auto md:mx-0">
+                    {locale === 'ca' 
+                      ? "Un joc d'intriga i deducció social totalment creat amb intel·ligència artificial. Posa a prova la teva capacitat d'engany."
+                      : "A game of intrigue and social deduction entirely created with artificial intelligence. Test your ability to deceive."}
+                  </p>
+                  
+                  <div className="pt-4">
+                    <Link 
+                      href="/webs/impostor/index.html" 
+                      target="_blank"
+                      className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-text)] text-[var(--color-bg)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                    >
+                      <Gamepad2 size={20} />
+                      <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
+                    </Link>
+                  </div>
+                </div>
+                
+                <div className="w-full md:w-1/3 aspect-square relative group-hover:rotate-3 transition-transform duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/20 to-transparent rounded-3xl blur-xl" />
+                  <div className="relative w-full h-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl flex items-center justify-center p-8 shadow-2xl overflow-hidden">
+                    <img 
+                      src="/webs/impostor/icons/logo.svg" 
+                      alt="Impostor Logo" 
+                      className="w-full h-auto max-w-[150px] drop-shadow-2xl animate-pulse"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/ghost.svg';
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
         </div>
       </main>

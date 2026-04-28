@@ -1,0 +1,194 @@
+/* ============================================
+   LAYOUT.CSS — App shell, header, nav, screens
+   ============================================ */
+
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-0);
+    position: relative;
+}
+
+@media (min-width: 500px) {
+    .app-container {
+        box-shadow: 0 0 0 1px var(--border), var(--shadow2);
+    }
+}
+
+/* ---- Header ---- */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--sp-lg);
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: opacity 0.3s, height 0.3s;
+}
+
+body.light-mode .app-header {
+    background: rgba(242,242,247,0.85);
+}
+
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-logo-section {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+}
+
+.header-logo {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.header-subtitle {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+}
+
+.header-buttons {
+    display: flex;
+    gap: var(--sp-sm);
+}
+
+.header-icon-btn {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--r-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-1);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.header-icon-btn:hover  { background: var(--bg-3); transform: translateY(-1px); }
+.header-icon-btn:active { transform: scale(0.92); }
+
+.header-icon-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* ---- Main content ---- */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: var(--nav-h);
+    scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar { display: none; }
+
+/* ---- Screens ---- */
+.screen {
+    display: none;
+    animation: fadeUp 0.3s ease-out both;
+}
+
+.screen.active {
+    display: block !important;
+}
+
+#screen-home.active {
+    display: flex !important;
+    flex-direction: column;
+    min-height: calc(100dvh - var(--nav-h));
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.screen-content {
+    padding: var(--sp-lg);
+    padding-bottom: var(--sp-xl);
+}
+
+/* ---- Bottom nav ---- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: var(--nav-h);
+    background: rgba(10,10,10,0.90);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    z-index: 300;
+}
+
+body.light-mode .bottom-nav {
+    background: rgba(242,242,247,0.90);
+}
+
+body.hide-bottom-nav .bottom-nav {
+    display: none;
+}
+
+.nav-content {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 var(--sp-sm);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: var(--sp-sm) var(--sp-md);
+    border-radius: var(--r-md);
+}
+
+.nav-item.active { color: var(--text-1); }
+.nav-item:active { opacity: 0.7; }
+
+.nav-icon img {
+    width: 22px;
+    height: 22px;
+}
+
+.nav-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: inherit;
+}

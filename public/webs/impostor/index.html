@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Juego del Impostor - Encuentra al impostor entre los jugadores">
+    <meta name="theme-color" content="#000000">
+    <title>Impostor</title>
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="icons/logo.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/screens.css">
+</head>
+<body>
+    <!-- Main Container -->
+    <div id="app" class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-logo-section">
+                    <img src="icons/logo.svg" alt="Logo" class="header-logo">
+                    <span class="header-subtitle" data-i18n="homeSubtitle">¿QUIÉN ES EL IMPOSTOR?</span>
+                </div>
+                <div class="header-buttons">
+                    <button id="header-help-btn" class="header-icon-btn" data-screen="help" aria-label="Ayuda">
+                        <img src="icons/help.svg" alt="">
+                    </button>
+                    <button id="header-config-btn" class="header-icon-btn" data-screen="config" aria-label="Configuración">
+                        <img src="icons/config.svg" alt="">
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="main-content">
+
+            <!-- Home Screen -->
+            <section id="screen-home" class="screen active">
+                <div class="home-container-new">
+                    <!-- Logo y título central -->
+                    <div class="home-logo-section">
+                        <div class="home-logo-circle">
+                            <img src="icons/logo.svg" alt="Logo Impostor" class="home-logo-svg">
+                        </div>
+                        <h1 class="home-title" data-i18n="homeTitle">EL JUEGO DEL IMPOSTOR</h1>
+                        <p class="home-subtitle" data-i18n="homeSubtitle">¿Quién es el impostor?</p>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="home-buttons">
+                        <button id="btn-new-game" class="btn-home btn-home-primary">
+                            <span data-i18n="newGame">Nueva Partida</span>
+                        </button>
+
+                        <button id="btn-online-game" class="btn-home btn-home-secondary" hidden aria-label="Partida En Línea (no disponible)">
+                            <span data-i18n="onlineGame">Partida En Línea</span>
+                        </button>
+
+                        <div class="home-support-card">
+                            <div class="support-content">
+                                <div class="support-text">
+                                    <p class="support-question" data-i18n="enjoyingGame">¿Te está gustando el juego?</p>
+                                    <a href="https://revolut.me/gabah1998" target="_blank" class="support-link">
+                                        <span data-i18n="inviteCoffee">Invítame a un café</span>
+                                    </a>
+                                </div>
+                                <img src="icons/dinero.svg" alt="Donar" class="support-icon">
+                            </div>
+                            <p class="support-description" data-i18n="supportDescription">El dinero se destinará exclusivamente a mantener los servidores y hacer que el juego siga siendo gratis</p>
+                        </div>
+                    </div>
+
+                    <!-- Footer con contacto -->
+                    <div class="home-footer">
+                        <img src="icons/help.svg" alt="Contacto" class="footer-icon">
+                        <p class="footer-text">
+                            <span data-i18n="suggestion">¿Alguna sugerencia?</span>
+                            <a href="mailto:gabahdesign98@gmail.com" class="footer-link" data-i18n="talkToUs">¡Hablemos!</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Players Screen -->
+            <section id="screen-players" class="screen">
+                <div class="screen-content">
+                    <h2 data-i18n="playersTitle">Jugadores</h2>
+
+                    <div class="add-player-form">
+                        <datalist id="player-names-suggestions"></datalist>
+                        <input type="text" id="input-player-name" placeholder="Nombre del jugador"
+                               data-i18n-placeholder="playerNamePlaceholder" maxlength="20" list="player-names-suggestions">
+                        <button id="btn-add-player" class="btn btn-primary">
+                            <span data-i18n="addPlayer">Añadir</span>
+                        </button>
+                    </div>
+
+                    <div class="players-list" id="players-list">
+                        <p class="empty-state" data-i18n="noPlayers">No hay jugadores aún</p>
+                    </div>
+
+                    <div class="impostor-config">
+                        <label for="impostor-count" data-i18n="impostorCount">Número de impostores:</label>
+                        <select id="impostor-count" class="select-input">
+                            <option value="1">1</option>
+                        </select>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="random-impostors" class="checkbox-input">
+                            <span data-i18n="randomImpostors">Número aleatorio</span>
+                        </label>
+                    </div>
+
+                    <button id="btn-start-game" class="btn btn-success btn-large" disabled>
+                        <span data-i18n="startGame">Comenzar Juego</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Config Screen -->
+            <section id="screen-config" class="screen">
+                <div class="screen-content">
+                    <h2 data-i18n="configTitle">Configuración</h2>
+
+                    <!-- Configuración del Juego -->
+                    <div class="config-section">
+                        <h3 data-i18n="gameSettingsTitle">Configuración del Juego</h3>
+
+                        <!-- Temas -->
+                        <div class="config-subsection">
+                            <h4 data-i18n="themesTitle">Temas</h4>
+                            <div class="themes-grid" id="themes-grid">
+                                <!-- Temas generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Impostor sin pistas -->
+                        <div class="config-subsection">
+                            <h4 data-i18n="impostorSettingsTitle">Configuración de Impostor</h4>
+                            <label class="toggle-container">
+                                <input type="checkbox" id="hide-theme-toggle">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label" data-i18n="hideThemeFromImpostor">Impostor sin pistas (no ve el tema)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Apariencia -->
+                    <div class="config-section">
+                        <h3 data-i18n="appearanceTitle">Apariencia</h3>
+                        <label class="toggle-container">
+                            <input type="checkbox" id="dark-mode-toggle">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label" data-i18n="darkMode">Modo Oscuro</span>
+                        </label>
+                    </div>
+
+                    <!-- Idioma -->
+                    <div class="config-section">
+                        <h3 data-i18n="languageTitle">Idioma</h3>
+                        <div class="language-selector-custom">
+                            <div class="language-option" data-lang="es">
+                                <img src="icons/banderas/spanish.svg" alt="Español" class="flag-icon">
+                                <span>Español</span>
+                            </div>
+                            <div class="language-option" data-lang="en">
+                                <img src="icons/banderas/english.svg" alt="English" class="flag-icon">
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" data-lang="ca">
+                                <img src="icons/banderas/catalan.svg" alt="Català" class="flag-icon">
+                                <span>Català</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legal -->
+                    <div class="config-section">
+                        <h3 data-i18n="legalTitle">Legal</h3>
+                        <div class="legal-buttons">
+                            <button class="btn btn-secondary btn-legal" id="btn-privacy-policy">
+                                <span data-i18n="privacyPolicy">Política de Privacidad</span>
+                            </button>
+                            <button class="btn btn-secondary btn-legal" id="btn-cookies">
+                                <span data-i18n="cookiesPolicy">Política de Cookies</span>
+                            </button>
+                            <button class="btn btn-secondary btn-legal" id="btn-legal-notice">
+                                <span data-i18n="legalNotice">Aviso Legal</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Privacy Policy Screen -->
+            <section id="screen-privacy-policy" class="screen legal-screen">
+                <div class="legal-content">
+                    <button class="close-legal-btn" id="close-privacy-policy">×</button>
+                    <h2 data-i18n="privacyPolicy">Política de Privacidad</h2>
+                    <div class="legal-text">
+                        <h3 data-i18n="legalPrivacy1">1. Información General</h3>
+                        <p data-i18n="legalPrivacy1Text">Esta aplicación web ("Juego del Impostor") respeta tu privacidad y se compromete a proteger cualquier información personal que puedas proporcionar.</p>
+
+                        <h3 data-i18n="legalPrivacy2">2. Datos Recopilados</h3>
+                        <p data-i18n="legalPrivacy2Text">Esta aplicación NO recopila, almacena ni transmite datos personales a servidores externos. Toda la información se almacena localmente en tu dispositivo mediante LocalStorage.</p>
+
+                        <h3 data-i18n="legalPrivacy3">3. Almacenamiento Local</h3>
+                        <p data-i18n="legalPrivacy3Text">La aplicación utiliza LocalStorage del navegador para guardar preferencias, temas y configuraciones. Estos datos permanecen en tu dispositivo.</p>
+
+                        <h3 data-i18n="legalPrivacy4">4. Cookies</h3>
+                        <p data-i18n="legalPrivacy4Text">Esta aplicación NO utiliza cookies de terceros ni de seguimiento. Solo almacenamiento local.</p>
+
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Help Screen -->
+            <section id="screen-help" class="screen">
+                <div class="screen-content help-content">
+                    <h2 data-i18n="helpTitle">Cómo Jugar</h2>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpObjective">Objetivo del Juego</h3>
+                        <p data-i18n="helpObjectiveText">Los civiles deben descubrir quién es el impostor mediante preguntas y deducciones. El impostor debe pasar desapercibido sin revelar que no conoce la palabra secreta.</p>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpSetup">Preparación</h3>
+                        <ol>
+                            <li data-i18n="helpSetupStep1">Añade al menos 3 jugadores</li>
+                            <li data-i18n="helpSetupStep2">Selecciona el número de impostores (o activa aleatorio)</li>
+                            <li data-i18n="helpSetupStep3">Elige uno o más temas</li>
+                            <li data-i18n="helpSetupStep4">Pulsa "Comenzar Juego"</li>
+                        </ol>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpRevelation">Revelación de Roles</h3>
+                        <p data-i18n="helpRevelationText">Cada jugador verá su rol en privado. Los civiles recibirán una palabra secreta y el tema. Los impostores solo verán que son impostores (y opcionalmente el tema).</p>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpGameplay">Desarrollo del Juego</h3>
+                        <p data-i18n="helpGameplayText">Los jugadores hacen preguntas por turnos sobre la palabra. Los civiles intentan confirmar que otros conocen la palabra sin revelarla. Los impostores intentan deducir la palabra escuchando las respuestas.</p>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpVoting">Votación</h3>
+                        <p data-i18n="helpVotingText">Cuando sospechen de alguien, pueden votar para eliminarlo. Se revela si era impostor o civil.</p>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpVictory">Victoria</h3>
+                        <ul>
+                            <li data-i18n="helpVictoryImpostors">Impostores ganan: Si quedan igual o más impostores que civiles</li>
+                            <li data-i18n="helpVictoryCivilians">Civiles ganan: Si eliminan a todos los impostores</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-section">
+                        <h3 data-i18n="helpTips">Consejos</h3>
+                        <ul>
+                            <li data-i18n="helpTip1">Como civil: Haz preguntas específicas sin revelar la palabra</li>
+                            <li data-i18n="helpTip2">Como impostor: Escucha atentamente y sé vago en tus respuestas</li>
+                            <li data-i18n="helpTip3">No reveles tu rol directamente, mantén el misterio</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cookies Policy Screen -->
+            <section id="screen-cookies" class="screen legal-screen">
+                <div class="legal-content">
+                    <button class="close-legal-btn" id="close-cookies">×</button>
+                    <h2 data-i18n="cookiesPolicy">Política de Cookies</h2>
+                    <div class="legal-text">
+                        <h3 data-i18n="legalCookies1">1. ¿Qué son las cookies?</h3>
+                        <p data-i18n="legalCookies1Text">Las cookies son pequeños archivos de texto que los sitios web almacenan en tu dispositivo para recordar información sobre tu visita.</p>
+
+                        <h3 data-i18n="legalCookies2">2. Uso en esta Aplicación</h3>
+                        <p data-i18n="legalCookies2Text">Esta aplicación NO utiliza cookies tradicionales, sino LocalStorage, una tecnología similar.</p>
+
+                        <h3 data-i18n="legalCookies3">3. LocalStorage vs Cookies</h3>
+                        <p data-i18n="legalCookies3Text">LocalStorage es diferente porque los datos nunca se envían al servidor y no tienen fecha de expiración.</p>
+
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Legal Notice Screen -->
+            <section id="screen-legal-notice" class="screen legal-screen">
+                <div class="legal-content">
+                    <button class="close-legal-btn" id="close-legal-notice">×</button>
+                    <h2 data-i18n="legalNotice">Aviso Legal</h2>
+                    <div class="legal-text">
+                        <h3 data-i18n="legalNotice1">1. Información General</h3>
+                        <p data-i18n="legalNotice1Text">Esta aplicación web es un proyecto de portfolio desarrollado con fines educativos y de entretenimiento.</p>
+
+                        <h3 data-i18n="legalNotice2">2. Titularidad</h3>
+                        <p data-i18n="legalNotice2Text">Esta aplicación es propiedad de su desarrollador.</p>
+
+                        <p class="legal-update" data-i18n="legalPrivacyUpdate">Última actualización: Diciembre 2024</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game Screen -->
+            <section id="screen-game" class="screen">
+                <div class="screen-content game-content">
+                    <!-- Setup State -->
+                    <div id="game-setup" class="game-state">
+                        <div class="info-box">
+                            <p data-i18n="gameSetupMessage">Configura los jugadores y presiona "Comenzar Juego"</p>
+                        </div>
+                    </div>
+
+                    <!-- Revealing State -->
+                    <div id="game-revealing" class="game-state" style="display: none;">
+                        <div class="reveal-container-new">
+                            <!-- Contenedor de las tarjetas -->
+                            <div class="cards-stack">
+                                <!-- Tarjeta de Fondo (Rol Revelado) -->
+                                <div id="role-card-bg" class="role-card-background">
+                                    <div class="role-content">
+                                        <div class="role-type-large" id="role-type-display"></div>
+                                        <div class="role-theme-small" id="role-theme-display"></div>
+                                        <div class="role-word-display" id="role-word-display"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Tarjeta Superior Deslizable -->
+                                <div id="swipe-card" class="swipe-card-top">
+                                    <div class="card-logo">
+                                        <img src="icons/logo.svg" alt="Logo" class="reveal-logo">
+                                    </div>
+                                    <div class="card-player-name">
+                                        <h1 id="current-player-name"></h1>
+                                    </div>
+                                    <div class="card-instruction">
+                                        <div class="swipe-arrow">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                                <path d="M12 19V5M5 12l7-7 7 7"/>
+                                            </svg>
+                                        </div>
+                                        <p data-i18n="swipeToReveal">Destapa tu rol</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botón siguiente jugador -->
+                            <button id="btn-next-player" class="btn btn-primary btn-large" style="margin-top: 2rem; display: none;">
+                                <span data-i18n="nextPlayer">Siguiente Jugador</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Playing State -->
+                    <div id="game-playing" class="game-state" style="display: none;">
+                        <div class="info-box success">
+                            <h2 data-i18n="discussPhase">¡Fase de Discusión!</h2>
+                            <p data-i18n="discussMessage">Todos conocen su rol. Discutan y descubran al impostor.</p>
+                        </div>
+
+                        <div class="impostors-remaining-box">
+                            <p><strong data-i18n="impostorsRemaining">Impostores restantes:</strong> <span id="impostors-remaining-count-game">0</span></p>
+                        </div>
+
+                        <h3 data-i18n="votingTitle" style="margin-top: 24px; margin-bottom: 16px;">Votación</h3>
+                        <div class="info-box warning">
+                            <p data-i18n="votingInstructions">Vota por quien creas que es el impostor</p>
+                        </div>
+
+                        <div id="voting-list-game" class="voting-list">
+                            <!-- Lista de jugadores para votar -->
+                        </div>
+
+                        <!-- Vote Result Modal -->
+                        <div id="vote-result-modal" class="vote-result-overlay" style="display: none;">
+                            <div class="vote-result-card" id="vote-result-card">
+                                <!-- Icon SVG animado -->
+                                <div class="vote-result-icon" id="vote-result-icon">
+                                    <div class="icon-circle">
+                                        <img id="vote-result-icon-img" src="icons/jugador-eliminado.svg" alt="Jugador Eliminado" class="vote-icon-svg">
+                                    </div>
+                                </div>
+
+                                <!-- Nombre del jugador eliminado -->
+                                <div class="vote-result-player">
+                                    <div class="player-label" data-i18n="eliminatedPlayer">Jugador Eliminado</div>
+                                    <h2 id="vote-result-title" class="player-name"></h2>
+                                </div>
+
+                                <!-- Revelación del rol con efecto dramático -->
+                                <div class="vote-result-role" id="vote-result-role">
+                                    <div class="role-reveal-text" data-i18n="wasRole">Era</div>
+                                    <div class="role-type" id="vote-result-message"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ended State -->
+                    <div id="game-ended" class="game-state" style="display: none;">
+                        <div class="victory-card-wrapper">
+                            <!-- Confetti Background -->
+                            <div class="confetti-container" id="confetti-container"></div>
+
+                            <!-- Victory Card -->
+                            <div class="victory-card">
+                                <!-- Trophy/Icon Section -->
+                                <div class="victory-icon" id="victory-icon">
+                                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="3"/>
+                                        <path d="M30 50 L45 65 L70 35" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+
+                                <!-- Title Section -->
+                                <div class="victory-title-section">
+                                    <h1 id="victory-title" class="victory-title"></h1>
+                                    <div class="victory-subtitle">
+                                        <span data-i18n="gameOver">Juego Terminado</span>
+                                    </div>
+                                </div>
+
+                                <!-- Info Section -->
+                                <div class="victory-info-card">
+                                    <div class="victory-detail">
+                                        <div class="detail-label" data-i18n="theme">Tema</div>
+                                        <div class="detail-value" id="victory-theme"></div>
+                                    </div>
+                                    <div class="victory-detail">
+                                        <div class="detail-label" data-i18n="word">Palabra</div>
+                                        <div class="detail-value" id="victory-word"></div>
+                                    </div>
+                                    <div class="victory-detail">
+                                        <div class="detail-label" id="victory-players-label"></div>
+                                        <div class="detail-value" id="victory-players"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Button -->
+                                <button id="btn-new-round" class="btn btn-primary btn-large victory-btn">
+                                    <span data-i18n="newRound">Nueva Ronda</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Voting Screen -->
+            <section id="screen-voting" class="screen">
+                <div class="screen-content voting-screen-modern">
+                    <!-- Header con título -->
+                    <div class="voting-header">
+                        <div class="voting-icon"><i data-lucide="vote"></i></div>
+                        <h2 data-i18n="votingTitle">Votación</h2>
+                    </div>
+
+                    <!-- Card de instrucciones -->
+                    <div class="voting-instructions-card">
+                        <div class="instruction-icon"><i data-lucide="search"></i></div>
+                        <p data-i18n="votingInstructions">Vota por quien creas que es el impostor</p>
+                    </div>
+
+                    <!-- Contador de impostores restantes -->
+                    <div class="impostors-counter-card">
+                        <div class="counter-label">
+                            <span class="counter-icon"><i data-lucide="alert-triangle"></i></span>
+                            <span data-i18n="impostorsRemaining">Impostores restantes</span>
+                        </div>
+                        <div class="counter-value" id="impostors-remaining-count">0</div>
+                    </div>
+
+                    <!-- Lista de votación moderna -->
+                    <div id="voting-list" class="voting-list-modern">
+                        <!-- Lista de jugadores para votar -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Screen -->
+            <section id="screen-history" class="screen">
+                <div class="screen-content">
+                    <h2 data-i18n="historyTitle">Resultados</h2>
+
+                    <div id="history-content" class="history-content">
+                        <!-- Podio de Estadísticas Totales -->
+                        <div class="total-stats-section">
+                            <div class="stats-header">
+                                <h3 data-i18n="totalStats">Estadísticas Totales</h3>
+                                <button id="btn-reset-stats" class="btn btn-danger btn-small">
+                                    <i data-lucide="refresh-cw"></i>
+                                    <span data-i18n="resetStats">Reiniciar</span>
+                                </button>
+                            </div>
+                            <div id="stats-podium">
+                                <p class="empty-state" data-i18n="noStatsYet">No hay estadísticas aún</p>
+                            </div>
+                        </div>
+
+                        <div class="current-round" id="current-round-info">
+                            <h3 data-i18n="currentRound">Ronda Actual</h3>
+                            <div id="current-round-data">
+                                <p class="empty-state" data-i18n="noGameActive">No hay partida activa</p>
+                            </div>
+                            <button id="btn-end-game" class="btn btn-danger btn-large" style="display: none; margin-top: 20px;">
+                                <span data-i18n="endGame">Acabar Partida</span>
+                            </button>
+                        </div>
+
+                        <div class="eliminated-players">
+                            <h3 data-i18n="eliminatedPlayers">Jugadores Eliminados</h3>
+                            <div id="eliminated-list">
+                                <p class="empty-state" data-i18n="noEliminated">Nadie ha sido eliminado aún</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Final Results Screen -->
+            <section id="screen-final-results" class="screen">
+                <div class="screen-content">
+                    <h2 data-i18n="finalResultsTitle">Resultados Finales</h2>
+
+                    <div class="podium-container">
+                        <h3 data-i18n="podium">Podio</h3>
+                        <div class="podium">
+                            <div class="podium-place second" id="podium-2">
+                                <div class="podium-rank">2º</div>
+                                <div class="podium-player"></div>
+                            </div>
+                            <div class="podium-place first" id="podium-1">
+                                <div class="podium-rank">1º</div>
+                                <div class="podium-player"></div>
+                            </div>
+                            <div class="podium-place third" id="podium-3">
+                                <div class="podium-rank">3º</div>
+                                <div class="podium-player"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rankings-list">
+                        <h3 data-i18n="position">Clasificación</h3>
+                        <div id="rankings-content"></div>
+                    </div>
+                    <button id="btn-back-home" class="btn btn-primary btn-large">
+                        <span data-i18n="backToHome">Volver al Inicio</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Custom Themes Screen -->
+            <section id="screen-custom-themes" class="screen">
+                <div class="screen-content">
+                    <div class="custom-themes-header" style="display: flex; align-items: center; gap: var(--sp-md); margin-bottom: var(--sp-lg);">
+                        <button class="btn btn-secondary btn-small" id="btn-back-custom-themes" style="padding: 8px;">
+                            <i data-lucide="arrow-left"></i>
+                        </button>
+                        <h2 data-i18n="customThemesTitle" style="margin: 0; font-size: 1.5rem;">Mis Temas</h2>
+                    </div>
+
+                    <!-- Vista de Carpetas -->
+                    <div id="view-folders">
+                        <div class="add-player-form">
+                            <input type="text" id="input-new-folder" placeholder="Nueva carpeta..." maxlength="20">
+                            <button id="btn-add-folder" class="btn btn-primary btn-icon-only">
+                                <i data-lucide="folder-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="sorting-actions">
+                            <button class="sort-btn active" data-sort="recent">Recientes</button>
+                            <button class="sort-btn" data-sort="az">A-Z</button>
+                            <button class="sort-btn" data-sort="za">Z-A</button>
+                        </div>
+
+                        <div class="folders-list" id="folders-list">
+                            <!-- Lista de carpetas generadas dinámicamente -->
+                        </div>
+                    </div>
+
+                    <!-- Vista de Palabras (dentro de carpeta) -->
+                    <div id="view-words" style="display: none;">
+                        <div class="folder-header">
+                            <button id="btn-back-to-folders" class="btn btn-secondary btn-icon-only btn-small">
+                                <i data-lucide="chevron-left"></i>
+                            </button>
+                            <h3 id="current-folder-name">Nombre Carpeta</h3>
+                        </div>
+
+                        <div class="add-player-form">
+                            <input type="text" id="input-custom-word" placeholder="Nueva palabra..." maxlength="30">
+                            <button id="btn-add-custom-word" class="btn btn-primary btn-icon-only">
+                                <i data-lucide="plus"></i>
+                            </button>
+                        </div>
+
+                        <div class="custom-words-list" id="custom-words-list">
+                            <!-- Lista de palabras de la carpeta -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal de Error -->
+        <div id="error-modal" class="modal-overlay">
+            <div class="modal-content error-modal">
+                <h3 data-i18n="errorTitle">Error</h3>
+                <p id="error-message"></p>
+                <button id="error-ok-btn" class="btn btn-primary" data-i18n="okButton">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Modal de Éxito -->
+        <div id="success-modal" class="modal-overlay">
+            <div class="modal-content success-modal">
+                <h3 data-i18n="successTitle">Éxito</h3>
+                <p id="success-message"></p>
+                <button id="success-ok-btn" class="btn btn-success" data-i18n="okButton">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div id="confirm-modal" class="modal-overlay">
+            <div class="modal-content confirm-modal">
+                <h3 data-i18n="confirmTitle">Esta página dice</h3>
+                <p id="confirm-message"></p>
+                <div class="modal-buttons">
+                    <button id="confirm-accept-btn" class="btn btn-primary" data-i18n="acceptButton">Aceptar</button>
+                    <button id="confirm-cancel-btn" class="btn btn-secondary" data-i18n="cancelButton">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-content">
+                <button class="nav-item" data-screen="home" aria-label="Inicio">
+                    <span class="nav-icon"><img src="icons/inicio.svg" alt=""></span>
+                    <span class="nav-label" data-i18n="navHome">Inicio</span>
+                </button>
+                <button class="nav-item" data-screen="players" aria-label="Jugadores">
+                    <span class="nav-icon"><img src="icons/jugadores.svg" alt=""></span>
+                    <span class="nav-label" data-i18n="navPlayers">Jugadores</span>
+                </button>
+                <button class="nav-item" data-screen="game" aria-label="Juego">
+                    <span class="nav-icon"><img src="icons/juego.svg" alt=""></span>
+                    <span class="nav-label" data-i18n="navGame">Juego</span>
+                </button>
+                <button class="nav-item" data-screen="history" aria-label="Historial">
+                    <span class="nav-icon"><img src="icons/estadisticas.svg" alt=""></span>
+                    <span class="nav-label" data-i18n="navHistory">Historial</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Adult Content Modal -->
+        <div id="modal-overlay" class="modal-overlay"></div>
+        <div id="adult-content-modal" class="modal adult-modal">
+            <div class="modal-content">
+                <h2 id="adult-modal-title">Contenido para Adultos (+18)</h2>
+                <div class="modal-warning"><i data-lucide="alert-circle" style="width: 48px; height: 48px;"></i></div>
+                <p id="adult-modal-warning" class="modal-text">Esta categoría contiene contenido explícito y sugerente para mayores de 18 años.</p>
+                <p id="adult-modal-confirm" class="modal-text"><strong>¿Confirmas que eres mayor de 18 años y deseas activar este contenido?</strong></p>
+                <div class="modal-buttons">
+                    <button id="adult-modal-yes" class="btn btn-danger">Sí, soy mayor de 18</button>
+                    <button id="adult-modal-no" class="btn btn-secondary">No, cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Error al registrar Service Worker:', err));
+            });
+        }
+    </script>
+</body>
+</html>

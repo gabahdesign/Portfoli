@@ -1,0 +1,144 @@
+/* ============================================
+   BASE.CSS — Design tokens, reset, typography
+   ============================================ */
+
+:root {
+    --black:     #0a0a0a;
+    --white:     #ffffff;
+
+    --bg-0:      #0a0a0a;
+    --bg-1:      #161616;
+    --bg-2:      #222222;
+    --bg-3:      #2e2e2e;
+
+    --text-1:    #ffffff;
+    --text-2:    #cccccc;
+    --text-3:    #888888;
+
+    --border:    rgba(255,255,255,0.10);
+
+    --accent:    #ffffff;
+    --primary:   #6366f1;
+    --danger:    #ff3b30;
+    --warning:   #ffcc00;
+    --success:   #30d158;
+
+    --glass:     rgba(255,255,255,0.05);
+
+    --r-sm:   8px;
+    --r-md:   14px;
+    --r-lg:   22px;
+    --r-full: 9999px;
+
+    --sp-xs:  4px;
+    --sp-sm:  8px;
+    --sp-md:  16px;
+    --sp-lg:  24px;
+    --sp-xl:  40px;
+
+    --header-h: 64px;
+    --nav-h:    72px;
+
+    --shadow:  0 8px 32px rgba(0,0,0,0.6);
+    --shadow2: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+body.light-mode {
+    --bg-0:   #f2f2f7;
+    --bg-1:   #ffffff;
+    --bg-2:   #e8e8ed;
+    --bg-3:   #d8d8dd;
+    --text-1: #0a0a0a;
+    --text-2: #3c3c43;
+    --text-3: #8e8e93;
+    --border: rgba(0,0,0,0.10);
+    --glass:  rgba(0,0,0,0.03);
+    --shadow: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow2:0 12px 40px rgba(0,0,0,0.18);
+    --accent: #0a0a0a;
+}
+
+*, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-0);
+    color: var(--text-1);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100dvh;
+    transition: background 0.3s, color 0.3s;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; color: var(--text-1); }
+
+p { color: var(--text-2); }
+
+a { color: var(--text-1); }
+
+[data-lucide], svg.lucide {
+    width: 20px !important;
+    height: 20px !important;
+    display: inline-block !important;
+    vertical-align: middle;
+    stroke-width: 2px;
+    flex-shrink: 0;
+}
+
+/* ---- Icon invert for dark backgrounds ----
+   SVGs that use fill (no currentColor) appear black on dark bg.
+   Apply invert so they show as white. Exclude logo and flag icons. */
+.header-icon-btn img,
+.nav-icon img,
+.home-icon-btn img,
+.help-icon-btn img,
+.support-icon,
+.footer-icon {
+    filter: invert(1);
+}
+
+body.light-mode .header-icon-btn img,
+body.light-mode .nav-icon img,
+body.light-mode .home-icon-btn img,
+body.light-mode .help-icon-btn img,
+body.light-mode .support-icon,
+body.light-mode .footer-icon {
+    filter: invert(0);
+}
+
+/* Logo and flags stay as-is (designed for both modes) */
+.header-logo,
+.home-logo-svg,
+.reveal-logo,
+.vote-icon-svg,
+.config-app-logo,
+.flag-icon {
+    filter: none !important;
+}
+
+/* Theme icons: invert when not selected in dark mode */
+.theme-button:not(.selected) img {
+    filter: invert(1);
+}
+
+body.light-mode .theme-button:not(.selected) img {
+    filter: invert(0);
+}
+
+/* Selected theme icons: icons should be white on black bg or black on white bg */
+/* In dark mode, selected button has white bg, so icon should be black (invert 0) */
+.theme-button.selected img {
+    filter: invert(0) !important;
+}
+
+/* In light mode, selected button has black bg, so icon should be white (invert 1) */
+body.light-mode .theme-button.selected img {
+    filter: invert(1) !important;
+}

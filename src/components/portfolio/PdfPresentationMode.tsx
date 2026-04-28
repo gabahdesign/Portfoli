@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { clsx } from "clsx";
 
 interface WorkForPresentation {
   slug: string;
@@ -19,10 +20,16 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentPdfIndex, setCurrentPdfIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const isOpen = searchParams.get("mode") === "present";
   const presentationWorks = works;
+
+  // Reset pdf index when changing works
+  useEffect(() => {
+    setCurrentPdfIndex(0);
+  }, [currentIndex]);
 
   const close = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -64,6 +71,20 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
 
   const currentWork = presentationWorks[currentIndex];
 
+  const pdfUrls = (() => {
+    if (!currentWork?.pdf_url) return [];
+    try {
+      if (currentWork.pdf_url.startsWith('[') && currentWork.pdf_url.endsWith(']')) {
+        return JSON.parse(currentWork.pdf_url);
+      }
+      return [currentWork.pdf_url];
+    } catch {
+      return [currentWork.pdf_url];
+    }
+  })();
+
+  const currentPdfUrl = pdfUrls[currentPdfIndex] || pdfUrls[0];
+
   return (
     <div className="fixed inset-0 z-[200] bg-[#09090b] text-white flex flex-col animate-in fade-in duration-500">
       {/* Header Area */}
@@ -85,9 +106,9 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
              <button onClick={next} className="p-2 hover:bg-white/10 rounded-lg transition-colors"><ChevronRight size={20} /></button>
           </div>
 
-          {currentWork.pdf_url && (
+          {currentPdfUrl && (
             <a 
-              href={currentWork.pdf_url} 
+              href={currentPdfUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className="p-3 bg-white/5 border border-white/10 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-xl transition-all"
@@ -118,9 +139,27 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
             </div>
           )}
           
-          {currentWork.pdf_url ? (
+          {pdfUrls.length > 1 && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[50] flex items-center gap-2 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 shadow-2xl">
+               {pdfUrls.map((_, idx) => (
+                 <button 
+                   key={idx}
+                   onClick={() => { setCurrentPdfIndex(idx); setLoading(true); }}
+                   className={clsx(
+                     "px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+                     currentPdfIndex === idx ? "bg-[var(--color-accent)] text-white" : "text-white/50 hover:bg-white/10 hover:text-white"
+                   )}
+                 >
+                   Doc {idx + 1}
+                 </button>
+               ))}
+            </div>
+          )}
+
+          {currentPdfUrl ? (
             <iframe 
-              src={`${currentWork.pdf_url}#toolbar=1&navpanes=0&scrollbar=1`}
+              key={currentPdfUrl} // Force re-render on URL change
+              src={`${currentPdfUrl}#toolbar=1&navpanes=0&scrollbar=1`}
               className="w-full h-full border-none relative z-10"
               onLoad={() => setLoading(false)}
             />

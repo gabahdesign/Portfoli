@@ -1,0 +1,39 @@
+/* ============================================
+   inicio.css — Specific styles for landing page
+   ============================================ */
+
+.inicio-page .app-container {
+    max-width: 500px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    padding-bottom: 0; /* No nav bar here */
+}
+
+.inicio-page .main-content {
+    padding-bottom: 0;
+    min-height: 100dvh;
+}
+
+.inicio-page #screen-home {
+    min-height: 100dvh;
+}
+
+.inicio-page .home-container-new {
+    min-height: 100dvh;
+    justify-content: space-between; /* Spread header, logo, buttons, footer */
+}
+
+/* Ensure the app-header and bottom-nav are not visible if they accidentally leak */
+.inicio-page .app-header,
+.inicio-page .bottom-nav {
+    display: none !important;
+}
+
+/* Adjustments for better vertical spacing on splash screen */
+.inicio-page .home-logo-section {
+    padding: var(--sp-xl) 0;
+}
+
+.inicio-page .home-buttons {
+    margin-bottom: var(--sp-lg);
+}
