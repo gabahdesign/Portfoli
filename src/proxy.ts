@@ -82,7 +82,7 @@ export async function proxy(request: NextRequest) {
 
   const cspValue = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google-analytics.com https://*.googletagmanager.com;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google-analytics.com https://*.googletagmanager.com https://unpkg.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com;
     img-src 'self' blob: data: https://*.supabase.co https://*.googleusercontent.com https://drive.google.com https://*.tile.openstreetmap.org https://unpkg.com;
     font-src 'self' https://fonts.gstatic.com;
