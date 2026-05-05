@@ -72,7 +72,7 @@ export default async function WebsPage() {
                 </a>
               )}
               
-              {project.download_url && (
+              {project.download_url && !project.title.toLowerCase().includes('impostor') && (
                 <a 
                   href={project.download_url}
                   download

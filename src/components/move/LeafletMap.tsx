@@ -27,7 +27,13 @@ const createCustomIcon = (color: string) => {
   });
 };
 
-export default function LeafletMap({ activities }: { activities: any[] }) {
+export default function LeafletMap({ 
+  activities, 
+  onSelectActivity 
+}: { 
+  activities: any[], 
+  onSelectActivity?: (act: any) => void 
+}) {
   // Filter activities that have valid lat/lng coords AND are in the future (or today)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -64,14 +70,21 @@ export default function LeafletMap({ activities }: { activities: any[] }) {
             icon={createCustomIcon(act.move_categories?.move_groups?.accent_color || "#156EF6")}
           >
             <Popup className="rounded-xl overflow-hidden shadow-2xl border-none">
-               <div className="p-2 min-w-[200px]">
-                 <div className="text-[10px] uppercase font-black tracking-widest opacity-60 mb-1" style={{ color: act.move_categories?.move_groups?.accent_color || "#156EF6" }}>
-                    {act.move_categories?.name}
-                 </div>
-                 <div className="font-bold text-gray-900 mb-1">{act.title}</div>
-                 <div className="text-xs text-gray-600">{act.location}</div>
-                 <div className="text-xs font-medium text-gray-400 mt-2">
-                    {new Date(act.start_datetime).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' })}
+                 <div className="flex flex-col gap-2 mt-4">
+                    <button 
+                      onClick={() => onSelectActivity?.(act)}
+                      className="w-full py-2.5 bg-[#156EF6] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#0F5ED4] transition-all"
+                    >
+                      Vull m'apunto
+                    </button>
+                    <a 
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${act.location_coords.lat},${act.location_coords.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 bg-gray-100 text-gray-700 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all text-center flex items-center justify-center gap-2"
+                    >
+                      <Navigation size={10} /> Com arribar-hi
+                    </a>
                  </div>
                </div>
             </Popup>

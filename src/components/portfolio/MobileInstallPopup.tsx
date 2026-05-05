@@ -75,20 +75,11 @@ export function MobileInstallPopup({ locale }: MobileInstallPopupProps) {
         </div>
 
         <div className="mt-6 flex gap-3">
-          <a 
-            href="/webs/impostor/impostor-game.zip" 
-            download
+          <button 
             onClick={dismiss}
             className="flex-1 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] py-4 rounded-xl flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-all"
           >
-            <Download size={14} />
-            {locale === 'ca' ? "Descarregar" : "Download"}
-          </a>
-          <button 
-            onClick={dismiss}
-            className="flex-1 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-[0.2em] py-4 rounded-xl active:scale-95 transition-all"
-          >
-            {locale === 'ca' ? "Més tard" : "Maybe later"}
+            {locale === 'ca' ? "Entesos" : "Got it"}
           </button>
         </div>
         

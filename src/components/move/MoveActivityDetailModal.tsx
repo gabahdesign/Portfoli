@@ -128,7 +128,7 @@ export function MoveActivityDetailModal({
                 >
                   {activity.move_categories?.name}
                 </div>
-                <h2 className="text-4xl sm:text-5xl font-display font-black text-white tracking-tight leading-[0.9]">
+                <h2 className="text-4xl sm:text-5xl font-display font-black text-[var(--color-text)] tracking-tight leading-[0.9]">
                   {activity.title}
                 </h2>
               </div>
@@ -143,7 +143,7 @@ export function MoveActivityDetailModal({
                       </div>
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Data i Hora</p>
-                        <p className="text-sm text-white font-medium capitalize">{dateStr}</p>
+                        <p className="text-sm text-[var(--color-text)] font-medium capitalize">{dateStr}</p>
                         <p className="text-xs text-[var(--color-muted)] font-bold">{timeStr} h</p>
                       </div>
                     </div>
@@ -155,7 +155,7 @@ export function MoveActivityDetailModal({
                         </div>
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Ubicació</p>
-                          <p className="text-sm text-white font-medium">{activity.location || "Ubicació no especificada"}</p>
+                          <p className="text-sm text-[var(--color-text)] font-medium">{activity.location || "Ubicació no especificada"}</p>
                         </div>
                       </div>
                     ) : (
@@ -165,7 +165,7 @@ export function MoveActivityDetailModal({
                         </div>
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1">Ubicació</p>
-                          <p className="text-sm text-white font-medium italic">Bloquejada</p>
+                          <p className="text-sm text-[var(--color-text)] font-medium italic">Bloquejada</p>
                         </div>
                       </div>
                     )}
@@ -229,7 +229,7 @@ export function MoveActivityDetailModal({
                     </div>
                     <div>
                       <h4 className="text-sm font-black text-amber-500 uppercase tracking-widest mb-1">Ets a la llista d&apos;espera</h4>
-                      <p className="text-xs text-white/70 leading-relaxed font-medium">T&apos;avisarem automàticament per email si s&apos;allibera una plaça.</p>
+                      <p className="text-xs text-[var(--color-text)] opacity-70 leading-relaxed font-medium">T&apos;avisarem automàticament per email si s&apos;allibera una plaça.</p>
                     </div>
                   </div>
                 )}

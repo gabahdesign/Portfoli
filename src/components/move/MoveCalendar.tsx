@@ -81,12 +81,18 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   };
 
   const filteredActivities = useMemo(() => {
-    if (!searchTerm.trim()) return activities;
-    const s = searchTerm.toLowerCase();
-    return activities.filter(act => 
-      act.title?.toLowerCase().includes(s) || 
-      act.location?.toLowerCase().includes(s) ||
-      act.move_categories?.name?.toLowerCase().includes(s)
+    let result = activities;
+    if (searchTerm.trim()) {
+      const s = searchTerm.toLowerCase();
+      result = activities.filter(act => 
+        act.title?.toLowerCase().includes(s) || 
+        act.location?.toLowerCase().includes(s) ||
+        act.move_categories?.name?.toLowerCase().includes(s)
+      );
+    }
+    // "Més recents a més antics" = Descending order (Newest first)
+    return [...result].sort((a, b) => 
+      new Date(b.start_datetime).getTime() - new Date(a.start_datetime).getTime()
     );
   }, [activities, searchTerm]);
 
@@ -335,7 +341,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                   <span className={clsx(
                     "text-xs font-bold mb-4 block transition-colors",
                     isToday ? "text-[var(--color-accent)]" : "text-[var(--color-muted)]",
-                    "group-hover:text-white"
+                    "group-hover:text-[var(--color-accent)]"
                   )}>
                     {day}
                   </span>
@@ -554,15 +560,12 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             </div>
           )}
         </div>
-      ) : (
-        <div className="animate-in fade-in duration-700">
-           <div className="mb-10">
-              <h2 className="text-2xl font-display font-black text-[var(--color-text)] tracking-tight">Geolocalització</h2>
-              <p className="text-[var(--color-muted)] text-sm">Visualització de les activitats sobre el terreny per a una millor planificació logística.</p>
-           </div>
-           <MoveMap activities={activities || []} />
-        </div>
-      )}
+      ) : viewMode === 'map' ? (
+        <MoveMap 
+          activities={filteredActivities} 
+          onSelectActivity={(act) => setSelectedDetailActivity(act)} 
+        />
+      ) : null}
 
       {/* 4. OPTIONAL HEATMAP (Only shown in Grid/List) */}
       {viewMode !== 'map' && (

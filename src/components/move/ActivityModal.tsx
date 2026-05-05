@@ -78,47 +78,50 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   };
 
   useEffect(() => {
-    if (editActivity) {
-      setTitle(editActivity.title || "");
-      setDescription(editActivity.description || "");
-      setLocation(editActivity.location || "");
-      
-      const start = new Date(editActivity.start_datetime);
-      setDate(start.toISOString().split('T')[0]);
-      setStartTime(start.toTimeString().slice(0, 5));
-      
-      if (editActivity.end_datetime) {
-        const end = new Date(editActivity.end_datetime);
-        setEndTime(end.toTimeString().slice(0, 5));
-      } else {
-        setEndTime("");
-      }
+    if (isOpen) {
+      if (editActivity) {
+        setTitle(editActivity.title || "");
+        setDescription(editActivity.description || "");
+        setLocation(editActivity.location || "");
+        
+        const start = new Date(editActivity.start_datetime);
+        setDate(start.toISOString().split('T')[0]);
+        setStartTime(start.toTimeString().slice(0, 5));
+        
+        if (editActivity.end_datetime) {
+          const end = new Date(editActivity.end_datetime);
+          setEndTime(end.toTimeString().slice(0, 5));
+        } else {
+          setEndTime("");
+        }
 
-      setDifficulty(editActivity.metadata?.difficulty || "Moderat");
-      setWhatsappLink(editActivity.whatsapp_link || "");
-      setDistance(editActivity.metadata?.distance?.toString() || "");
-      setElevation(editActivity.metadata?.elevation?.toString() || "");
-      setIsAllDay(editActivity.metadata?.isAllDay || false);
-      setIsLocked(editActivity.metadata?.isLocked || false);
-      setUnlockAt(editActivity.metadata?.unlockAt ? new Date(editActivity.metadata.unlockAt).toISOString().split('T')[0] : "");
-      setCoords(editActivity.location_coords);
-      setSelectedSubcategoryId(editActivity.subcategory_id);
-      setMaxCapacity(editActivity.max_capacity?.toString() || "");
+        setDifficulty(editActivity.metadata?.difficulty || "Moderat");
+        setWhatsappLink(editActivity.whatsapp_link || "");
+        setDistance(editActivity.metadata?.distance?.toString() || "");
+        setElevation(editActivity.metadata?.elevation?.toString() || "");
+        setIsAllDay(editActivity.metadata?.isAllDay || false);
+        setIsLocked(editActivity.metadata?.isLocked || false);
+        setUnlockAt(editActivity.metadata?.unlockAt ? new Date(editActivity.metadata.unlockAt).toISOString().split('T')[0] : "");
+        setCoords(editActivity.location_coords);
+        setSelectedSubcategoryId(editActivity.subcategory_id);
+        setMaxCapacity(editActivity.max_capacity?.toString() || "");
 
-      const cat = categories.find(c => c.id === editActivity.category_id);
-      if (cat) {
-        setSelectedCategory(cat);
-        const grp = groups.find(g => g.id === cat.group_id);
-        if (grp) setSelectedGroup(grp);
-      }
-      setStep('details');
-    } else {
-      resetForm();
-      if (initialDate) {
-        setDate(initialDate.toISOString().split('T')[0]);
+        const cat = categories.find(c => c.id === editActivity.category_id);
+        if (cat) {
+          setSelectedCategory(cat);
+          const grp = groups.find(g => g.id === cat.group_id);
+          if (grp) setSelectedGroup(grp);
+        }
+        setStep('details');
+      } else if (step === 'group' && !selectedGroup) {
+        // Only reset if we are at the start and nothing is selected
+        resetForm();
+        if (initialDate) {
+          setDate(initialDate.toISOString().split('T')[0]);
+        }
       }
     }
-  }, [editActivity, isOpen, initialDate, categories, groups]);
+  }, [editActivity, isOpen, initialDate]);
 
   useEffect(() => {
     if (selectedCategory) {
@@ -222,12 +225,18 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
 
   const handleAddCategory = async () => {
     if (!selectedGroup || !newCategoryName) return;
+    setLoading(true);
     const res = await saveCategory({ name: newCategoryName, group_id: selectedGroup.id });
     if (res.success) {
       setNewCategoryName("");
       setIsAddingCategory(false);
+      // Use router.refresh() but don't let it reset everything immediately
       router.refresh();
+      showNotification("Categoria afegida!", "success");
+    } else {
+      showNotification(res.error || "Error al afegir categoria", "error");
     }
+    setLoading(false);
   };
 
   const handleDeleteCategory = async (id: string, e: React.MouseEvent) => {
@@ -240,9 +249,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
   return (
     <Drawer.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[6000]" />
-        <Drawer.Content className="bg-[var(--color-surface)] flex flex-col rounded-t-[2.5rem] h-[92%] sm:h-auto sm:max-h-[90vh] sm:max-w-xl fixed bottom-0 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:bottom-1/2 sm:translate-y-1/2 sm:rounded-[2.5rem] z-[6001] outline-none border-t border-white/5 sm:border sm:border-white/10 shadow-2xl">
-          <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/20 my-4 sm:hidden" />
+        <Drawer.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[6000]" />
+        <Drawer.Content className="bg-[var(--color-surface)] flex flex-col h-full sm:h-[90vh] sm:max-w-4xl fixed bottom-0 left-0 right-0 sm:left-1/2 sm:-translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 sm:rounded-[3rem] z-[6001] outline-none border-none">
+          <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-white/10 my-6 sm:hidden" />
           
           <div className="flex-1 flex flex-col overflow-hidden">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -295,7 +304,7 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
 
               {step === 'category' && selectedGroup && (
                 <div className="space-y-6">
-                  <button onClick={() => setStep('group')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-muted)] hover:text-white transition-colors">
+                  <button onClick={() => setStep('group')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
                     <ChevronLeft size={16} /> Tornar als grups
                   </button>
                   <div className="relative">
@@ -347,9 +356,9 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
               {step === 'details' && selectedCategory && (
                 <form onSubmit={handleSave} className="space-y-8 pb-20">
                    <div className="flex items-center justify-between">
-                     <button type="button" onClick={() => setStep('category')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-muted)] hover:text-white transition-colors">
-                       <ChevronLeft size={16} /> Canviar categoria
-                     </button>
+                      <button type="button" onClick={() => setStep('category')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
+                        <ChevronLeft size={16} /> Canviar categoria
+                      </button>
                      {editActivity && (
                        <button type="button" onClick={handleDelete} disabled={isDeleting} className="p-2 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
                          <Trash2 size={18} />
