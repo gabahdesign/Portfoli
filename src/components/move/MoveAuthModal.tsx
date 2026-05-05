@@ -136,7 +136,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
              {view === "login" ? <LogIn size={28} /> : view === "register" ? <UserPlus size={28} /> : <ShieldCheck size={28} />}
           </div>
           
-          <h2 className="text-3xl font-display font-black text-white tracking-tight mb-2">
+          <h2 className="text-3xl font-display font-black text-[var(--color-text)] tracking-tight mb-2">
             {view === "login" ? "Hola de nou" : view === "register" ? "Crea un compte" : "Verifica el correu"}
           </h2>
           <p className="text-[var(--color-muted)] text-sm px-4">
@@ -156,7 +156,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                     type="email" 
                     required
                     placeholder="El teu correu" 
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                    className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 pl-12 pr-4 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                    />
@@ -169,7 +169,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                     type="password" 
                     required
                     placeholder="Contrasenya" 
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                    className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 pl-12 pr-4 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                    />
@@ -201,7 +201,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                   type="text" 
                   required
                   placeholder="Nom" 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                  className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                  />
@@ -209,7 +209,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                   type="text" 
                   required
                   placeholder="Cognom" 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                  className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                   value={formData.surname}
                   onChange={(e) => setFormData({...formData, surname: e.target.value})}
                  />
@@ -218,7 +218,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                 type="email" 
                 required
                 placeholder="Correu electrònic" 
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
               />
@@ -227,14 +227,14 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                   type="tel" 
                   required
                   placeholder="Telèfon" 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                  className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
                  />
                  <input 
                   type="text" 
                   placeholder="Ubicació (opcional)" 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                  className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
                  />
@@ -244,7 +244,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                 type="text" 
                 required
                 placeholder="Nom d'usuari (Nick)" 
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                 value={formData.username}
                 onChange={(e) => setFormData({...formData, username: e.target.value})}
               />
@@ -252,7 +252,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                 type="password" 
                 required
                 placeholder="Contrasenya segura" 
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-4 px-5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
               />
@@ -289,7 +289,7 @@ export function MoveAuthModal({ isOpen, onClose, onSuccess }: MoveAuthModalProps
                   maxLength={6}
                   required
                   placeholder="000 000" 
-                  className="w-48 bg-white/5 border border-white/20 rounded-2xl py-5 text-center text-3xl font-black tracking-[0.2em] text-[var(--color-accent)] focus:border-[var(--color-accent)] focus:bg-white/10 outline-none transition-all"
+                  className="w-48 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-2xl py-5 text-center text-3xl font-black tracking-[0.2em] text-[var(--color-accent)] focus:border-[var(--color-accent)] focus:bg-[var(--color-surface-2)] outline-none transition-all"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
                  />

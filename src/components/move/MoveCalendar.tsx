@@ -49,6 +49,15 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const [selectedDetailActivity, setSelectedDetailActivity] = useState<any>(null);
+  const [pendingJoinActivityId, setPendingJoinActivityId] = useState<string | null>(null);
+
+  // Resume join action after login
+  useEffect(() => {
+    if (profile && pendingJoinActivityId) {
+      handleJoinLeave(pendingJoinActivityId, false);
+      setPendingJoinActivityId(null);
+    }
+  }, [profile, pendingJoinActivityId]);
 
   // Default to list view on mobile
   useEffect(() => {
@@ -102,6 +111,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
 
   const handleJoinLeave = async (activityId: string, isJoined: boolean) => {
     if (!profile) {
+      setPendingJoinActivityId(activityId);
       setIsAuthModalOpen(true);
       return;
     }
@@ -368,15 +378,22 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                           >
                              <div className="flex items-center gap-6">
                                 <div 
-                                  className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner"
+                                  className={clsx(
+                                    "w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner transition-all",
+                                    new Date(act.start_datetime) < new Date() && "opacity-40 grayscale"
+                                  )}
                                   style={{ backgroundColor: (act.move_categories?.move_groups?.accent_color || '#843aea') + '20' }}
                                 >
                                    <Activity className="w-6 h-6" style={{ color: act.move_categories?.move_groups?.accent_color || '#843aea' }} />
                                 </div>
-                                 <div>
+                                 <div className={clsx("flex-1", new Date(act.start_datetime) < new Date() && "opacity-60")}>
                                    <div className="flex items-center gap-3 mb-1.5 ">
                                       <h4 className="text-xl font-display font-black text-[var(--color-text)] tracking-tight">{act.title}</h4>
-                                      {act.metadata?.isLocked && (
+                                      {new Date(act.start_datetime) < new Date() ? (
+                                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 text-[var(--color-muted)] border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                           Realitzat
+                                        </div>
+                                      ) : act.metadata?.isLocked && (
                                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
                                            <Lock size={10} /> Proximament
                                         </div>
@@ -410,26 +427,32 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                              <div className="flex items-center gap-4">
                                 {(() => {
                                   const isJoined = act.move_activity_participants?.some((p: any) => p.move_profiles?.username === profile?.username);
+                                  const isPast = new Date(act.start_datetime) < new Date();
+                                  
                                   return (
                                     <button 
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleJoinLeave(act.id, isJoined);
                                       }}
-                                      disabled={loadingAction === act.id}
+                                      disabled={loadingAction === act.id || (isPast && !isJoined)}
                                       className={clsx(
                                         "px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all min-w-[150px] flex items-center justify-center gap-2",
                                         isJoined 
                                           ? "bg-white/5 text-white border border-white/10 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/20" 
-                                          : act.metadata?.isLocked 
-                                            ? "bg-white/5 text-amber-500 border border-amber-500/20 cursor-not-allowed opacity-50"
-                                            : "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
+                                          : isPast
+                                            ? "bg-white/5 text-[var(--color-muted)] border border-white/5 cursor-not-allowed opacity-50"
+                                            : act.metadata?.isLocked 
+                                              ? "bg-white/5 text-amber-500 border border-amber-500/20 cursor-not-allowed opacity-50"
+                                              : "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
                                       )}
                                     >
                                       {loadingAction === act.id ? (
                                         <Loader2 size={14} className="animate-spin" />
                                       ) : isJoined ? (
                                         "Ja hi estic"
+                                      ) : isPast ? (
+                                        "Finalitzat"
                                       ) : act.metadata?.isLocked ? (
                                         "Bloquejat"
                                       ) : (

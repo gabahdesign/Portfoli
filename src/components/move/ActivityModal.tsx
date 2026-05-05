@@ -120,7 +120,8 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     // 1. The modal is being opened (false -> true)
     // 2. The activity being edited has changed
     const isOpening = isOpen && !prevOpenRef.current;
-    const activityChanged = editActivity?.id !== prevEditIdRef.current;
+    const currentEditId = editActivity?.id || null;
+    const activityChanged = currentEditId !== prevEditIdRef.current;
 
     if (isOpening || (isOpen && activityChanged)) {
       if (editActivity) {

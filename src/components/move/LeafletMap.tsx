@@ -37,7 +37,7 @@ export default function LeafletMap({ activities }: { activities: any[] }) {
     : [41.768, 2.399];
 
   return (
-    <div className="w-full h-full aspect-[21/9] rounded-[2.5rem] border border-[var(--color-border)] overflow-hidden relative shadow-2xl z-0 group">
+    <div className="w-full aspect-[21/9] min-h-[400px] rounded-[2.5rem] border border-[var(--color-border)] overflow-hidden relative shadow-2xl z-0 group">
       <MapContainer 
         center={center} 
         zoom={9} 

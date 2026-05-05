@@ -68,22 +68,39 @@ export default function EditBlogPostPage() {
   const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
-    const payload = {
-      ...formData,
-      published_at: formData.published_at ? new Date(formData.published_at).toISOString() : new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+    
+    try {
+      // Obtenir l'usuari actual per l'author_id
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const payload = {
+        title: formData.title,
+        slug: formData.slug,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        cover_url: formData.cover_url,
+        is_premium: formData.is_premium,
+        status: formData.status,
+        published_at: formData.published_at ? new Date(formData.published_at).toISOString() : new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        author_id: user?.id // Assignem l'autor
+      };
 
-    if (postId === "nuevo") {
-      const { error } = await supabase.from("blog_posts").insert([payload]);
-      if (!error) router.push("/admin/blog");
-      else showToast("Error: " + error.message, "error");
-    } else {
-      const { error } = await supabase.from("blog_posts").update(payload).eq("id", postId);
-      if (!error) showToast("Article desat correctament", "success");
-      else showToast("Error: " + error.message, "error");
+      if (postId === "nuevo") {
+        const { error } = await supabase.from("blog_posts").insert([payload]);
+        if (!error) router.push("/admin/blog");
+        else throw error;
+      } else {
+        const { error } = await supabase.from("blog_posts").update(payload).eq("id", postId);
+        if (!error) showToast("Article desat correctament", "success");
+        else throw error;
+      }
+    } catch (err: any) {
+      console.error("Error saving post:", err);
+      showToast("Error: " + (err.message || "No s'ha pogut desar l'article"), "error");
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   if (loading) return <div className="p-4 md:p-8 text-[var(--color-muted)] animate-pulse uppercase tracking-[0.2em] font-black text-[10px]">Carregant editor de Journal...</div>;
