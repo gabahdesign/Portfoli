@@ -60,7 +60,7 @@ export function FeaturedWorkCard({
           onMouseLeave={handleMouseLeave}
         >
           {coverUrl ? (
-            <div className="relative w-full h-full overflow-hidden">
+            <div className="relative w-full aspect-[3/4] overflow-hidden">
               {isVideo ? (
                 <video
                   ref={videoRef}

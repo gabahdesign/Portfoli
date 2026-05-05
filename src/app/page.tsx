@@ -7,6 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Move, Maximize2, Zap, Sparkles, Download } from "lucide-react";
 
+import { MobileInstallPopup } from "@/components/portfolio/MobileInstallPopup";
+
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
   const locale = await getLocale() as any;
@@ -189,7 +191,6 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                   </p>
                   
                   <div className="pt-4">
-                    <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
                       <a 
                         href={`/webs/impostor/index.html?lang=${locale}`} 
                         target="_blank"
@@ -197,15 +198,6 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                       >
                         <Zap size={20} />
                         <span>{locale === 'ca' ? 'Jugar Ara' : 'Play Now'}</span>
-                      </a>
-                      
-                      <a 
-                        href="/webs/impostor/impostor-game.zip" 
-                        download
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
-                      >
-                        <Download size={20} />
-                        <span>{locale === 'ca' ? 'Descarregar App' : 'Download App'}</span>
                       </a>
                     </div>
                   </div>
@@ -228,6 +220,8 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
           </section>
 
         </div>
+        
+        <MobileInstallPopup locale={locale} />
       </main>
     </div>
   );

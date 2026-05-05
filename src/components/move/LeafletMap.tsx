@@ -28,8 +28,16 @@ const createCustomIcon = (color: string) => {
 };
 
 export default function LeafletMap({ activities }: { activities: any[] }) {
-  // Filter activities that have valid lat/lng coords
-  const validActivities = (activities || []).filter(a => Array.isArray(a.location_coords) ? false : (a.location_coords?.lat && a.location_coords?.lng));
+  // Filter activities that have valid lat/lng coords AND are in the future (or today)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const validActivities = (activities || [])
+    .filter(a => {
+      const actDate = new Date(a.start_datetime);
+      const hasCoords = !Array.isArray(a.location_coords) && a.location_coords?.lat && a.location_coords?.lng;
+      return hasCoords && actDate >= today;
+    });
   
   // Center roughly in Catalonia/Montseny area by default, or use the first activity
   const center: [number, number] = validActivities.length > 0 
@@ -42,11 +50,11 @@ export default function LeafletMap({ activities }: { activities: any[] }) {
         center={center} 
         zoom={9} 
         scrollWheelZoom={false} 
-        style={{ height: "100%", width: "100%", backgroundColor: '#0a0a0c', zIndex: 1 }}
+        style={{ height: "100%", width: "100%", backgroundColor: '#f8fafc', zIndex: 1 }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
         
         {validActivities.map(act => (

@@ -3,14 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function saveCategory(name: string, groupId: string, id?: string) {
+export async function saveCategory({ name, group_id, id }: { name: string; group_id: string; id?: string }) {
   const supabase = await createClient();
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
 
   const payload = {
     name,
-    group_id: groupId,
+    group_id,
   };
 
   let error;

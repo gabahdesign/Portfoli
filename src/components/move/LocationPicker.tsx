@@ -107,15 +107,18 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCa
   };
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center sm:p-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="relative w-full h-full sm:max-w-4xl sm:h-[80vh] flex flex-col bg-[var(--color-surface)] sm:border border-[var(--color-border)] sm:rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center sm:p-8 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="relative w-full h-full sm:max-w-5xl sm:h-[90vh] flex flex-col bg-[var(--color-surface)] sm:border border-[var(--color-border)] sm:rounded-[3rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         
         {/* Header with Search */}
         <div className="p-6 border-b border-[var(--color-border)] bg-[var(--color-surface-2)]/50 space-y-4">
            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-display font-black tracking-tight">Tria la Ubicació</h3>
+              <div className="flex items-center gap-3">
+                <Navigation className="text-[var(--color-accent)]" size={20} />
+                <h3 className="text-lg font-display font-black tracking-tight uppercase">Cercador d'Ubicacions</h3>
+              </div>
               <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <X size={20} />
+                <X size={24} />
               </button>
            </div>
            
@@ -124,7 +127,7 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCa
               <input 
                 type="text" 
                 autoFocus
-                placeholder="Cerca un lloc..." 
+                placeholder="Cerca un carrer, ciutat o lloc..." 
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl pl-12 pr-28 py-4 text-sm outline-none focus:border-[var(--color-accent)] transition-all shadow-inner"
@@ -149,27 +152,29 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCa
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
             <ChangeView center={coords} />
             <MapEvents onLocationSelect={handleLocationSelect} />
             <Marker position={coords} icon={customIcon} />
           </MapContainer>
 
-          {/* Map Overlay Info */}
-          <div className="absolute bottom-6 left-4 right-4 sm:left-6 sm:right-6 p-4 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1000] flex flex-col sm:flex-row items-center gap-4">
-             <div className="flex items-center gap-4 w-full sm:w-auto">
-               <div className="w-10 h-10 rounded-xl bg-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] shrink-0">
-                  <MapPin size={20} />
+          {/* Map Overlay Info - Optimized for long addresses */}
+          <div className="absolute bottom-6 left-4 right-4 sm:left-6 sm:right-6 p-5 bg-black/90 backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-2xl z-[1000] flex flex-col sm:flex-row items-center gap-5">
+             <div className="flex items-center gap-4 w-full sm:flex-1 min-w-0">
+               <div className="w-12 h-12 rounded-2xl bg-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] shrink-0">
+                  <MapPin size={24} />
                </div>
                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--color-accent)] mb-1">Ubicació Seleccionada</p>
-                  <p className="text-xs text-white font-medium truncate">{loading ? "Carregant adreça..." : (address || "Clica al mapa per triar")}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-accent)] mb-1">Ubicació Seleccionada</p>
+                  <p className="text-xs text-white font-medium line-clamp-2 leading-relaxed">
+                    {loading ? "Carregant adreça..." : (address || "Clica al mapa per triar una ubicació exacta")}
+                  </p>
                </div>
              </div>
              <button 
                onClick={() => onConfirm({ address, lat: coords[0], lng: coords[1] })}
-               className="w-full sm:w-auto bg-[var(--color-accent)] text-white px-8 py-4 sm:py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
+               className="w-full sm:w-auto bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-10 py-5 sm:py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-[var(--color-accent-glow)] hover:scale-105 transition-all disabled:opacity-50"
                disabled={loading || !address}
              >
                 Confirmar Ubicació
@@ -185,7 +190,7 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCa
           }
           .leaflet-container {
             font-family: inherit !important;
-            background-color: #0a0a0c !important;
+            background-color: #f8fafc !important;
           }
         `}</style>
       </div>

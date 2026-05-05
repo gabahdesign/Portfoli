@@ -616,11 +616,13 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
       </Drawer.Portal>
 
       {isMapOpen && createPortal(
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-           <div className="absolute inset-0 bg-black/90" onClick={() => setIsMapOpen(false)} />
-           <div className="relative w-full max-w-4xl h-[70vh] bg-[var(--color-surface)] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center sm:p-4 animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-black/95 sm:backdrop-blur-sm" onClick={() => setIsMapOpen(false)} />
+           <div className="relative w-full h-full sm:max-w-5xl sm:h-[90vh] bg-[var(--color-surface)] sm:rounded-[3rem] overflow-hidden sm:border border-white/10 shadow-2xl">
               <div className="absolute top-6 right-6 z-[10001]">
-                <button onClick={() => setIsMapOpen(false)} className="p-3 bg-black/50 backdrop-blur-md rounded-2xl text-white hover:bg-black transition-colors"><X size={24} /></button>
+                <button onClick={() => setIsMapOpen(false)} className="p-3 bg-black/50 backdrop-blur-md rounded-2xl text-white hover:bg-black transition-colors">
+                  <X size={24} />
+                </button>
               </div>
               <LocationPicker 
                 initialCoords={coords} 
