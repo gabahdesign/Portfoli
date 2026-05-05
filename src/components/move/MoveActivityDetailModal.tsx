@@ -6,6 +6,7 @@ import { renderMarkdown } from "@/lib/utils/markdown";
 import { createPortal } from "react-dom";
 import { useEffect, useState, useMemo } from "react";
 import { Drawer } from "vaul";
+import { getGoogleCalendarUrl, getAppleCalendarIcs } from "@/lib/calendar-utils";
 import type { MoveActivity, MoveParticipant } from "@/lib/types";
 
 interface MoveActivityDetailModalProps {
@@ -234,15 +235,34 @@ export function MoveActivityDetailModal({
                 )}
 
                 {/* 3. BOTÓ WHATSAPP (si existeix) */}
-                {activity.whatsapp_link && !isLocked && !isWaitlisted && isJoined && (
-                  <a 
-                    href={activity.whatsapp_link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-3 w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#25D36640] transition-all hover:scale-[1.02] active:scale-95"
-                  >
-                    <MessageCircle size={18} /> Entrar al Grup de WhatsApp
-                  </a>
+                  <div className="space-y-3">
+                    <a 
+                      href={activity.whatsapp_link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3 w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-5 rounded-3xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#25D36640] transition-all hover:scale-[1.02] active:scale-95"
+                    >
+                      <MessageCircle size={18} /> Entrar al Grup de WhatsApp
+                    </a>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <a 
+                        href={getGoogleCalendarUrl(activity)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 py-4 bg-white/5 border border-white/10 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                      >
+                        <Calendar size={14} className="text-blue-400" /> Google Calendar
+                      </a>
+                      <a 
+                        href={getAppleCalendarIcs(activity)}
+                        download={`${activity.slug || 'actvity'}.ics`}
+                        className="flex items-center justify-center gap-2 py-4 bg-white/5 border border-white/10 text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                      >
+                        <Calendar size={14} className="text-orange-400" /> Apple Calendar
+                      </a>
+                    </div>
+                  </div>
                 )}
 
                 {/* BOTONS ACCIÓ */}

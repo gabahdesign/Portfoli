@@ -34,9 +34,9 @@ export default function LeafletMap({ activities }: { activities: any[] }) {
 
   const validActivities = (activities || [])
     .filter(a => {
-      const actDate = new Date(a.start_datetime);
+      const actDate = new Date(a.start_datetime).getTime();
       const hasCoords = !Array.isArray(a.location_coords) && a.location_coords?.lat && a.location_coords?.lng;
-      return hasCoords && actDate >= today;
+      return hasCoords && actDate >= today.getTime();
     });
   
   // Center roughly in Catalonia/Montseny area by default, or use the first activity

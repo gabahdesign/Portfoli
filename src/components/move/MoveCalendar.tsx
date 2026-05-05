@@ -28,6 +28,7 @@ import { MoveMap } from "./MoveMap";
 import { Heatmap } from "../portfolio/Heatmap";
 import { MoveActivityDetailModal } from "./MoveActivityDetailModal";
 import { useSwipeable } from "react-swipeable";
+import { getAllActivitiesIcs } from "@/lib/calendar-utils";
 import type { MoveActivity, MoveCategory, MoveGroup, MoveProfile, MoveParticipant } from "@/lib/types";
 
 interface MoveCalendarProps {
@@ -52,6 +53,13 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const [selectedDetailActivity, setSelectedDetailActivity] = useState<MoveActivity | null>(null);
   const [pendingJoinActivityId, setPendingJoinActivityId] = useState<string | null>(null);
+  const [exportCalendarUrl, setExportCalendarUrl] = useState<string>("");
+
+  useEffect(() => {
+    const url = getAllActivitiesIcs(filteredActivities);
+    setExportCalendarUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [filteredActivities]);
 
   // Resume join action after login
   useEffect(() => {
@@ -187,7 +195,9 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             onClick={() => setViewMode('grid')}
             className={clsx(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
-              viewMode === 'grid' ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
+              viewMode === 'grid' 
+                ? "bg-[var(--color-accent)] text-white shadow-lg" 
+                : "text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-white/10"
             )}
           >
             <LayoutGrid size={14} /> Graella
@@ -197,7 +207,9 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             onClick={() => setViewMode('list')}
             className={clsx(
               "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
-              viewMode === 'list' ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
+              viewMode === 'list' 
+                ? "bg-[var(--color-accent)] text-white shadow-lg" 
+                : "text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-white/10"
             )}
           >
             <ListIcon size={14} /> Agenda
@@ -207,7 +219,9 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             onClick={() => setViewMode('map')}
             className={clsx(
               "flex-1 xl:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
-              viewMode === 'map' ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
+              viewMode === 'map' 
+                ? "bg-[var(--color-accent)] text-white shadow-lg" 
+                : "text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-white/10"
             )}
           >
             <MapViewIcon size={14} /> Mapa
@@ -230,7 +244,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
              <div className="flex items-center gap-4 bg-[var(--color-surface-2)] pl-4 pr-2 py-1.5 rounded-xl border border-[var(--color-border)] flex-1 xl:flex-none justify-between">
                 <div className="flex flex-col items-end">
                    <span className="text-[9px] font-black tracking-widest text-[var(--color-accent)] uppercase">Connectat</span>
-                   <span className="text-xs font-bold text-white">{profile.username}</span>
+                   <span className="text-xs font-bold text-[var(--color-text)]">{profile.username}</span>
                 </div>
                 <button 
                   type="button"
@@ -244,24 +258,35 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
            ) : (
              <button 
                 onClick={() => setIsAuthModalOpen(true)}
-                className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:border-[var(--color-accent)]/50 transition-all"
+                className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text)] px-5 py-2.5 rounded-xl text-xs font-bold hover:border-[var(--color-accent)]/50 transition-all"
              >
                <UserIcon size={14} /> Entra
              </button>
            )}
 
-           {isAdmin && (
-             <button 
-              onClick={() => {
-                setEditActivity(null);
-                setInitialDate(currentDate);
-                setIsModalOpen(true);
-              }}
-              className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
-             >
-               <Plus size={16} /> Nou
-             </button>
-           )}
+           <div className="flex flex-wrap items-center gap-2">
+              <a 
+                href={exportCalendarUrl}
+                download="calendari-move.ics"
+                className="p-2.5 bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)] rounded-xl transition-all"
+                title="Exportar calendari complet"
+              >
+                <Download size={16} />
+              </a>
+
+              {isAdmin && (
+                <button 
+                  onClick={() => {
+                    setEditActivity(null);
+                    setInitialDate(currentDate);
+                    setIsModalOpen(true);
+                  }}
+                  className="flex-1 xl:flex-none flex items-center justify-center gap-2 bg-[var(--color-accent)] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
+                >
+                  <Plus size={16} /> Nou
+                </button>
+              )}
+           </div>
         </div>
       </div>
 
