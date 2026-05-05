@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Image from "next/image";
 import { 
   Building2, Landmark, Plus, Edit2, Trash2, Hash, Layers, Type, X, ChevronRight, PanelLeftClose
 } from "lucide-react";
@@ -179,8 +180,13 @@ export function CompanyHierarchySidebar({
                               activeCompanyId === emp.id ? "bg-[var(--color-accent)] text-white border-transparent" : "bg-white/5 border-white/5 opacity-40 group-hover/side:opacity-100"
                            )}>
                               {emp.logo_url ? (
-                                 /* eslint-disable-next-line @next/next/no-img-element */
-                                 <img src={emp.logo_url} alt="" className="w-full h-full object-cover" />
+                                 <Image 
+                                   src={emp.logo_url} 
+                                   alt="" 
+                                   width={24} 
+                                   height={24} 
+                                   className="w-full h-full object-cover" 
+                                 />
                               ) : (
                                  emp.depth === 0 ? <Landmark size={12} /> : <Building2 size={12} />
                               )}

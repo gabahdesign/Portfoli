@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
@@ -167,11 +168,13 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
             <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12">
                {currentWork.cover_url ? (
                  <div className="relative w-full h-full">
-                    <img 
+                    <Image 
                       src={currentWork.cover_url} 
                       alt={currentWork.title}
-                      className="w-full h-full object-contain relative z-10 rounded-xl"
+                      fill
+                      className="object-contain relative z-10 rounded-xl"
                       onLoad={() => setLoading(false)}
+                      priority
                     />
                     <div 
                       className="absolute inset-0 blur-3xl opacity-20 z-0 scale-110"

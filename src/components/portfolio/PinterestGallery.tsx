@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { X, Maximize2 } from "lucide-react";
 
 interface PinterestGalleryProps {
@@ -34,8 +35,10 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
             className="break-inside-avoid rounded-2xl overflow-hidden border border-white/5 shadow-lg group relative cursor-zoom-in bg-[var(--color-surface)]"
             onClick={() => setSelectedImage(url)}
           >
-            <img 
+            <Image 
               src={url} 
+              width={600}
+              height={800}
               className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]" 
               alt="" 
             />
@@ -64,12 +67,15 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
             <X size={24} />
           </button>
           
-          <img 
-            src={selectedImage} 
-            className="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
-            alt=""
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div className="relative w-full h-full">
+            <Image 
+              src={selectedImage} 
+              fill
+              className="object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
+              alt=""
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         </div>
       )}
     </>

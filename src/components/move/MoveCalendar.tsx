@@ -27,14 +27,16 @@ import { Toast, ToastType } from "../ui/Toast";
 import { MoveMap } from "./MoveMap";
 import { Heatmap } from "../portfolio/Heatmap";
 import { MoveActivityDetailModal } from "./MoveActivityDetailModal";
+import { useSwipeable } from "react-swipeable";
+import type { MoveActivity, MoveCategory, MoveGroup, MoveProfile, MoveParticipant } from "@/lib/types";
 
 interface MoveCalendarProps {
   isAdmin?: boolean;
   user: any;
-  profile: any;
-  groups: any[];
-  categories: any[];
-  activities: any[];
+  profile: MoveProfile | null;
+  groups: MoveGroup[];
+  categories: MoveCategory[];
+  activities: MoveActivity[];
 }
 
 export function MoveCalendar({ isAdmin, profile, groups, categories, activities }: MoveCalendarProps) {
@@ -43,12 +45,12 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [editActivity, setEditActivity] = useState<any>(null);
+  const [editActivity, setEditActivity] = useState<MoveActivity | null>(null);
   const [initialDate, setInitialDate] = useState<Date>(new Date());
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
-  const [selectedDetailActivity, setSelectedDetailActivity] = useState<any>(null);
+  const [selectedDetailActivity, setSelectedDetailActivity] = useState<MoveActivity | null>(null);
   const [pendingJoinActivityId, setPendingJoinActivityId] = useState<string | null>(null);
 
   // Resume join action after login
@@ -102,6 +104,12 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => viewMode === 'grid' && handleNextMonth(),
+    onSwipedRight: () => viewMode === 'grid' && handlePrevMonth(),
+    trackMouse: true,
+  });
 
   const handleLogout = async () => {
     await logoutMoveUser();
@@ -261,7 +269,10 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
 
       {/* 2. CALENDAR GRID */}
       {viewMode === 'grid' ? (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div 
+          {...swipeHandlers}
+          className="animate-in fade-in slide-in-from-bottom-4 duration-700"
+        >
           <div className="grid grid-cols-7 gap-px bg-[var(--color-border)] border border-[var(--color-border)] rounded-3xl overflow-hidden shadow-2xl">
             {/* Day Names */}
             {["Dl", "Dt", "Dc", "Dj", "Dv", "Ds", "Dg"].map(d => (
@@ -327,9 +338,21 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                             color: act.move_categories?.move_groups?.accent_color || '#843aea'
                           }}
                         >
-                          <div className="flex items-center gap-1">
-                             {act.title}
-                             {act.metadata?.isLocked && <Lock size={8} className="shrink-0" />}
+                          <div className="flex flex-col gap-0.5">
+                             <div className="flex items-center gap-1">
+                                {act.title}
+                                {act.metadata?.isLocked && <Lock size={8} className="shrink-0" />}
+                             </div>
+                             {(() => {
+                               const participants = act.move_activity_participants || [];
+                               const joinedCount = participants.filter(p => p.status === 'joined').length;
+                               const isUserWaitlisted = participants.some(p => p.profile_id === profile?.id && p.status === 'waitlisted');
+                               const isFull = act.max_capacity ? joinedCount >= act.max_capacity : false;
+                               
+                               if (isUserWaitlisted) return <div className="text-[7px] text-amber-500 font-black uppercase">Espera</div>;
+                               if (isFull) return <div className="text-[7px] text-red-500 font-black uppercase">Plenari</div>;
+                               return null;
+                             })()}
                           </div>
                         </div>
                       ))
@@ -354,13 +377,13 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
             <div className="space-y-8">
                {/* Organize by month/day */}
                {Object.entries(
-                 filteredActivities.reduce((acc: any, act) => {
+                 filteredActivities.reduce<Record<string, MoveActivity[]>>((acc, act) => {
                     const date = new Date(act.start_datetime).toLocaleDateString('ca-ES', { day: 'numeric', month: 'long', year: 'numeric' });
                     if (!acc[date]) acc[date] = [];
                     acc[date].push(act);
                     return acc;
                  }, {})
-               ).map(([date, dayActivities]: [string, any]) => (
+               ).map(([date, dayActivities]: [string, MoveActivity[]]) => (
                  <div key={date} className="space-y-4">
                     <div className="flex items-center gap-4">
                        <div className="h-px flex-1 bg-[var(--color-border)]" />
@@ -368,7 +391,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                        <div className="h-px flex-1 bg-[var(--color-border)] opacity-30" />
                     </div>
                     <div className="grid gap-4">
-                       {dayActivities.map((act: any) => (
+                       {dayActivities.map((act) => (
                           <div 
                             key={act.id} 
                             onClick={() => {
@@ -389,15 +412,35 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                                  <div className={clsx("flex-1", new Date(act.start_datetime) < new Date() && "opacity-60")}>
                                    <div className="flex items-center gap-3 mb-1.5 ">
                                       <h4 className="text-xl font-display font-black text-[var(--color-text)] tracking-tight">{act.title}</h4>
-                                      {new Date(act.start_datetime) < new Date() ? (
-                                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 text-[var(--color-muted)] border border-white/10 rounded-lg text-[8px] font-black uppercase tracking-widest">
-                                           Realitzat
-                                        </div>
-                                      ) : act.metadata?.isLocked && (
-                                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
-                                           <Lock size={10} /> Proximament
-                                        </div>
-                                      )}
+                                       {(() => {
+                                         const participants = act.move_activity_participants || [];
+                                         const joinedCount = participants.filter(p => p.status === 'joined').length;
+                                         const isUserWaitlisted = participants.some(p => p.profile_id === profile?.id && p.status === 'waitlisted');
+                                         const isFull = act.max_capacity ? joinedCount >= act.max_capacity : false;
+
+                                         if (isUserWaitlisted) {
+                                           return (
+                                             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                               <Clock size={10} /> Espera
+                                             </div>
+                                           );
+                                         }
+                                         if (isFull && !act.move_activity_participants?.some(p => p.profile_id === profile?.id)) {
+                                           return (
+                                             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                               Plenari
+                                             </div>
+                                           );
+                                         }
+                                         if (act.metadata?.isLocked) {
+                                           return (
+                                              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                                 <Lock size={10} /> Proximament
+                                              </div>
+                                           );
+                                         }
+                                         return null;
+                                       })()}
                                    </div>
                                    <div className="flex flex-wrap items-center gap-y-2 gap-x-3 text-[10px] text-[var(--color-muted)] font-bold uppercase tracking-widest">
                                       <span style={{ color: act.move_categories?.move_groups?.accent_color }} className="opacity-80">
@@ -412,11 +455,15 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                                         </>
                                       )}
                                       
-                                      {act.move_activity_participants?.length > 0 && (
+                                      {act.move_activity_participants && act.move_activity_participants.length > 0 && (
                                         <div className="flex items-center gap-2 ml-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
                                           <Users size={10} className="text-[var(--color-accent)]" />
                                           <span className="text-white/70 normal-case font-medium">
-                                            {act.move_activity_participants.map((p: any) => p.move_profiles?.username).filter(Boolean).join(', ')}
+                                            {act.move_activity_participants
+                                              .filter(p => p.status === 'joined')
+                                              .map((p) => p.move_profiles?.username)
+                                              .filter(Boolean)
+                                              .join(', ')}
                                           </span>
                                         </div>
                                       )}
@@ -426,7 +473,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
 
                              <div className="flex items-center gap-4">
                                 {(() => {
-                                  const isJoined = act.move_activity_participants?.some((p: any) => p.move_profiles?.username === profile?.username);
+                                  const isJoined = act.move_activity_participants?.some((p) => p.profile_id === profile?.id);
                                   const isPast = new Date(act.start_datetime) < new Date();
                                   
                                   return (
@@ -526,7 +573,8 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
         onClose={() => setSelectedDetailActivity(null)}
         activity={selectedDetailActivity}
         isAdmin={isAdmin}
-        isJoined={selectedDetailActivity?.move_activity_participants?.some((p: any) => p.move_profiles?.username === profile?.username)}
+        userId={profile?.id}
+        isJoined={selectedDetailActivity?.move_activity_participants?.some((p) => p.profile_id === profile?.id) || false}
         loadingAction={loadingAction}
         onJoinLeave={(id, joined) => handleJoinLeave(id, joined)}
         onEdit={(act) => {

@@ -99,7 +99,13 @@ export default async function WorkPage({
                   {content.mimeType?.startsWith('video') ? (
                     <video src={content.url} controls className="w-full h-auto block" />
                   ) : (
-                    <img src={content.url} className="w-full h-auto block" alt="" />
+                    <Image 
+                      src={content.url} 
+                      alt="" 
+                      width={1400} 
+                      height={800} 
+                      className="w-full h-auto block" 
+                    />
                   )}
                </div>
             </div>

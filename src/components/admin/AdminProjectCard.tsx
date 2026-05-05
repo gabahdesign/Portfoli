@@ -3,6 +3,7 @@
 import { Edit2, Trash2, Copy, Lock, Star, Eye, ExternalLink } from "lucide-react";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface AdminProjectCardProps {
   work: any;
@@ -24,7 +25,13 @@ export function AdminProjectCard({ work, onDelete, onDuplicate }: AdminProjectCa
           {work.cover_url.match(/\.(mp4|webm|mov)$/i) ? (
             <video src={work.cover_url} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" muted loop autoPlay />
           ) : (
-            <img src={work.cover_url} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" alt={work.title} />
+            <Image 
+              src={work.cover_url} 
+              fill
+              className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" 
+              alt={work.title} 
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
           )}
 
           {/* Status Badges Overlay */}
@@ -59,8 +66,13 @@ export function AdminProjectCard({ work, onDelete, onDuplicate }: AdminProjectCa
           <h3 className="text-lg font-bold text-[var(--color-text)] font-display tracking-tight group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">{work.title}</h3>
           <p className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mt-1 flex items-center gap-2">
             {work.companies?.logo_url && (
-              <span className="w-4 h-4 rounded-full overflow-hidden bg-white/5 border border-white/10 shrink-0">
-                <img src={work.companies.logo_url} alt="" className="w-full h-full object-cover" />
+              <span className="w-4 h-4 rounded-full overflow-hidden bg-white/5 border border-white/10 shrink-0 relative">
+                <Image 
+                  src={work.companies.logo_url} 
+                  alt="" 
+                  fill
+                  className="object-cover" 
+                />
               </span>
             )}
             <span className="truncate">{work.companies?.name || "Sin asociar"}</span>

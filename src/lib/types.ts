@@ -79,3 +79,66 @@ export interface CVSection {
   content: any; // LocalizedText or structured content
   sort_order: number;
 }
+
+// Move Types
+export interface MoveProfile {
+  id: string;
+  email: string;
+  name: string;
+  surname: string;
+  phone: string | null;
+  location: string | null;
+  username: string | null;
+  created_at: string;
+}
+
+export interface MoveGroup {
+  id: string;
+  name: string;
+  icon_key: string;
+  accent_color: string;
+  created_at: string;
+}
+
+export interface MoveCategory {
+  id: string;
+  group_id: string;
+  name: string;
+  created_at: string;
+  move_groups?: MoveGroup;
+}
+
+export interface MoveActivity {
+  id: string;
+  category_id: string;
+  creator_id: string;
+  title: string;
+  description: string | null;
+  location: string | null;
+  location_coords: { lat: number; lng: number } | null;
+  start_datetime: string;
+  end_datetime: string | null;
+  metadata: {
+    isLocked?: boolean;
+    unlockAt?: string;
+    distance?: number;
+    elevation?: number;
+    difficulty?: string;
+    isAllDay?: boolean;
+  } | null;
+  whatsapp_link: string | null;
+  subcategory_id: string | null;
+  max_capacity: number | null; // Added for Waitlist logic
+  created_at: string;
+  move_categories?: MoveCategory;
+  move_activity_participants?: MoveParticipant[];
+}
+
+export interface MoveParticipant {
+  id: string;
+  activity_id: string;
+  profile_id: string;
+  status: 'joined' | 'waitlisted'; // Added for Waitlist logic
+  created_at: string;
+  move_profiles?: MoveProfile;
+}

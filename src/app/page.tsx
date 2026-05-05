@@ -214,9 +214,11 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
                 <div className="w-full md:w-1/3 aspect-square relative group-hover:rotate-3 transition-transform duration-500">
                   <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/20 to-transparent rounded-3xl blur-xl" />
                   <div className="relative w-full h-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl flex items-center justify-center p-8 shadow-2xl overflow-hidden">
-                    <img 
+                    <Image 
                       src="/webs/impostor/icons/logo.svg" 
                       alt="Impostor Logo" 
+                      width={150}
+                      height={150}
                       className="w-full h-auto max-w-[150px] drop-shadow-2xl animate-pulse dark:invert"
                     />
                   </div>

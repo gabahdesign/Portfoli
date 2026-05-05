@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Lock, ArrowUpRight, FileText } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRef } from "react";
@@ -85,10 +86,12 @@ export function FeaturedWorkCard({
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--color-accent)]/10 to-transparent blur-3xl opacity-30" />
                 </div>
               ) : (
-                <img
+                <Image
                   src={coverUrl}
                   alt={title}
-                  className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               )}
             </div>
