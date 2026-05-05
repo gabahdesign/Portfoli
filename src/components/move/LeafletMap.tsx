@@ -75,7 +75,7 @@ export default function LeafletMap({
                       onClick={() => onSelectActivity?.(act)}
                       className="w-full py-2.5 bg-[#156EF6] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#0F5ED4] transition-all"
                     >
-                      Vull m'apunto
+                      Unir-me
                     </button>
                     <a 
                       href={`https://www.google.com/maps/dir/?api=1&destination=${act.location_coords.lat},${act.location_coords.lng}`}

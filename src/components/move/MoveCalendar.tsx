@@ -54,6 +54,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
   const [selectedDetailActivity, setSelectedDetailActivity] = useState<MoveActivity | null>(null);
   const [pendingJoinActivityId, setPendingJoinActivityId] = useState<string | null>(null);
   const [exportCalendarUrl, setExportCalendarUrl] = useState<string>("");
+  const [showMyPlansOnly, setShowMyPlansOnly] = useState(false);
 
   useEffect(() => {
     const url = getAllActivitiesIcs(filteredActivities);
@@ -82,19 +83,29 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
 
   const filteredActivities = useMemo(() => {
     let result = activities;
+
+    // Search filter
     if (searchTerm.trim()) {
       const s = searchTerm.toLowerCase();
-      result = activities.filter(act => 
+      result = result.filter(act => 
         act.title?.toLowerCase().includes(s) || 
         act.location?.toLowerCase().includes(s) ||
         act.move_categories?.name?.toLowerCase().includes(s)
       );
     }
+
+    // My Plans filter
+    if (showMyPlansOnly && profile) {
+      result = result.filter(act => 
+        act.move_activity_participants?.some(p => p.profile_id === profile.id && p.status === 'joined')
+      );
+    }
+
     // "Més recents a més antics" = Descending order (Newest first)
     return [...result].sort((a, b) => 
       new Date(b.start_datetime).getTime() - new Date(a.start_datetime).getTime()
     );
-  }, [activities, searchTerm]);
+  }, [activities, searchTerm, showMyPlansOnly, profile]);
 
   const daysInMonth = useMemo(() => {
     const year = currentDate.getFullYear();
@@ -235,14 +246,30 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-           <div className="relative flex-1 min-w-[150px]">
-             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" size={14} />
+           {profile && (
+             <button 
+               type="button"
+               onClick={() => setShowMyPlansOnly(!showMyPlansOnly)}
+               className={clsx(
+                 "px-4 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center gap-2",
+                 showMyPlansOnly 
+                   ? "bg-[var(--color-accent)] border-[var(--color-accent)] text-white shadow-lg" 
+                   : "bg-[var(--color-surface-2)] border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-text)]"
+               )}
+             >
+               <Users size={14} />
+               <span>{showMyPlansOnly ? "Tots els plans" : "Els meus plans"}</span>
+             </button>
+           )}
+
+           <div className="relative flex-1 min-w-[200px] group">
+             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)] transition-colors group-focus-within:text-[var(--color-accent)]" size={14} />
              <input 
                type="text" 
                placeholder="Cerca activitats..." 
+               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all w-full"
                value={searchTerm}
                onChange={(e) => setSearchTerm(e.target.value)}
-               className="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-[var(--color-accent)] transition-all w-full"
              />
            </div>
            
@@ -335,7 +362,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
                   }}
                   className={clsx(
                     "bg-[var(--color-surface)] p-4 min-h-[140px] border-t border-[var(--color-border)] transition-all hover:bg-[var(--color-surface-2)] relative group cursor-pointer",
-                    isToday && "bg-[var(--color-accent-subtle)]/5"
+                    isToday && "ring-2 ring-inset ring-[var(--color-accent)] bg-[var(--color-accent)]/5"
                   )}
                 >
                   <span className={clsx(
@@ -592,7 +619,7 @@ export function MoveCalendar({ isAdmin, profile, groups, categories, activities 
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={() => {
-          router.refresh();
+          window.location.reload();
         }}
       />
 

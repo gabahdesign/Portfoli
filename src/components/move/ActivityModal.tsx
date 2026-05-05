@@ -230,9 +230,12 @@ export function ActivityModal({ isOpen, onClose, groups, categories, editActivit
     if (res.success) {
       setNewCategoryName("");
       setIsAddingCategory(false);
-      // Use router.refresh() but don't let it reset everything immediately
+      
+      // We need to wait for router.refresh to propagate the new category to props
+      // so we can actually select it. Or we can optimisticially set it if we had the ID.
+      // Since server action returns {success: true}, we'll refresh and notify.
       router.refresh();
-      showNotification("Categoria afegida!", "success");
+      showNotification("Categoria afegida! Ara selecciona-la a la llista.", "success");
     } else {
       showNotification(res.error || "Error al afegir categoria", "error");
     }

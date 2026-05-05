@@ -292,7 +292,7 @@ export function MoveActivityDetailModal({
                     ) : isFull ? (
                       "Apunta'm a la llista d'espera"
                     ) : (
-                      "Vull m'apunto al plan"
+                      "Unir-me al plan"
                     )}
                   </button>
 
