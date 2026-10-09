@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
   if (!session) return new NextResponse("Torna a iniciar sessió", { status: 401 });
   let tokenHash: string;
   try {
-    const exchange = await fetch(`${local ? callback.origin : calendarOrigin}/api/auth/descobreix`, {
+    const exchangeOrigin = local && process.env.CALENDAR_SSO_EXCHANGE_ORIGIN !== calendarOrigin ? callback.origin : calendarOrigin;
+    const exchange = await fetch(`${exchangeOrigin}/api/auth/descobreix`, {
       method: "POST", headers: { Authorization: `Bearer ${session.access_token}` },
       cache: "no-store", redirect: "error", signal: AbortSignal.timeout(15_000),
     });
