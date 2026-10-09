@@ -45,7 +45,7 @@ export function PortfolioFeed({ works, token, locale, initialCompanyId, companie
   return (
     <section className="studio-projects" id="projects" aria-labelledby="projects-title">
       <div className="project-section-heading">
-        <div><p className="studio-label">01 / {c.title}</p><h2 id="projects-title">{c.title}<sup>{works.length.toString().padStart(2, "0")}</sup></h2></div>
+        <div><h2 id="projects-title">{c.title}<sup>{works.length.toString().padStart(2, "0")}</sup></h2></div>
         {works.length > 0 && <Link className="presentation-link" href="?mode=present" scroll={false}><Maximize2 size={14} />{c.present}</Link>}
       </div>
       <div className="project-toolbar">

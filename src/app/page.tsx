@@ -50,16 +50,16 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         <PresentationLoader works={works.map(work => ({ slug: work.slug, title: work.title, cover_url: work.cover_url || undefined, pdf_url: work.pdf_url || undefined }))} />
         {worksRes.error ? <section className="studio-empty" id="projects" role="status"><p>{c.unavailable}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
         {clients.length > 0 && <section className="studio-clients">
-          <div><p className="studio-label">02 / CLIENTS</p><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
+          <div><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
           <div className="client-grid">{clients.map(company => <Link href={`/v/preview/empresa/${company.slug}`} prefetch={false} key={company.id} className={`studio-client${company.logo_url ? " has-logo" : ""}`} aria-label={company.name}>
             {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="(max-width: 767px) 100px, 120px" quality={75} className="object-contain" /></div>}
             <span className="client-name">{company.name}</span>
           </Link>)}</div>
         </section>}
         <section className="studio-experiments">
-          <p className="studio-label">03 / {c.more}</p><h2 className="studio-section-title">{c.more}</h2>
+          <h2 className="studio-section-title">{c.more}</h2>
 
-          <a href={`/webs/impostor/index.html?lang=${locale}`} className="experiment-row"><span className="experiment-number">01</span><div><h2>{c.game}</h2><p>Experimental AI project</p></div><span className="experiment-cta">{c.play}<ArrowUpRight size={19} /></span></a>
+          <a href={`/webs/impostor/index.html?lang=${locale}`} className="experiment-row"><div><h2>{c.game}</h2><p>Experimental AI project</p></div><span className="experiment-cta">{c.play}<ArrowUpRight size={19} /></span></a>
         </section>
         </details>
         <section className="studio-home-section" aria-labelledby="move-title">
