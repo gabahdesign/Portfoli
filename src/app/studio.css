@@ -285,3 +285,68 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 .descobreix-access-card{max-width:440px;width:100%;margin:auto;border:1px solid var(--color-border);border-radius:16px;padding:32px;background:var(--color-surface)}
 @media(max-width:800px){.descobreix-access{grid-template-columns:1fr;padding:90px 24px 40px}.descobreix-access-intro{min-height:240px;padding:30px}.descobreix-access-card{padding:24px}}
 .descobreix-access h1,.descobreix-access h2{font-family:var(--font-space-grotesk),sans-serif;font-weight:500;letter-spacing:-.045em}
+
+/* Reserve the rail once, so wide screens use the whole remaining viewport. */
+.portfolio-shell main, .portfolio-shell section, .portfolio-shell article { min-width: 0; }
+.studio-route-content { overflow-wrap: anywhere; }
+.studio-project-sections { flex-wrap: wrap; }
+@media (min-width: 768px) {
+  .portfolio-shell:has(> .studio-header) { padding-left: 80px; }
+  .portfolio-shell:has(> .studio-header) > .studio-main,
+  .portfolio-shell:has(> .studio-header) > .studio-footer,
+  .portfolio-shell:has(> .studio-header) > .studio-route-content { margin-left: 0; }
+  .studio-main { max-width: none; width: 100%; padding-inline: clamp(24px, 3.5vw, 96px); }
+  .studio-footer { padding-inline: clamp(24px, 3.5vw, 96px); }
+  .portfolio-hero { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+  .hero-object { min-height: clamp(310px, 23vw, 620px); }
+  .orb { width: clamp(190px, 17vw, 440px); }
+  .client-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+}
+@media (min-width: 1600px) {
+  .studio-work-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .studio-route-content > .max-w-7xl { max-width: 1920px; }
+}
+@media (min-width: 2300px) {
+  .studio-work-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .studio-header { gap: 12px; padding-inline: 16px; }
+  .studio-header .studio-wordmark { flex-shrink: 0; font-size: 22px; }
+  .studio-header .header-controls { gap: 4px; min-width: 0; }
+  .studio-header .studio-settings-trigger { padding: 10px; min-width: 40px; min-height: 44px; justify-content: center; }
+  .studio-header .studio-settings-trigger > span { display: none; }
+  .studio-header .studio-menu { min-width: 40px; min-height: 44px; justify-content: center; padding: 10px; }
+  .studio-header .studio-language-trigger { min-height: 44px; }
+  .studio-main { padding-inline: 16px; }
+  .project-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .project-search { grid-column: 1 / -1; }
+  .toolbar-select { min-width: 0; }
+  .toolbar-select select { max-width: 100%; width: 100%; }
+  .view-switch { margin-left: 0; }
+  .studio-client { min-width: 0; overflow-wrap: anywhere; }
+  .project-pagination { flex-wrap: wrap; }
+  .studio-route-content .overflow-x-auto { max-width: 100%; }
+}
+@media (max-width: 400px) {
+  .studio-language-trigger > span { display: none; }
+}
+@media (max-width: 360px) {
+  .studio-header .studio-logo-full { display: none; }
+  .studio-header .studio-logo-mark { display: block; font-size: 24px; font-weight: 700; }
+  .studio-header .studio-wordmark { min-width: 24px; }
+}
+@media (min-width: 768px) {
+  .portfolio-shell:has(> .studio-header.is-collapsed) > .studio-main,
+  .portfolio-shell:has(> .studio-header.is-collapsed) > .studio-footer { margin-left: 0; }
+}
+
+.studio-section-title, .project-section-heading h2, .studio-clients h2, .studio-section-summary h2 { font: 500 30px var(--font-space-grotesk), sans-serif; letter-spacing: -.04em; margin-top: 12px; }
+.studio-section-summary { position: relative; list-style: none; padding: 32px 0; border-top: 1px solid var(--color-border); cursor: pointer; }
+.studio-section-summary::-webkit-details-marker { display: none; }
+.studio-disclosure { position: absolute; right: 0; top: 42px; font-size: 24px; }
+.studio-portfolio-group[open] > summary .studio-disclosure { transform: rotate(45deg); }
+.studio-section-summary:focus-visible { outline: 2px solid var(--color-text); outline-offset: 4px; }
+.studio-home-section { border-top: 1px solid var(--color-border); padding: 32px 0 48px; }
+.studio-home-section .clients-intro { max-width: 620px; margin: 18px 0 24px; }
+.studio-experiments > .studio-section-title { margin-bottom: 24px; }
+@media(max-width:767px) { .experiment-row { flex-wrap: wrap; } .experiment-row > div { min-width: 0; flex: 1; } .experiment-cta { margin-left: 36px; } }

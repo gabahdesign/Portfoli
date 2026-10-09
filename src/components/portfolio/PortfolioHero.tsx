@@ -27,7 +27,7 @@ export function PortfolioHero({ name, tagline, locale, token = "preview" }: { na
         <span className="object-caption">DESCOBREIX®<br />CREATIVE EXPLORATION</span>
         <span className="object-cross">+</span>
       </div>
-      <div className="hero-footer"><span>01 — PORTFOLIO</span><span>{c.index}</span><ArrowDown size={14} /></div>
+      <div className="hero-footer"><span>DESCOBREIX</span><span>{c.index}</span><ArrowDown size={14} /></div>
     </section>
   );
 }
