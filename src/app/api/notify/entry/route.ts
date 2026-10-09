@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const { token } = await request.json();
     if (!token || token === 'preview') return new NextResponse('OK', { status: 200 });
 
-    const supabase = await createClient();
+    const supabase = await createClient(token || undefined);
 
     // 1. Get token and company info
     const { data: tokenData } = await supabase

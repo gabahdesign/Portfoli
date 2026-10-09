@@ -7,7 +7,7 @@ export default async function ProjectesPage({ params, searchParams }: { params: 
   const { token } = await params;
   const { tab } = await searchParams;
   const isWeb = tab === "web";
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
   const locale = await getLocale();
 
   // All companies remain available in the archive hierarchy.

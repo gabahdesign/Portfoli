@@ -7,7 +7,7 @@ import Image from "next/image";
 export default async function BlogPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const locale = await getLocale();
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   const { data: posts } = await supabase
     .from("blog_posts")

@@ -1,86 +1,13 @@
 "use client";
-
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-
-export default function AdminLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-    } else {
-      const calendarState = new URLSearchParams(window.location.search).get("calendar_state");
-      if (calendarState && /^[a-f0-9]{64}$/.test(calendarState)) { window.location.assign(`/api/calendar/access?state=${calendarState}`); return; }
-      router.push("/admin/dashboard");
-      router.refresh();
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-[var(--color-bg)]">
-      <div className="max-w-md w-full bg-[var(--color-surface)] border border-[var(--color-border)] p-10 rounded-2xl shadow-2xl">
-        <div className="text-center mb-10">
-          <h1 className="font-display text-4xl font-black text-[var(--color-text)] mb-3 tracking-tight">Accés Privat</h1>
-          <p className="text-[var(--color-muted)] text-sm font-medium">Identifica&apos;t per gestionar el teu portfolio.</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-lg animate-shake">
-              {error}
-            </div>
-          )}
-          
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 px-1">Email de l&apos;Administrador</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-5 py-3.5 text-[var(--color-text)] font-medium focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
-              placeholder="admin@descobreix.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-2 px-1">Contrasenya</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-5 py-3.5 text-[var(--color-text)] font-medium focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold py-4 rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-[var(--color-accent-glow)] hover:scale-[1.02] active:scale-[0.98]"
-          >
-            {loading ? "Verificant..." : "Entrar al Panel d'Administració"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+import {useState} from "react";
+import Link from "next/link";
+import {ArrowLeft,ArrowUpRight,Sun,Moon} from "lucide-react";
+import {createClient} from "@/lib/supabase/client";
+import {useRouter} from "next/navigation";
+import {LanguageFlag} from "@/components/ui/LanguageFlag";
+export default function AdminLogin(){
+ const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[error,setError]=useState(""),[loading,setLoading]=useState(false),[dark,setDark]=useState(false);
+ const router=useRouter();
+ async function login(e:React.FormEvent){e.preventDefault();setLoading(true);setError("");const {error}=await createClient().auth.signInWithPassword({email,password});if(error){setError("El correu o la contrasenya no són correctes. Torna-ho a provar.");setLoading(false);return;}const state=new URLSearchParams(location.search).get("calendar_state");if(state&&/^[a-f0-9]{64}$/.test(state)){location.assign(`/api/calendar/access?state=${state}`);return;}router.push("/admin/dashboard");router.refresh();}
+ return <div className="descobreix-access"><div className="absolute top-6 right-6 flex gap-3 items-center"><span className="flex gap-2 items-center text-sm"><LanguageFlag code="ca"/>Català</span><button type="button" aria-label="Canviar aparença" onClick={()=>{const value=document.documentElement.dataset.studioTheme!=="dark";document.documentElement.dataset.studioTheme=value?"dark":"light";localStorage.setItem("studio-theme",value?"dark":"light");setDark(value);}} className="access-secondary">{dark?<Sun size={17}/>:<Moon size={17}/>}</button></div><section className="descobreix-access-intro"><Link href="/" className="flex gap-2 items-center text-sm"><ArrowLeft size={17}/>Tornar al web</Link><div><p className="text-sm uppercase tracking-widest text-[var(--color-muted)] mb-5">Descobreix</p><h1 className="text-5xl sm:text-6xl leading-tight">El teu espai.<br/>Tot connectat.</h1><p className="text-[var(--color-muted)] mt-6 max-w-sm">Gestiona els projectes, el blog i el teu perfil. Accedeix al calendari Move amb el mateix compte.</p></div><p className="text-xs text-[var(--color-muted)] mt-6">Disseny · Comunitat · Trajectòria</p></section><section className="descobreix-access-card"><p className="text-xs uppercase tracking-widest text-[var(--color-muted)]">Administració</p><h2 className="text-3xl mt-3">Benvingut de nou</h2><p className="text-sm text-[var(--color-muted)] mt-3 mb-8">Inicia sessió per editar Descobreix.</p><form onSubmit={login} className="space-y-5"><label className="block text-sm" htmlFor="admin-email">Correu electrònic<input id="admin-email" type="email" autoComplete="username" required value={email} onChange={e=>setEmail(e.target.value)}/></label><label className="block text-sm" htmlFor="admin-password">Contrasenya<input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={e=>setPassword(e.target.value)}/></label>{error&&<p role="alert" className="text-sm">{error}</p>}<button disabled={loading} className="access-primary w-full">{loading?"Verificant…":"Iniciar sessió"}<ArrowUpRight size={17}/></button></form></section></div>;
 }

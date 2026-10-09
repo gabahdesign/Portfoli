@@ -26,7 +26,7 @@ export default async function WorkPage({
 }) {
   const { token, slug } = await params;
 
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   // Obtain work info
   const { data: work, error } = await supabase

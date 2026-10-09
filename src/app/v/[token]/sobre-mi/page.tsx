@@ -1,4 +1,5 @@
 import CurriculumContent from "@/components/portfolio/CurriculumContent";
+import AboutAccessRequest from "@/components/portfolio/AboutAccessRequest";
 import { canAccessAbout } from "@/lib/about-access";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
@@ -12,9 +13,9 @@ import Underline from "@tiptap/extension-underline";
 
 export default async function AboutMePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  if (!(await canAccessAbout(token))) return <div className="max-w-4xl mx-auto px-6 py-20"><h1 className="text-4xl mb-6">Sobre mi</h1><p>Aquest espai i el currículum només estan disponibles amb un enllaç d&apos;accés personal. Demana&apos;l a <a className="underline" href="mailto:info@descobreix.com">info@descobreix.com</a>.</p></div>;
+  if (!(await canAccessAbout(token))) return <AboutAccessRequest />;
   const locale = await getLocale();
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   const ADMIN_PROFILE_ID = "00000000-0000-0000-0000-000000000000";
   const { data: about } = await supabase

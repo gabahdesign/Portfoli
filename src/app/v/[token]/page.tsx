@@ -16,7 +16,7 @@ export default async function PortfolioHome({
   const { companyId } = await searchParams;
   const locale = await getLocale();
   const t = await getTranslations("Index");
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   let tokenData = null;
   let aboutData = null;

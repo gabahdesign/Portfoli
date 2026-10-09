@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default async function CompanyPage({ params }: { params: Promise<{ token: string, slug: string }> }) {
   const { token, slug } = await params;
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   const { data: company, error } = await supabase
     .from("companies")

@@ -23,23 +23,24 @@ export default async function AdminDashboard() {
     { data: topWorks },
     { data: last30DaysActivity },
   ] = await Promise.all([
-    supabase.from("analytics_events").select("*", { count: "exact", head: true }),
+    supabase.from("analytics_events").select("*", { count: "exact", head: true }).eq("event_type","page_enter"),
     supabase.from("works").select("*", { count: "exact", head: true }),
     supabase.from("companies").select("*", { count: "exact", head: true }),
     supabase.from("access_tokens").select("*", { count: "exact", head: true }),
     supabase
       .from("analytics_events")
-      .select("id, event_type, duration_sec, scroll_pct, created_at, access_tokens(token, companies(name))")
+      .select("id, event_type, duration_sec, scroll_pct, created_at, access_tokens(token, label)")
       .order("created_at", { ascending: false })
       .limit(8),
     supabase
       .from("analytics_events")
-      .select("work_id, works(title)")
-      .not("work_id", "is", null)
+      .select("resource_id")
+      .not("resource_id", "is", null)
       .limit(100),
     supabase
       .from("analytics_events")
       .select("created_at")
+      .eq("event_type","page_enter")
       .gte("created_at", thirtyDaysStr),
   ]);
 
@@ -67,12 +68,13 @@ export default async function AdminDashboard() {
 
   // Aggregate work views
   const workViewCounts: Record<string, { title: string; count: number }> = {};
+  const ids = [...new Set((topWorks || []).map(e=>e.resource_id).filter(Boolean))];
+  const {data: workNames} = ids.length ? await supabase.from("works").select("id,title").in("id",ids) : {data:[]};
   (topWorks ?? []).forEach((e) => {
-    if (!e.work_id) return;
-    const relatedWork = Array.isArray(e.works) ? e.works[0] : e.works;
-    const title = relatedWork?.title ?? e.work_id;
-    if (!workViewCounts[e.work_id]) workViewCounts[e.work_id] = { title, count: 0 };
-    workViewCounts[e.work_id].count++;
+    if (!e.resource_id) return;
+    const title = workNames?.find(w=>w.id===e.resource_id)?.title || "Projecte";
+    if (!workViewCounts[e.resource_id]) workViewCounts[e.resource_id] = { title, count: 0 };
+    workViewCounts[e.resource_id].count++;
   });
   const sortedWorks = Object.entries(workViewCounts)
     .sort(([, a], [, b]) => b.count - a.count)
@@ -144,7 +146,7 @@ export default async function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {recentEvents.map((ev: any) => {
-                const company = ev.access_tokens?.companies?.name ?? "Visitant Directe";
+                const company = ev.access_tokens?.label ?? "Visitant Directe";
                 const date = new Date(ev.created_at).toLocaleDateString("ca-ES", { day: "2-digit", month: "short" });
                 const time = new Date(ev.created_at).toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" });
                 return (

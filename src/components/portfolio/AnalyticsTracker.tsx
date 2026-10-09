@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 interface DropTrackerProps {
@@ -9,6 +9,7 @@ interface DropTrackerProps {
 
 export function AnalyticsTracker({ token }: DropTrackerProps) {
   const pathname = usePathname();
+  const recorded = useRef("");
 
   useEffect(() => {
     // 1. Notify Access (Resend) if it's the first time
@@ -63,7 +64,8 @@ export function AnalyticsTracker({ token }: DropTrackerProps) {
       });
     };
     
-    sendPageView();
+    const key = `${token}:${pathname}`;
+    if (recorded.current !== key) { sendPageView(); recorded.current = key; }
 
     // Send leave event on unmount
     return () => {

@@ -274,3 +274,14 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 }
 .studio-admin-overview { border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
 .studio-admin-overview > summary { padding: 16px 24px; cursor: pointer; font-size: 13px; }
+
+.about-request input,.about-request textarea,.descobreix-access input{display:block;width:100%;margin-top:8px;padding:13px 15px;background:var(--color-surface);color:var(--color-text);border:1px solid var(--color-border);border-radius:8px;outline-offset:3px}
+.access-primary,.access-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:11px 18px;border-radius:8px;font-size:14px;border:1px solid var(--color-border);cursor:pointer}
+.access-primary{background:var(--color-text);color:var(--color-bg)}
+.access-secondary{background:var(--color-surface);color:var(--color-text)}
+.access-primary:disabled,.access-secondary:disabled{opacity:.5;cursor:wait}
+.descobreix-access{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:6vw;align-items:center;padding:80px 7vw;position:relative;background:var(--color-bg);color:var(--color-text)}
+.descobreix-access-intro{border:1px solid var(--color-border);border-radius:20px;padding:60px 40px;min-height:480px;display:flex;flex-direction:column;justify-content:space-between;background:var(--color-surface)}
+.descobreix-access-card{max-width:440px;width:100%;margin:auto;border:1px solid var(--color-border);border-radius:16px;padding:32px;background:var(--color-surface)}
+@media(max-width:800px){.descobreix-access{grid-template-columns:1fr;padding:90px 24px 40px}.descobreix-access-intro{min-height:240px;padding:30px}.descobreix-access-card{padding:24px}}
+.descobreix-access h1,.descobreix-access h2{font-family:var(--font-space-grotesk),sans-serif;font-weight:500;letter-spacing:-.045em}

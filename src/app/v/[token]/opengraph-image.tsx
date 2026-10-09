@@ -10,7 +10,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image({ params }: { params: { token: string } }) {
-  const supabase = await createClient();
+  const supabase = await createClient(params.token);
   const { data: tokenData } = await supabase
     .from("access_tokens")
     .select("label")

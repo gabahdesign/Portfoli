@@ -8,7 +8,7 @@ import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
   const { token } = await params;
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
   
   const isPreview = token === "preview";
   
@@ -45,7 +45,7 @@ export default async function TokenLayout({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
   const locale = await getLocale();
   const { data: { user } } = await supabase.auth.getUser();
 

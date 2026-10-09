@@ -57,6 +57,7 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { headers: { 'x-portfolio-token': pathname.match(/^\/v\/([^/]+)/)?.[1] || '' } },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -77,7 +78,7 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   // Redirect /admin users without auth
-  if (pathname.startsWith('/admin') && pathname !== '/admin' && !user) {
+  if (pathname.startsWith('/admin') && pathname !== '/admin' && user?.id !== 'a899bd7c-d921-4bf4-a3d6-63ff0460e418') {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
