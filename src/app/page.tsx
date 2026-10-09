@@ -50,7 +50,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
           <a href={`/webs/impostor/index.html?lang=${locale}`} className="experiment-row"><span className="experiment-number">02</span><div><h2>{c.game}</h2><p>Experimental AI project</p></div><span className="experiment-cta">{c.play}<ArrowUpRight size={19} /></span></a>
         </section>
       </main>
-      <footer className="studio-footer"><Link href="/" className="studio-wordmark">descobreix<span>↗</span></Link><p>{c.footer}</p><Link href="/v/preview/cv">{t("view_cv")}<ArrowUpRight size={14} /></Link></footer>
+      <footer className="studio-footer"><Link href="/" className="studio-wordmark">descobreix</Link><p>{c.footer}</p><Link href="/v/preview/cv">{t("view_cv")}<ArrowUpRight size={14} /></Link></footer>
     </div>
   );
 }

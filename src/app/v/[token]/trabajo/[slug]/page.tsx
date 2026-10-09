@@ -103,7 +103,9 @@ export default async function WorkPage({
                       src={content.url} 
                       alt="" 
                       width={1400} 
-                      height={800} 
+                      height={800}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1480px) calc(100vw - 128px), 1400px"
+                      quality={85}
                       className="w-full h-auto block" 
                     />
                   )}

@@ -43,7 +43,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-16 pb-8 border-b border-color-border">
          <div className="w-24 h-24 bg-color-surface border border-color-border rounded-xl flex items-center justify-center p-3 relative shrink-0">
             {company.logo_url ? (
-              <Image src={company.logo_url} alt={company.name} fill className="object-contain p-2" />
+              <Image src={company.logo_url} alt={company.name} fill sizes="96px" quality={75} className="object-contain p-2" />
             ) : (
                <span className="text-3xl font-display font-black text-[var(--color-muted)]">{company.name.charAt(0)}</span>
             )}

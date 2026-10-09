@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/portfolio/Navbar";
+import { StudioHeader } from "@/components/portfolio/StudioHeader";
 import { WelcomeBanner } from "@/components/portfolio/WelcomeBanner";
 import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
 import { createClient } from "@/lib/supabase/server";
@@ -72,11 +72,11 @@ export default async function TokenLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex w-full">
+    <div className="portfolio-shell studio-interior min-h-screen bg-[var(--color-bg)] w-full">
       {!isPreview && <AnalyticsTracker token={token} />}
-      <Navbar token={token} locale={locale} isAdmin={!!session} />
+      <StudioHeader token={token} locale={locale} isAdmin={!!session} />
       
-      <main className="flex-1 w-full ml-0 md:ml-[240px] pb-20 md:pb-0 min-h-screen pt-16 md:pt-0 transition-all duration-300 overflow-x-hidden">
+      <main className="studio-route-content pb-20 md:pb-0 min-h-screen overflow-x-hidden">
         {!isPreview && <WelcomeBanner message={welcomeMessage} />}
         {children}
       </main>

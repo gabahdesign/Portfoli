@@ -72,11 +72,12 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
 
   const currentWork = presentationWorks[currentIndex];
 
-  const pdfUrls = (() => {
+  const pdfUrls: string[] = (() => {
     if (!currentWork?.pdf_url) return [];
     try {
       if (currentWork.pdf_url.startsWith('[') && currentWork.pdf_url.endsWith(']')) {
-        return JSON.parse(currentWork.pdf_url);
+        const parsed: unknown = JSON.parse(currentWork.pdf_url);
+        return Array.isArray(parsed) ? parsed.filter((url): url is string => typeof url === "string") : [];
       }
       return [currentWork.pdf_url];
     } catch {

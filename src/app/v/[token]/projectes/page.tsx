@@ -7,24 +7,21 @@ export default async function ProjectesPage({ params }: { params: Promise<{ toke
   const supabase = await createClient();
   const locale = await getLocale();
 
-  // 1. Fetch collaboration companies (all of them to build hierarchy)
+  // All companies remain available in the archive hierarchy.
   const { data: companies } = await supabase
     .from("companies")
     .select("*")
     .order("name");
 
-  // 2. Fetch collaboration company IDs for filtering works initially (only those marked as freelance/collaboration)
-  const collaborationIds = companies?.filter(c => c.is_freelance).map(c => c.id) || [];
-
-  // 3. Fetch published works for those companies
-  const { data: works } = await supabase
+  // Include every published work, regardless of the company's collaboration flag.
+  const { data: works, error } = await supabase
     .from("works")
     .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, companies(name, logo_url)")
-    .in("company_id", collaborationIds)
     .eq("status", "published")
     .order("work_date", { ascending: false });
 
   return (
+    error ? <div className="studio-empty" role="status"><h1>Projectes</h1><p>No s&apos;han pogut carregar els projectes. Torna-ho a provar més tard.</p></div> :
     <PublicArchiveView 
       initialWorks={works || []}
       initialCompanies={companies || []}

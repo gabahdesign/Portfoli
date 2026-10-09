@@ -1,4 +1,4 @@
-/* Portfolio only: the admin and existing applications retain their own theme. */
+/* Shared Descobreix design system: public pages and administration. */
 .portfolio-shell {
   --color-bg: #f7f7f5; --color-surface: #fff; --color-surface-2: #eaeae7;
   --color-border: #d7d7d2; --color-border-subtle: #e8e8e4;
@@ -22,7 +22,7 @@
   .legacy-collapsed nav a { justify-content: center; gap: 0; }
   .legacy-collapsed nav a > span { font-size: 0; width: 0; overflow: hidden; }
   .legacy-collapsed > div > a { font-size: 0; padding: 0; text-align: center; }
-  .legacy-collapsed > div > a::before { content: "d↗"; font-size: 22px; }
+  .legacy-collapsed > div > a::before { content: "d"; font-size: 22px; }
   .legacy-collapsed > div > a > span { display: none; }
   .legacy-collapsed > div > div button, .legacy-collapsed > div > div a { font-size: 0; justify-content: center; padding-left: 0; padding-right: 0; }
   .legacy-collapsed > div > div button > svg, .legacy-collapsed > div > div a > svg { display: none; }
@@ -144,6 +144,7 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
   .studio-header.is-collapsed { width: 80px; padding: 30px 14px 70px; }
   .studio-header.is-collapsed .studio-logo-full, .studio-header.is-collapsed .studio-nav span, .studio-header.is-collapsed .studio-link-arrow, .studio-header.is-collapsed .studio-language-trigger > span, .studio-header.is-collapsed .studio-language-trigger > svg:last-child { display: none; }
   .studio-header.is-collapsed .studio-logo-mark { display: block; font-size: 24px; font-weight: 700; }
+  .studio-header.is-collapsed .studio-wordmark { display: flex; width: 100%; justify-content: center; }
   .studio-header.is-collapsed .studio-nav a, .studio-header.is-collapsed .studio-nav button { justify-content: center; }
   .studio-header.is-collapsed .studio-collapse { align-self: center; }
   .studio-header.is-collapsed .studio-language-trigger { padding: 10px 12px; }
@@ -191,6 +192,13 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
   .studio-footer { padding: 24px 20px; align-items: flex-start; flex-direction: column; gap: 16px; }
   .experiment-cta { font-size: 0; gap: 0; }
 }
+@media (max-width: 1279px) {
+  .studio-admin:has(> .studio-header) > .studio-route-content { padding-top: 64px; }
+  .studio-admin-mobile-header { left: 80px; }
+}
+@media (max-width: 767px) {
+  .studio-admin-mobile-header { top: 72px; left: 0; }
+}
 @media (max-width: 639px) {
   .studio-work-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -201,4 +209,41 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }
   .portfolio-shell *, .portfolio-shell *::before, .portfolio-shell *::after { animation: none !important; transition: none !important; }
+}
+
+/* Interior pages retain their controls, data and layouts, with shared surfaces. */
+.studio-route-content { min-width: 0; }
+.studio-interior h1, .studio-interior h2, .studio-interior h3 { font-family: var(--font-space-grotesk), sans-serif; font-weight: 500; letter-spacing: -.045em; }
+.studio-interior .font-serif { font-family: var(--font-space-grotesk), sans-serif; }
+.studio-interior h1 { text-transform: none; }
+.studio-interior [class*="rounded-2xl"], .studio-interior [class*="rounded-3xl"], .studio-interior [class*="rounded-[2rem]"] { border-radius: 6px; }
+.studio-interior [class*="shadow-"] { box-shadow: none; }
+.studio-interior [class*="backdrop-blur"] { backdrop-filter: none; }
+.studio-interior .text-white { color: var(--color-text); }
+.studio-interior [class*="text-purple-"], .studio-interior [class*="text-violet-"], .studio-interior [class*="text-blue-"] { color: var(--color-muted); }
+.studio-interior [class*="bg-purple-"], .studio-interior [class*="bg-violet-"], .studio-interior [class*="bg-blue-"] { background-color: var(--color-surface-2); }
+.studio-interior [class*="bg-black/"] .text-white, .studio-interior [class*="bg-[#09090b]"] .text-white { color: white; }
+.studio-interior [class~="bg-[var(--color-accent)]"], .studio-interior [class~="bg-[var(--color-text)]"] { color: var(--color-bg); }
+.studio-interior [class~="bg-red-500"] { color: white; }
+.studio-interior input:not([type="checkbox"]):not([type="radio"]), .studio-interior textarea, .studio-interior select { color: var(--color-text); background-color: var(--color-surface); border-color: var(--color-border); }
+.studio-interior table { background: var(--color-surface); font-size: 13px; }
+.studio-interior th { color: var(--color-muted); font-weight: 500; }
+.studio-interior .border-double { border-style: solid; border-width: 1px; }
+.studio-admin main > div { padding-top: 40px; }
+.studio-admin main > div > header, .studio-admin main > div > .mb-10 { border-bottom: 1px solid var(--color-border); padding-bottom: 24px; }
+@media (min-width: 768px) {
+  .portfolio-shell:has(> .studio-header) > .studio-main,
+  .portfolio-shell:has(> .studio-header) > .studio-footer,
+  .portfolio-shell:has(> .studio-header) > .studio-route-content { margin-left: 80px; }
+  .studio-header { transition: width .2s ease; z-index: 90; }
+  .studio-interior .studio-route-content > div { padding-top: 40px; }
+}
+@media (min-width: 1280px) {
+  .studio-admin > aside { position: fixed; right: 0; top: 0; }
+  .studio-admin:has(> aside) > .studio-route-content { margin-right: 288px; }
+}
+@media (max-width: 767px) {
+  .studio-admin main > div { padding-top: 24px; }
+  .studio-interior .company-hierarchy { top: 72px; height: calc(100dvh - 72px); }
+  .studio-nav { max-height: calc(100dvh - 72px); overflow-y: auto; }
 }

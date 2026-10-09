@@ -65,9 +65,10 @@ export default async function AdminDashboard() {
 
   // Aggregate work views
   const workViewCounts: Record<string, { title: string; count: number }> = {};
-  (topWorks ?? []).forEach((e: { work_id: string | null; works: { title: string } | null }) => {
+  (topWorks ?? []).forEach((e) => {
     if (!e.work_id) return;
-    const title = e.works?.title ?? e.work_id;
+    const relatedWork = Array.isArray(e.works) ? e.works[0] : e.works;
+    const title = relatedWork?.title ?? e.work_id;
     if (!workViewCounts[e.work_id]) workViewCounts[e.work_id] = { title, count: 0 };
     workViewCounts[e.work_id].count++;
   });

@@ -70,7 +70,7 @@ export function CompanyHierarchySidebar({
 
   return (
     <aside className={clsx(
-      "fixed lg:sticky top-0 h-screen z-[70] bg-[var(--color-bg)] transition-all duration-500 ease-in-out border-r border-[var(--color-border)] flex flex-col",
+      "company-hierarchy fixed lg:sticky top-0 h-screen z-[70] bg-[var(--color-bg)] transition-all duration-500 ease-in-out border-r border-[var(--color-border)] flex flex-col",
       isOpen ? "translate-x-0 w-80 shadow-2xl" : "-translate-x-full lg:translate-x-0",
       !isOpen ? "lg:w-16 lg:px-2" : "lg:w-80",
       "lg:bg-[var(--color-bg)]/50 lg:backdrop-blur-xl"
