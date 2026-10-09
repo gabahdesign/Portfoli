@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // WebP avoids AVIF's slower first encoding while retaining responsive delivery.
+    formats: ['image/webp'],
+    qualities: [70, 75, 85],
     remotePatterns: [
       {
         protocol: 'https',

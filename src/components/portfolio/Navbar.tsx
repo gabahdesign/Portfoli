@@ -10,6 +10,7 @@ import {
   Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar
 } from "lucide-react";
 import { RequestAccessModal } from "./RequestAccessModal";
+import { MOVE_URL } from "@/lib/move-url";
 
 // Inline SVG flag components
 function FlagCA() {
@@ -235,7 +236,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     { href: `/v/${token}/projectes`, label: t("projectes"), icon: LayoutGrid },
     { href: `/v/${token}/cv`, label: t("cv"), icon: FileText },
     { href: `/v/${token}/blog`, label: "Blog", icon: BookOpen },
-    { href: `/v/${token}/move`, label: t("move"), icon: Calendar },
+    { href: MOVE_URL, label: t("move"), icon: Calendar },
     { href: `/v/${token}/webs`, label: t("webs"), icon: WebIcon },
   ];
 

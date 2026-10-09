@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
-import { PdfPresentationMode } from "@/components/portfolio/PdfPresentationMode";
+import { PresentationLoader as PdfPresentationMode } from "@/components/portfolio/PresentationLoader";
+import { PortfolioHero } from "@/components/portfolio/PortfolioHero";
 import Image from "next/image";
-import Link from "next/link";
-import { Move, Maximize2 } from "lucide-react";
 
 export default async function PortfolioHome({
   params,
@@ -73,73 +72,17 @@ export default async function PortfolioHome({
     return isAllowedByToken || isCollaboration;
   });
 
-  const latestWorkCover = visibleWorks.length > 0 ? visibleWorks[0].cover_url : null;
   const tagline = aboutData?.tagline ? aboutData.tagline[locale] || aboutData.tagline["ca"] : "";
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="portfolio-shell min-h-screen bg-[var(--color-bg)] px-6 md:px-10">
       
-      {/* 1. BLOG-STYLE BANNER (Latest Project Background) */}
-      <section className="relative w-full h-[450px] md:h-[550px] flex items-center justify-center overflow-hidden">
-        {/* Background Image with Parallax-like feel */}
-        {latestWorkCover ? (
-          <div className="absolute inset-0 z-0">
-            <Image 
-              src={latestWorkCover} 
-              alt="Latest Project" 
-              fill 
-              className="object-cover opacity-40 scale-105 blur-[2px]" 
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[var(--color-bg)]/40 to-[var(--color-bg)]" />
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/20 to-black/40 z-0" />
-        )}
-        
-        <div className="z-10 text-center px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <div className="inline-block px-4 py-1.5 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-[10px] font-black uppercase tracking-[0.3em] mb-4 backdrop-blur-md">
-            {locale === 'ca' ? 'Actualització Recent' : 'Latest Update'}
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-8 text-[9px] text-[var(--color-muted)] font-black uppercase tracking-[0.2em] opacity-50">
-            Web en procés &middot; Continguts i idiomes sota revisió (poden haver-hi faltes)
-          </div>
-          <h1 className="text-6xl md:text-8xl font-black text-[var(--color-text)] tracking-tighter mb-6 drop-shadow-2xl">
-            {aboutData?.name || "Marc"}<span className="text-[var(--color-accent)]">.</span>
-          </h1>
-          <p className="text-xl md:text-2xl font-medium text-[var(--color-text)] opacity-70 max-w-2xl mx-auto drop-shadow-md leading-relaxed">
-            {tagline}
-          </p>
-
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-             <Link
-               href="?mode=present"
-               className="group relative px-8 py-4 bg-white text-black font-bold rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl overflow-hidden"
-             >
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-accent)] to-[#AF52F2] opacity-0 group-hover:opacity-10 transition-opacity" />
-                <div className="relative flex items-center gap-3">
-                   <Maximize2 size={20} className="text-[var(--color-accent)]" />
-                   {locale === 'ca' ? 'Presentació de Projectes' : 'Project Presentation'}
-                </div>
-             </Link>
-
-             <Link
-               href={`/v/${token}/move`}
-               className="group px-8 py-4 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] font-bold rounded-2xl transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)] flex items-center gap-3"
-             >
-                <div className="w-8 h-8 rounded-xl bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-110 transition-transform">
-                   <Move size={18} />
-                </div>
-                <span>Move</span>
-             </Link>
-          </div>
-        </div>
-      </section>
+      <PortfolioHero name={aboutData?.name || "Marc G."} tagline={tagline} locale={locale} token={token} />
 
       {/* Global PDF Presentation Overlay */}
       <PdfPresentationMode works={visibleWorks.filter(w => !!w.pdf_url) as any} />
 
-      <div className="max-w-[2000px] mx-auto px-6 pb-32">
+      <div className="max-w-[1400px] mx-auto pb-32">
         
         {/* 2. PORTFOLIO FEED (Search + Filtered Works Grid) */}
         { }
@@ -181,6 +124,7 @@ export default async function PortfolioHome({
                         <Image 
                           src={company.logo_url} 
                           alt={company.name} 
+                          sizes="96px"
                           fill 
                           className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-80 group-hover:opacity-100" 
                         />

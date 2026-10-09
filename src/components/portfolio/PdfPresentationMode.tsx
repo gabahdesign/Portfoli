@@ -172,13 +172,11 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
                       src={currentWork.cover_url} 
                       alt={currentWork.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 1152px"
+                      quality={85}
                       className="object-contain relative z-10 rounded-xl"
                       onLoad={() => setLoading(false)}
                       priority
-                    />
-                    <div 
-                      className="absolute inset-0 blur-3xl opacity-20 z-0 scale-110"
-                      style={{ backgroundImage: `url(${currentWork.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     />
                  </div>
                ) : (
