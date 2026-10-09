@@ -372,3 +372,4 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 .studio-portfolio-group .studio-experiments > h2 { margin-top: 0; }
 .studio-portfolio-group .project-pagination { border-bottom: 0; padding-bottom: 0; }
 .studio-portfolio-group .experiment-row:last-child { border-bottom: 0; }
+.studio-section-summary h2, .studio-home-section > .studio-section-title { text-transform: uppercase; }
