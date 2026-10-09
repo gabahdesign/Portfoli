@@ -362,3 +362,5 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 .studio-client.has-logo { min-height: 156px; }
 .studio-client.has-logo .client-logo { width: min(100%, 120px); height: 88px; }
 @media(max-width:767px) { .studio-client.has-logo { min-height: 140px; } .studio-client.has-logo .client-logo { width: min(100%, 100px); height: 72px; } }
+.studio-portfolio-group .studio-projects,
+.studio-portfolio-group .studio-clients { border-top: 1px solid var(--color-border); padding-top: 32px; }
