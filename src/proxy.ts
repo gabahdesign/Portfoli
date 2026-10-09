@@ -57,6 +57,7 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { headers: { 'x-portfolio-token': pathname.match(/^\/v\/([^/]+)/)?.[1] || '' } },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -74,10 +75,19 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Restore the personal context on every public page, never in administration.
+  const remembered = request.cookies.get('about_access')?.value;
+  if (remembered && /^[a-f0-9]{24,64}$/.test(remembered) && user?.id !== 'a899bd7c-d921-4bf4-a3d6-63ff0460e418' && (pathname === '/' || pathname === '/v/preview' || pathname.startsWith('/v/preview/'))) {
+    const destination = new URL(request.url);
+    destination.pathname = pathname === '/' ? `/v/${remembered}` : pathname.replace('/v/preview', `/v/${remembered}`);
+    // The destination's regular token validation checks revocation and expiry.
+    return NextResponse.redirect(destination);
+  }
 
   // Redirect /admin users without auth
-  if (pathname.startsWith('/admin') && pathname !== '/admin' && !session) {
+  if (pathname.startsWith('/admin') && pathname !== '/admin' && user?.id !== 'a899bd7c-d921-4bf4-a3d6-63ff0460e418') {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
@@ -98,11 +108,21 @@ export async function proxy(request: NextRequest) {
         .single();
 
       if (error || !tokenData || !tokenData.active) {
+        if (remembered === token) {
+          const fallback = NextResponse.redirect(new URL(pathname.replace(`/v/${token}`, '/v/preview'), request.url));
+          fallback.cookies.set('about_access', '', {path:'/', maxAge:0});
+          return fallback;
+        }
         request.nextUrl.pathname = '/404';
         return NextResponse.rewrite(request.nextUrl);
       }
 
       if (tokenData.expires_at && new Date(tokenData.expires_at) < new Date()) {
+        if (remembered === token) {
+          const fallback = NextResponse.redirect(new URL(pathname.replace(`/v/${token}`, '/v/preview'), request.url));
+          fallback.cookies.set('about_access', '', {path:'/', maxAge:0});
+          return fallback;
+        }
         request.nextUrl.pathname = '/404';
         return NextResponse.rewrite(request.nextUrl);
       }

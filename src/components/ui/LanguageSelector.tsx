@@ -3,6 +3,7 @@
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { LanguageFlag } from "./LanguageFlag";
 
 export function LanguageSelector() {
   const locale = useLocale();
@@ -43,7 +44,7 @@ export function LanguageSelector() {
           aria-expanded={isOpen}
           aria-haspopup="true"
         >
-          {locale.toUpperCase()}
+          <LanguageFlag code={locale}/>{locale.toUpperCase()}
           <svg className="-mr-1 size-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
           </svg>
@@ -67,7 +68,7 @@ export function LanguageSelector() {
                 }`}
                 role="menuitem"
               >
-                {lng.label}
+                <span className="flex items-center gap-2"><LanguageFlag code={lng.code}/>{lng.label}</span>
               </button>
             ))}
           </div>

@@ -7,14 +7,15 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Home, User, LayoutGrid, FileText,
-  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar
+  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import { RequestAccessModal } from "./RequestAccessModal";
+import { MOVE_URL } from "@/lib/move-url";
 
 // Inline SVG flag components
 function FlagCA() {
   return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
       <rect width="24" height="16" fill="#FCDD09" />
       <rect y="1.78" width="24" height="1.78" fill="#DA121A" />
       <rect y="5.33" width="24" height="1.78" fill="#DA121A" />
@@ -25,7 +26,7 @@ function FlagCA() {
 }
 function FlagES() {
   return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
       <rect width="24" height="4" fill="#AA151B" />
       <rect y="4" width="24" height="8" fill="#F1BF00" />
       <rect y="12" width="24" height="4" fill="#AA151B" />
@@ -34,7 +35,7 @@ function FlagES() {
 }
 function FlagEN() {
   return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
       <rect width="24" height="16" fill="#012169" />
       <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.5" />
       <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.5" />
@@ -45,7 +46,7 @@ function FlagEN() {
 }
 function FlagFR() {
   return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0">
+    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
       <rect width="8" height="16" fill="#002395" />
       <rect x="8" width="8" height="16" fill="#FFFFFF" />
       <rect x="16" width="8" height="16" fill="#ED2939" />
@@ -68,7 +69,7 @@ function WebIcon({ className }: { className?: string }) {
   );
 }
 
-function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void; currentLocale: string; token: string }) {
+export function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void; currentLocale: string; token: string }) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isPending, startTransition] = useTransition();
   const [langOpen, setLangOpen] = useState(false);
@@ -76,7 +77,7 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
   const t = useTranslations("Settings");
 
   useEffect(() => {
-    setTheme(document.documentElement.classList.contains("light") ? "light" : "dark");
+    setTheme(document.querySelector(".studio-header") ? (document.documentElement.dataset.studioTheme === "dark" ? "dark" : "light") : document.documentElement.classList.contains("light") ? "light" : "dark");
   }, []);
 
   const handleLang = (code: string) => {
@@ -92,6 +93,8 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
     setTheme(next);
     document.documentElement.classList.toggle("light", next === "light");
     localStorage.setItem("theme", next);
+    document.documentElement.dataset.studioTheme = next;
+    localStorage.setItem("studio-theme", next);
   };
 
   return (
@@ -99,7 +102,7 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--color-border)]">
         <span className="text-sm font-bold text-[var(--color-text)] tracking-wide uppercase" style={{ fontFamily: "var(--font-display)" }}>{t("title")}</span>
-        <button onClick={onClose} className="p-1.5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
+        <button onClick={onClose} aria-label={currentLocale === "ca" ? "Tanca els ajustos" : "Close settings"} className="p-1.5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
           <X className="w-4 h-4" />
         </button>
       </div>
@@ -164,6 +167,9 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
             </div>
             <button
               onClick={toggleTheme}
+              role="switch"
+              aria-label={t("dark_mode")}
+              aria-checked={theme === "dark"}
               className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${theme === "dark" ? "bg-[var(--color-accent)]" : "bg-zinc-700"}`}
             >
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg transition-all duration-300 ${theme === "dark" ? "left-7" : "left-1"}`} />
@@ -213,12 +219,20 @@ function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void;
 }
 
 export function Navbar({ token, locale = "ca", isAdmin = false }: { token: string; locale?: string; isAdmin?: boolean }) {
+  const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState("");
   const t = useTranslations("Navigation");
+  useEffect(() => {
+    setCollapsed(localStorage.getItem("navigation-collapsed") === "true");
+  }, []);
+  function toggleCollapsed() {
+    localStorage.setItem("navigation-collapsed", String(!collapsed));
+    setCollapsed(!collapsed);
+  }
 
   const isPreview = token === "preview";
   const restrictedSections = ["blog"];
@@ -235,7 +249,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     { href: `/v/${token}/projectes`, label: t("projectes"), icon: LayoutGrid },
     { href: `/v/${token}/cv`, label: t("cv"), icon: FileText },
     { href: `/v/${token}/blog`, label: "Blog", icon: BookOpen },
-    { href: `/v/${token}/move`, label: t("move"), icon: Calendar },
+    { href: MOVE_URL, label: t("move"), icon: Calendar },
     { href: `/v/${token}/webs`, label: t("webs"), icon: WebIcon },
   ];
 
@@ -250,9 +264,9 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     <>
       {/* ═══════════════ DESKTOP SIDEBAR ═══════════════ */}
       <aside
-        className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-50 overflow-hidden"
+        className={`legacy-sidebar hidden md:flex flex-col fixed left-0 top-0 h-screen z-50 overflow-hidden ${collapsed && !settingsOpen ? "legacy-collapsed" : ""}`}
         style={{
-          width: settingsOpen ? "320px" : "240px",
+          width: settingsOpen ? "320px" : collapsed ? "80px" : "240px",
           background: "var(--color-surface)",
           borderRight: "1px solid var(--color-border)",
           transition: "width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
@@ -262,6 +276,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
           <SettingsPanel onClose={() => setSettingsOpen(false)} currentLocale={locale} token={token} />
         ) : (
           <div className="flex flex-col h-full py-8 px-4">
+            <button className="legacy-collapse p-2 mb-4 self-end" aria-label={collapsed ? "Amplia la navegació" : "Minimitza la navegació"} aria-expanded={!collapsed} onClick={toggleCollapsed}>{collapsed ? <PanelLeftOpen size={19}/> : <PanelLeftClose size={19}/>}</button>
             {/* Logo */}
             <Link
               href={`/v/${token}`}

@@ -5,9 +5,12 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
+    // WebP avoids AVIF's slower first encoding while retaining responsive delivery.
+    formats: ['image/webp'],
+    qualities: [70, 75, 85],
     remotePatterns: [
       {
         protocol: 'https',

@@ -33,7 +33,7 @@ export function PublicArchiveView({
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [companySortBy, setCompanySortBy] = useState<"hierarchy" | "alphabetical" | "recent">("hierarchy");
 
   const filteredWorks = useMemo(() => {
@@ -76,7 +76,8 @@ export function PublicArchiveView({
                   {!isSidebarOpen && (
                     <button 
                       onClick={() => setIsSidebarOpen(true)}
-                      className="hidden lg:flex p-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-all animate-in slide-in-from-left-4"
+                      aria-label="Mostra els clients"
+                      className="flex p-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-all animate-in slide-in-from-left-4"
                     >
                        <PanelLeft size={20} />
                     </button>

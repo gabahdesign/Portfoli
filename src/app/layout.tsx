@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import Script from "next/script";
 import "./globals.css";
+import "./studio.css";
 
 const inter = Inter({
   subsets: ["latin"],

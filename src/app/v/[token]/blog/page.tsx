@@ -7,11 +7,12 @@ import Image from "next/image";
 export default async function BlogPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const locale = await getLocale();
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   const { data: posts } = await supabase
     .from("blog_posts")
     .select("*")
+    .eq("status", "published")
     .order("published_at", { ascending: false });
 
   const today = new Date().toLocaleDateString(locale, {
@@ -65,7 +66,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                  <article key={post.id} className="group">
                     <div className="relative aspect-[16/9] w-full overflow-hidden mb-8 border border-[var(--color-border)]">
                        {post.cover_url ? (
-                         <Image src={post.cover_url} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                         <Image src={post.cover_url} alt={post.title} fill sizes="(max-width: 1024px) 100vw, 65vw" quality={75} className="object-cover group-hover:scale-105 transition-transform duration-700" />
                        ) : (
                          <div className="w-full h-full bg-[var(--color-surface)] flex items-center justify-center">
                             <Newspaper className="opacity-10" size={64} />

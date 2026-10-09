@@ -1,3 +1,6 @@
+import CurriculumContent from "@/components/portfolio/CurriculumContent";
+import AboutAccessRequest from "@/components/portfolio/AboutAccessRequest";
+import { canAccessAbout } from "@/lib/about-access";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
 import Image from "next/image";
@@ -9,9 +12,10 @@ import LinkExtension from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 
 export default async function AboutMePage({ params }: { params: Promise<{ token: string }> }) {
-  await params;
+  const { token } = await params;
+  if (!(await canAccessAbout(token))) return <AboutAccessRequest />;
   const locale = await getLocale();
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   const ADMIN_PROFILE_ID = "00000000-0000-0000-0000-000000000000";
   const { data: about } = await supabase
@@ -95,6 +99,8 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
           dangerouslySetInnerHTML={{ __html: typeof bioHtml === "string" ? bioHtml : "" }}
         />
       </div>
+
+      <CurriculumContent token={token} />
 
       {/* 3. Contact Integrated Section */}
       <div className="pt-16 border-t border-[var(--color-border)]">

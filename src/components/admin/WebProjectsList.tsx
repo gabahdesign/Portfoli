@@ -112,7 +112,7 @@ export function WebProjectsList({ initialProjects }: { initialProjects: WebProje
     <div className="space-y-6">
       <div className="flex justify-end">
         <button 
-          onClick={() => { setIsAdding(true); setFormData({ title: "", description: "", url: "", download_url: "", type: "ia", is_active: true }); }}
+          onClick={() => { setIsAdding(true); setFormData({ title: "", description_ca: "", description_es: "", description_en: "", url: "", download_url: "", type: "ia", is_active: true }); }}
           className="flex items-center gap-2 px-6 py-3 bg-[var(--color-accent)] text-white font-bold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[var(--color-accent-glow)]/20"
         >
           <Plus size={18} /> Nou Projecte Web
@@ -142,8 +142,8 @@ export function WebProjectsList({ initialProjects }: { initialProjects: WebProje
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1.5 ml-1">Descripció</label>
                 <textarea 
-                  value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  value={formData.description_ca}
+                  onChange={e => setFormData({...formData, description_ca: e.target.value})}
                   className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[var(--color-accent)] min-h-[100px]"
                   placeholder="Breu descripció del projecte..."
                 />
@@ -238,7 +238,7 @@ export function WebProjectsList({ initialProjects }: { initialProjects: WebProje
                   {project.title}
                   {!project.is_active && <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">Inactiu</span>}
                 </h3>
-                <p className="text-xs text-[var(--color-muted)] mt-0.5 line-clamp-1 max-w-md">{project.description}</p>
+                <p className="text-xs text-[var(--color-muted)] mt-0.5 line-clamp-1 max-w-md">{project.description_ca}</p>
               </div>
             </div>
 

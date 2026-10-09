@@ -101,7 +101,7 @@ export function AdminSidebar() {
             <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
             <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
               <KeyRound className="w-4 h-4 mr-3" />
-              Accessos Portfoli
+              Accessos Sobre mi
             </AdminNavLink>
             <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
               <Settings className="w-4 h-4 mr-3" />
@@ -121,7 +121,7 @@ export function AdminSidebar() {
       </aside>
 
       {/* Mobile Sticky Header */}
-      <header className="xl:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--color-surface)]/80 backdrop-blur-xl border-b border-[var(--color-border)] z-50 flex items-center justify-between px-6">
+      <header className="studio-admin-mobile-header xl:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--color-surface)]/80 backdrop-blur-xl border-b border-[var(--color-border)] z-50 flex items-center justify-between px-6">
         <div className="font-display text-lg font-black tracking-tight text-[var(--color-accent)]">
           Marc <span className="text-[var(--color-text)] opacity-40 ml-1">Admin</span>
         </div>
@@ -202,7 +202,7 @@ export function AdminSidebar() {
               <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
               <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
                 <KeyRound className="w-4 h-4 mr-3" />
-                Accessos Portfoli
+                Accessos Sobre mi
               </AdminNavLink>
               <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
                 <Settings className="w-4 h-4 mr-3" />

@@ -39,6 +39,8 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
               src={url} 
               width={600}
               height={800}
+              sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1024px) 45vw, 30vw"
+              quality={70}
               className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]" 
               alt="" 
             />
@@ -71,6 +73,8 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
             <Image 
               src={selectedImage} 
               fill
+              sizes="100vw"
+              quality={85}
               className="object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
               alt=""
               onClick={(e) => e.stopPropagation()}

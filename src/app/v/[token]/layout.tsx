@@ -1,7 +1,6 @@
-import { Navbar } from "@/components/portfolio/Navbar";
+import { StudioHeader } from "@/components/portfolio/StudioHeader";
 import { WelcomeBanner } from "@/components/portfolio/WelcomeBanner";
 import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
-import { CustomCursor } from "@/components/portfolio/CustomCursor";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -9,7 +8,7 @@ import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
   const { token } = await params;
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
   
   const isPreview = token === "preview";
   
@@ -46,9 +45,9 @@ export default async function TokenLayout({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
   const locale = await getLocale();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const isPreview = token === "preview";
   let welcomeMessage = undefined;
@@ -73,13 +72,13 @@ export default async function TokenLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex w-full">
-      {!isPreview && <AnalyticsTracker token={token} />}
-      <CustomCursor />
-      <Navbar token={token} locale={locale} isAdmin={!!session} />
+    <div className="portfolio-shell studio-interior min-h-screen bg-[var(--color-bg)] w-full">
+      <AnalyticsTracker token={token} />
+      <StudioHeader token={token} locale={locale} isAdmin={!!user} />
       
-      <main className="flex-1 w-full ml-0 md:ml-[240px] pb-20 md:pb-0 min-h-screen pt-16 md:pt-0 transition-all duration-300 overflow-x-hidden">
+      <main className="studio-route-content pb-20 md:pb-0 min-h-screen overflow-x-hidden">
         {!isPreview && <WelcomeBanner message={welcomeMessage} />}
+
         {children}
       </main>
     </div>

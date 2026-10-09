@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No token provided" }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const supabase = await createClient(token || undefined);
 
     // Fetch token details
     const { data: tokenData, error } = await supabase

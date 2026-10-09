@@ -72,11 +72,12 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
 
   const currentWork = presentationWorks[currentIndex];
 
-  const pdfUrls = (() => {
+  const pdfUrls: string[] = (() => {
     if (!currentWork?.pdf_url) return [];
     try {
       if (currentWork.pdf_url.startsWith('[') && currentWork.pdf_url.endsWith(']')) {
-        return JSON.parse(currentWork.pdf_url);
+        const parsed: unknown = JSON.parse(currentWork.pdf_url);
+        return Array.isArray(parsed) ? parsed.filter((url): url is string => typeof url === "string") : [];
       }
       return [currentWork.pdf_url];
     } catch {
@@ -172,13 +173,11 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
                       src={currentWork.cover_url} 
                       alt={currentWork.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, 1152px"
+                      quality={85}
                       className="object-contain relative z-10 rounded-xl"
                       onLoad={() => setLoading(false)}
                       priority
-                    />
-                    <div 
-                      className="absolute inset-0 blur-3xl opacity-20 z-0 scale-110"
-                      style={{ backgroundImage: `url(${currentWork.cover_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     />
                  </div>
                ) : (

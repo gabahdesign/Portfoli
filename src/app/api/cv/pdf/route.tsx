@@ -1,3 +1,4 @@
+import { canAccessAbout } from "@/lib/about-access";
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import React from 'react';
@@ -147,8 +148,9 @@ export async function GET(request: NextRequest) {
   const locale = searchParams.get('lang') || 'ca';
 
   if (!token) return new NextResponse('Token required', { status: 400 });
+  if (!(await canAccessAbout(token))) return new NextResponse('Accés restringit', { status: 403 });
 
-  const supabase = await createClient();
+  const supabase = await createClient(token || undefined);
 
   // 1. Verify token exists
   if (token !== 'preview') {

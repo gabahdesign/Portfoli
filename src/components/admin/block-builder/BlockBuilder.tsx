@@ -77,7 +77,7 @@ function SortableBlock({
   onUpdateSettings: (settings: any) => void,
   isEditing: boolean,
   setEditingId: (id: string | null) => void,
-  handleUpload: (file: File) => Promise<string>
+  handleUpload: (file: File) => Promise<string | null>
 }) {
   const {
     attributes,
@@ -194,7 +194,7 @@ function renderBlockContent(
   block: Block, 
   onUpdate: (content: any) => void, 
   isEditing: boolean,
-  handleUpload: (file: File) => Promise<string>
+  handleUpload: (file: File) => Promise<string | null>
 ) {
   const [dragActive, setDragActive] = useState(false);
 

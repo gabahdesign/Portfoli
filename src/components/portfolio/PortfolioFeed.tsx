@@ -1,204 +1,66 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useDeferredValue } from "react";
 import { FeaturedWorkCard } from "./FeaturedWorkCard";
-import { Search, X, Hash } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Search, X, ArrowDown, LayoutGrid, List, Maximize2 } from "lucide-react";
+import Link from "next/link";
 import { useTracker } from "@/hooks/useTracker";
-import { PREDEFINED_TAGS } from "@/lib/constants";
 
-interface Work {
-  slug: string;
-  title: string;
-  cover_url?: string;
-  summary: string;
-  tags: string[];
-  protected: boolean;
-  company_id: string;
-  work_date?: string;
-  companies?: { name: string };
-  pdf_url?: string;
+export interface FeedWork {
+  slug: string; title: string; cover_url?: string | null; summary?: string | null;
+  tags: string[] | null; protected: boolean; company_id: string; work_date?: string | null;
+  companies?: { name: string } | null; pdf_url?: string | null;
 }
+const labels = {
+  ca: { title: "Projectes", all: "Tots", search: "Cerca un projecte, marca o disciplina", more: "Carrega més projectes", empty: "No hi ha projectes amb aquests filtres.", reset: "Neteja els filtres", grid: "Vista de galeria", list: "Vista de llista", shown: "mostrats", present: "Presentació", results: "projectes", discipline: "Disciplina", sort: "Ordena", newest: "Més recents", oldest: "Més antics", name: "Nom A–Z" },
+  es: { title: "Proyectos", all: "Todos", search: "Busca un proyecto, marca o disciplina", more: "Cargar más proyectos", empty: "No hay proyectos con estos filtros.", reset: "Limpiar filtros", grid: "Vista de galería", list: "Vista de lista", shown: "mostrados", present: "Presentación", results: "proyectos", discipline: "Disciplina", sort: "Ordenar", newest: "Más recientes", oldest: "Más antiguos", name: "Nombre A–Z" },
+  en: { title: "Projects", all: "All", search: "Search a project, brand or discipline", more: "Load more projects", empty: "No projects match these filters.", reset: "Clear filters", grid: "Gallery view", list: "List view", shown: "shown", present: "Presentation", results: "projects", discipline: "Discipline", sort: "Sort", newest: "Newest", oldest: "Oldest", name: "Name A–Z" },
+  fr: { title: "Projets", all: "Tous", search: "Rechercher un projet, une marque ou une discipline", more: "Voir plus de projets", empty: "Aucun projet ne correspond aux filtres.", reset: "Effacer les filtres", grid: "Vue galerie", list: "Vue liste", shown: "affichés", present: "Présentation", results: "projets", discipline: "Discipline", sort: "Trier", newest: "Plus récents", oldest: "Plus anciens", name: "Nom A–Z" },
+};
+const PAGE_SIZE = 9;
+const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-interface PortfolioFeedProps {
-  works: Work[];
-  token: string;
-  locale: string;
-  initialCompanyId?: string;
-  companies?: Array<{ id: string; name: string }>;
-}
-
-export function PortfolioFeed({ works, token, locale, initialCompanyId, companies }: PortfolioFeedProps) {
-  const t = useTranslations("Index");
-  
-  // Track this page view
+export function PortfolioFeed({ works, token, locale, initialCompanyId, companies }: { works: FeedWork[]; token: string; locale: string; initialCompanyId?: string; companies?: Array<{ id: string; name: string }> }) {
+  const c = labels[locale as keyof typeof labels] || labels.ca;
   useTracker(token, "page_view");
-
-  // Notify entry (first time)
   useEffect(() => {
-    if (token !== 'preview') {
-      fetch('/api/notify/entry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      }).catch(console.error);
-    }
+    if (token !== "preview") fetch("/api/notify/entry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) }).catch(console.error);
   }, [token]);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [activeCompanyId, setActiveCompanyId] = useState<string | null>(initialCompanyId || null);
-
-  const activeCompanyName = useMemo(() => {
-    if (!activeCompanyId || !companies) return null;
-    return companies.find(c => c.id === activeCompanyId)?.name || null;
-  }, [activeCompanyId, companies]);
-
-  // Use Predefined Tags for the primary filter row
-  const tagsToDisplay = PREDEFINED_TAGS;
-
-  const filteredWorks = useMemo(() => {
-    return works.filter(w => {
-      // 1. Basic matching
-      const matchesSearch = 
-        w.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        w.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (w.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesTag = !activeTag || (w.tags || []).includes(activeTag);
-      const matchesCompany = !activeCompanyId || w.company_id === activeCompanyId;
-      
-      return matchesSearch && matchesTag && matchesCompany;
-    });
-  }, [works, searchQuery, activeTag, activeCompanyId]);
-
-  const clearFilters = () => {
-    setSearchQuery("");
-    setActiveTag(null);
-    setActiveCompanyId(null);
-  };
-
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const [tag, setTag] = useState("");
+  const [company, setCompany] = useState(initialCompanyId || "");
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [sort, setSort] = useState("newest");
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const tags = useMemo(() => [...new Set(works.flatMap(w => w.tags || []))].sort((a, b) => a.localeCompare(b, locale)), [works, locale]);
+  const filtered = useMemo(() => {
+    const term = normalize(deferredQuery.trim());
+    return works.filter(w => (!tag || (w.tags || []).includes(tag)) && (!company || w.company_id === company) && normalize([w.title, w.summary || "", w.companies?.name || "", ...(w.tags || [])].join(" ")).includes(term))
+      .sort((a, b) => sort === "name" ? a.title.localeCompare(b.title, locale) : sort === "oldest" ? (a.work_date || "").localeCompare(b.work_date || "") : (b.work_date || "").localeCompare(a.work_date || ""));
+  }, [works, tag, company, deferredQuery, sort, locale]);
+  const visible = filtered.slice(0, limit);
+  const reset = () => { setQuery(""); setTag(""); setCompany(""); setLimit(PAGE_SIZE); };
+  const activeCompany = companies?.find(item => item.id === company)?.name;
   return (
-    <div className="space-y-12">
-      {/* Search Bar Section */}
-      <div className="relative max-w-6xl mx-auto -mt-10 mb-16 z-30 space-y-8">
-        <div className="relative group max-w-4xl mx-auto">
-          <div className="absolute inset-0 bg-black/20 blur-2xl rounded-full opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
-          <div className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-full p-2 flex items-center shadow-2xl backdrop-blur-3xl transition-all group-focus-within:border-[var(--color-accent)]/50 group-focus-within:ring-4 group-focus-within:ring-[var(--color-accent)]/5">
-            <div className="pl-6 text-[var(--color-muted)]">
-              <Search className="w-5 h-5" />
-            </div>
-            <input 
-              type="text" 
-              placeholder={locale === 'ca' ? 'Projectes, marques, tecnologies...' : 'Projects, brands, tech...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm text-[var(--color-text)] font-medium placeholder:text-[var(--color-muted)]/50 placeholder:font-normal"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery("")}
-                className="p-2 text-[var(--color-muted)] hover:text-white transition-colors mr-2 hover:bg-white/5 rounded-full"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-            <div className="hidden sm:block border-l border-[var(--color-border)] h-8 mx-2" />
-            <div className="hidden sm:flex items-center px-6 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-50 whitespace-nowrap">
-              {filteredWorks.length} Results
-            </div>
-          </div>
-        </div>
-
-        {/* Tag Filters Row */}
-        <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-700 delay-300">
-           <div className="w-full overflow-x-auto pb-4 px-4 scrollbar-hide">
-              <div className="flex items-center justify-center min-w-max gap-3">
-                 <button
-                   onClick={() => setActiveTag(null)}
-                   className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border flex items-center gap-2 ${
-                     activeTag === null 
-                       ? 'bg-white text-black border-white shadow-xl scale-105' 
-                       : 'bg-[var(--color-bg)]/40 text-[var(--color-muted)] border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:text-white'
-                   }`}
-                 >
-                   All Projects
-                 </button>
-                 <div className="w-px h-6 bg-[var(--color-border)] mx-2" />
-                 {tagsToDisplay.map(tag => (
-                   <button
-                     key={tag}
-                     onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                     className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border flex items-center gap-2 ${
-                       activeTag === tag 
-                         ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-[0_0_20px_var(--color-accent-glow)] scale-105' 
-                         : 'bg-[var(--color-surface)]/20 text-[var(--color-muted)] border-[var(--color-border)] hover:border-[var(--color-accent)]/30 hover:text-white'
-                     }`}
-                   >
-                     <Hash size={12} className={activeTag === tag ? "opacity-100" : "opacity-30"} />
-                     {tag}
-                   </button>
-                 ))}
-              </div>
-           </div>
-        </div>
+    <section className="studio-projects" id="projects" aria-labelledby="projects-title">
+      <div className="project-section-heading">
+        <div><p className="studio-label">02 / SELECTED WORK</p><h2 id="projects-title">{c.title}<sup>{works.length.toString().padStart(2, "0")}</sup></h2></div>
+        {works.length > 0 && <Link className="presentation-link" href="?mode=present" scroll={false}><Maximize2 size={14} />{c.present}</Link>}
       </div>
-
-      {/* Active Filters / Company Info */}
-      {activeCompanyId && (
-        <div className="max-w-4xl mx-auto flex flex-col items-center gap-4 bg-[var(--color-accent)]/5 border border-[var(--color-accent)]/20 rounded-2xl p-8 animate-in slide-in-from-top-4 duration-500">
-           <div className="flex items-center gap-3">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-accent)] opacity-60">Filtrant per empresa:</span>
-              <h3 className="text-xl font-black text-[var(--color-text)]">{activeCompanyName}</h3>
-           </div>
-           <button 
-             onClick={() => setActiveCompanyId(null)}
-             className="text-xs font-bold text-[var(--color-muted)] hover:text-white flex items-center gap-2 bg-[var(--color-surface)] px-4 py-2 rounded-full border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-all"
-           >
-             <X className="w-3 h-3" /> {locale === 'ca' ? 'Veure tots els projectes' : 'View all projects'}
-           </button>
-        </div>
-      )}
-
-      {/* Grid Section */}
-      <div>
-        <div className="flex items-center justify-between mb-12">
-          <h2 className="text-sm font-black uppercase tracking-[0.3em] text-[var(--color-muted)] flex items-center gap-4">
-            <span className="w-8 h-px bg-[var(--color-border)]" />
-            {t("featured_works")}
-          </h2>
-        </div>
-
-        {filteredWorks.length > 0 ? (
-          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 3xl:columns-6 gap-8 space-y-8">
-            {filteredWorks.map((work) => (
-              <div key={work.slug} className="break-inside-avoid">
-                <FeaturedWorkCard
-                  slug={work.slug}
-                  title={work.title}
-                  coverUrl={work.cover_url}
-                  summary={work.summary}
-                  tags={work.tags || []}
-                  protectedNode={work.protected}
-                  token={token}
-                  workDate={work.work_date}
-                  pdfUrl={work.pdf_url}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="py-32 text-center flex flex-col items-center gap-4">
-            <p className="text-[var(--color-muted)] text-sm italic">No s&apos;ha trobat cap projecte que coincideixi amb la cerca.</p>
-            <button 
-              onClick={clearFilters}
-              className="text-xs font-bold text-[var(--color-accent)] hover:underline"
-            >
-              Reiniciar filtres
-            </button>
-          </div>
-        )}
+      <div className="project-toolbar">
+        <div className="project-search"><Search size={17} aria-hidden="true" /><input aria-label={c.search} placeholder={c.search} value={query} onChange={e => { setQuery(e.target.value); setLimit(PAGE_SIZE); }} />{query && <button onClick={() => { setQuery(""); setLimit(PAGE_SIZE); }} aria-label={c.reset}><X size={16} /></button>}</div>
+        <label className="toolbar-select"><span className="sr-only">{c.discipline}</span><select value={tag} onChange={e => { setTag(e.target.value); setLimit(PAGE_SIZE); }}><option value="">{c.all} / {c.discipline}</option>{tags.map(item => <option key={item}>{item}</option>)}</select></label>
+        <label className="toolbar-select"><span className="sr-only">{c.sort}</span><select value={sort} onChange={e => { setSort(e.target.value); setLimit(PAGE_SIZE); }}><option value="newest">{c.newest}</option><option value="oldest">{c.oldest}</option><option value="name">{c.name}</option></select></label>
+        <div className="view-switch"><button onClick={() => setView("grid")} aria-label={c.grid} aria-pressed={view === "grid"}><LayoutGrid size={17} /></button><button onClick={() => setView("list")} aria-label={c.list} aria-pressed={view === "list"}><List size={18} /></button></div>
       </div>
-    </div>
+      <div className="project-status"><p role="status" aria-live="polite">{filtered.length} {c.results}{activeCompany ? ` / ${activeCompany}` : ""}</p>{(query || tag || company) && <button onClick={reset}>{c.reset}<X size={12} /></button>}</div>
+      {visible.length ? (
+        <div className={view === "grid" ? "studio-work-grid" : "studio-work-list"}>
+          {visible.map((work, index) => <FeaturedWorkCard key={work.slug} slug={work.slug} title={work.title} coverUrl={work.cover_url || undefined} summary={work.summary || ""} tags={work.tags || []} protectedNode={work.protected} token={token} workDate={work.work_date || undefined} pdfUrl={work.pdf_url || undefined} layout={view} index={index} />)}
+        </div>
+      ) : <div className="studio-empty"><Search size={28} /><p>{c.empty}</p>{(query || tag || company) && <button className="studio-button" onClick={reset}>{c.reset}</button>}</div>}
+      <div className="project-pagination"><span>{visible.length} / {filtered.length} {c.shown}</span>{limit < filtered.length && <button className="studio-button" onClick={() => setLimit(current => current + PAGE_SIZE)}>{c.more}<ArrowDown size={15} /></button>}</div>
+    </section>
   );
 }
