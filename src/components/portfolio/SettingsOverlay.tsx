@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { Settings, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LanguageFlag } from "@/components/ui/LanguageFlag";
 
 export function SettingsOverlay({ currentLocale = 'ca' }: { currentLocale?: string }) {
   const [theme, setTheme] = useState<string>('dark');
@@ -106,7 +107,7 @@ export function SettingsOverlay({ currentLocale = 'ca' }: { currentLocale?: stri
                           : 'hover:bg-color-surface text-color-muted hover:text-color-accent border-transparent'
                       } border`}
                     >
-                      <span>{lng.label}</span>
+                      <span className="flex items-center gap-3"><LanguageFlag code={lng.code}/>{lng.label}</span>
                       <span className={`text-xs font-black px-2 py-1 rounded-md ${isSel ? 'bg-color-accent text-white' : 'bg-color-surface'}`}>
                         {lng.short}
                       </span>
