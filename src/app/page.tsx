@@ -52,7 +52,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         {clients.length > 0 && <section className="studio-clients">
           <div><p className="studio-label">02 / CLIENTS</p><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
           <div className="client-grid">{clients.map(company => <Link href={`/v/preview/empresa/${company.slug}`} prefetch={false} key={company.id} className={`studio-client${company.logo_url ? " has-logo" : ""}`} aria-label={company.name}>
-            {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="64px" quality={75} className="object-contain" /></div>}
+            {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="(max-width: 767px) 100px, 120px" quality={75} className="object-contain" /></div>}
             <span className="client-name">{company.name}</span>
           </Link>)}</div>
         </section>}

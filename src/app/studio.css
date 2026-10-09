@@ -359,3 +359,6 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
   .studio-client.has-logo .client-name { position: absolute; bottom: 8px; left: 8px; right: 8px; opacity: 0; }
   .studio-client.has-logo:hover .client-name, .studio-client.has-logo:focus-visible .client-name { opacity: 1; }
 }
+.studio-client.has-logo { min-height: 156px; }
+.studio-client.has-logo .client-logo { width: min(100%, 120px); height: 88px; }
+@media(max-width:767px) { .studio-client.has-logo { min-height: 140px; } .studio-client.has-logo .client-logo { width: min(100%, 100px); height: 72px; } }
