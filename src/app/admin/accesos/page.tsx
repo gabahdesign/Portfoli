@@ -45,7 +45,7 @@ export default function AdminTokens() {
     if (!rawLabel) return;
 
     const baseSlug = rawLabel.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    const randomSuffix = crypto.randomUUID().replaceAll("-", "");
     const customToken = `${baseSlug}-${randomSuffix}`;
 
     const expiresAt = new Date();
@@ -68,7 +68,7 @@ export default function AdminTokens() {
   };
 
   const handleCopy = (tokenStr: string) => {
-    const url = `${window.location.origin}/v/${tokenStr}`;
+    const url = `${window.location.origin}/v/${tokenStr}/sobre-mi`;
     navigator.clipboard.writeText(url);
     setCopied(tokenStr);
     setTimeout(() => setCopied(null), 2000);
@@ -88,7 +88,7 @@ export default function AdminTokens() {
   return (
     <div className="p-4 md:p-8 animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-8 border-b border-[var(--color-border)] pb-4">
-        <h1 className="text-3xl font-display font-bold text-[var(--color-text)]">Gestió d&apos;Enllaços d&apos;Accés</h1>
+        <h1 className="text-3xl font-display font-bold text-[var(--color-text)]">Accessos Sobre mi</h1>
         <button onClick={handleCreateToken} className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-5 py-2.5 rounded-lg flex items-center justify-center transition-colors font-bold shadow-lg shadow-[var(--color-accent-glow)]">
           <Plus className="w-5 h-5 mr-2" /> Nou Enllaç
         </button>

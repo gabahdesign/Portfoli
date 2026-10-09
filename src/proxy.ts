@@ -74,10 +74,10 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Redirect /admin users without auth
-  if (pathname.startsWith('/admin') && pathname !== '/admin' && !session) {
+  if (pathname.startsWith('/admin') && pathname !== '/admin' && !user) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 

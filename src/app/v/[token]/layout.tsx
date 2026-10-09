@@ -47,7 +47,7 @@ export default async function TokenLayout({
   const { token } = await params;
   const supabase = await createClient();
   const locale = await getLocale();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const isPreview = token === "preview";
   let welcomeMessage = undefined;
@@ -74,10 +74,11 @@ export default async function TokenLayout({
   return (
     <div className="portfolio-shell studio-interior min-h-screen bg-[var(--color-bg)] w-full">
       {!isPreview && <AnalyticsTracker token={token} />}
-      <StudioHeader token={token} locale={locale} isAdmin={!!session} />
+      <StudioHeader token={token} locale={locale} isAdmin={!!user} />
       
       <main className="studio-route-content pb-20 md:pb-0 min-h-screen overflow-x-hidden">
         {!isPreview && <WelcomeBanner message={welcomeMessage} />}
+
         {children}
       </main>
     </div>

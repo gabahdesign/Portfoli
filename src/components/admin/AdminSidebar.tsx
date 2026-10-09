@@ -101,7 +101,7 @@ export function AdminSidebar() {
             <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
             <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
               <KeyRound className="w-4 h-4 mr-3" />
-              Accessos Portfoli
+              Accessos Sobre mi
             </AdminNavLink>
             <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
               <Settings className="w-4 h-4 mr-3" />
@@ -202,7 +202,7 @@ export function AdminSidebar() {
               <div className="pt-6 pb-2 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] opacity-50">Configuració</div>
               <AdminNavLink href="/admin/accesos" onClick={() => setMobileOpen(false)}>
                 <KeyRound className="w-4 h-4 mr-3" />
-                Accessos Portfoli
+                Accessos Sobre mi
               </AdminNavLink>
               <AdminNavLink href="/admin/ajustos" onClick={() => setMobileOpen(false)}>
                 <Settings className="w-4 h-4 mr-3" />

@@ -26,6 +26,8 @@ export default function AdminLogin() {
       setError(authError.message);
       setLoading(false);
     } else {
+      const calendarState = new URLSearchParams(window.location.search).get("calendar_state");
+      if (calendarState && /^[a-f0-9]{64}$/.test(calendarState)) { window.location.assign(`/api/calendar/access?state=${calendarState}`); return; }
       router.push("/admin/dashboard");
       router.refresh();
     }

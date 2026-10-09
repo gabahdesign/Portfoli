@@ -247,3 +247,30 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
   .studio-interior .company-hierarchy { top: 72px; height: calc(100dvh - 72px); }
   .studio-nav { max-height: calc(100dvh - 72px); overflow-y: auto; }
 }
+
+.studio-settings-trigger { display: flex; align-items: center; gap: 12px; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 12px; }
+.studio-settings-trigger:hover { background: var(--color-surface-2); }
+.studio-project-sections { display: flex; gap: 24px; padding: 24px 32px; border-bottom: 1px solid var(--color-border); font-size: 13px; }
+.studio-project-sections a:hover { text-decoration: underline; text-underline-offset: 5px; }
+#projectes-web { scroll-margin-top: 80px; border-top: 1px solid var(--color-border); }
+@media (min-width: 768px) {
+  .studio-header .header-controls { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+  .studio-header.is-collapsed .studio-settings-trigger { justify-content: center; }
+  .studio-header.is-collapsed .studio-settings-trigger span { display: none; }
+}
+.studio-header .studio-nav a[aria-current="page"] { background: var(--color-surface-2); color: var(--color-text); font-weight: 600; box-shadow: inset 2px 0 var(--color-text); }
+.studio-project-sections a { padding: 10px 2px; border-bottom: 2px solid transparent; color: var(--color-muted); }
+.studio-project-sections a[aria-current="page"] { border-bottom-color: var(--color-text); color: var(--color-text); font-weight: 600; }
+.studio-admin-label { padding: 18px 12px 8px; margin-top: 12px; border-top: 1px solid var(--color-border); color: var(--color-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.studio-admin-tools { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); font-size: 12px; }
+.studio-admin-tools > span { color: var(--color-muted); }
+.studio-admin-tools a { display: inline-flex; align-items: center; gap: 8px; }
+.studio-admin-tools a:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (min-width: 768px) {
+  .studio-admin:has(> .studio-header) > .studio-route-content { padding-top: 0; }
+  .studio-header .studio-nav { flex-shrink: 0; }
+  .studio-header .header-controls { flex-shrink: 0; padding-top: 16px; }
+  .studio-header .studio-nav a { min-height: 40px; padding-top: 10px; padding-bottom: 10px; }
+}
+.studio-admin-overview { border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+.studio-admin-overview > summary { padding: 16px 24px; cursor: pointer; font-size: 13px; }

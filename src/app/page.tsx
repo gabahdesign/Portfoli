@@ -14,6 +14,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   const locale = await getLocale();
   const t = await getTranslations("Index");
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const [aboutRes, companiesRes, worksRes] = await Promise.all([
     supabase.from("about_me").select("name, tagline").limit(1).maybeSingle(),
     supabase.from("companies").select("id, slug, name, logo_url, sector, is_freelance").order("start_date", { ascending: false }),
@@ -32,13 +33,14 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   }[locale as "ca" | "es" | "en" | "fr"];
   return (
     <div className="portfolio-shell">
-      <StudioHeader locale={locale} />
+      <StudioHeader locale={locale} isAdmin={!!user} />
       <main className="studio-main">
+
         <PortfolioHero name={about?.name || "Marc G."} tagline={tagline} locale={locale} />
         <PresentationLoader works={works.map(work => ({ slug: work.slug, title: work.title, cover_url: work.cover_url || undefined, pdf_url: work.pdf_url || undefined }))} />
         {worksRes.error ? <section className="studio-empty" id="projects" role="status"><p>{c.unavailable}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
         {clients.length > 0 && <section className="studio-clients">
-          <div><p className="studio-label">03 / COLLABORATIONS</p><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
+          <div><p className="studio-label">03 / CLIENTS</p><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
           <div className="client-grid">{clients.map(company => <Link href={`/v/preview/empresa/${company.slug}`} prefetch={false} key={company.id} className="studio-client">
             {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="64px" quality={75} className="object-contain" /></div>}
             <span>{company.name}</span>

@@ -1,3 +1,5 @@
+import CurriculumContent from "@/components/portfolio/CurriculumContent";
+import { canAccessAbout } from "@/lib/about-access";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
 import Image from "next/image";
@@ -9,7 +11,8 @@ import LinkExtension from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 
 export default async function AboutMePage({ params }: { params: Promise<{ token: string }> }) {
-  await params;
+  const { token } = await params;
+  if (!(await canAccessAbout(token))) return <div className="max-w-4xl mx-auto px-6 py-20"><h1 className="text-4xl mb-6">Sobre mi</h1><p>Aquest espai i el currículum només estan disponibles amb un enllaç d&apos;accés personal. Demana&apos;l a <a className="underline" href="mailto:info@descobreix.com">info@descobreix.com</a>.</p></div>;
   const locale = await getLocale();
   const supabase = await createClient();
 
@@ -95,6 +98,8 @@ export default async function AboutMePage({ params }: { params: Promise<{ token:
           dangerouslySetInnerHTML={{ __html: typeof bioHtml === "string" ? bioHtml : "" }}
         />
       </div>
+
+      <CurriculumContent token={token} />
 
       {/* 3. Contact Integrated Section */}
       <div className="pt-16 border-t border-[var(--color-border)]">

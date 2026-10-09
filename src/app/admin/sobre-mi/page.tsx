@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Save, Loader2, User, Mail, Phone, MapPin, Link2, Globe, Upload, Camera, Trash2, FileText } from "lucide-react";
 import { TipTapEditor } from "@/components/admin/TipTapEditor";
 import Image from "next/image";
+import CurriculumEditor from "@/components/admin/CurriculumEditor";
 
 const ADMIN_PROFILE_ID = "00000000-0000-0000-0000-000000000000";
 const LANGUAGES = [
@@ -283,6 +284,7 @@ export default function AdminSobreMi() {
           </div>
         </div>
       </div>
+      <section id="curriculum" className="mt-12 border-t border-[var(--color-border)]"><CurriculumEditor /></section>
     </div>
   );
 }

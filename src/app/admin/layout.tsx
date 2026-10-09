@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { StudioHeader } from "@/components/portfolio/StudioHeader";
 import { getLocale } from "next-intl/server";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
+
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const locale = await getLocale();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Fetch a token for the portfolio menu preview
   const { data: tokenData } = await supabase
@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="portfolio-shell studio-interior studio-admin min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       {/* 1. PORTFOLIO MENU (LEFT) */}
-      {session && (
+      {user && (
         <>
           <StudioHeader token={previewToken} locale={locale} isAdmin />
         </>
@@ -34,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </main>
 
       {/* 3. ADMIN PANEL (RIGHT) */}
-      {session && <AdminSidebar />}
+
     </div>
   );
 }
