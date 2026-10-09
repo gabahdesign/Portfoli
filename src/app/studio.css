@@ -350,3 +350,12 @@ html[data-studio-theme="dark"] .portfolio-shell { --color-bg: #141414; --color-s
 .studio-home-section .clients-intro { max-width: 620px; margin: 18px 0 24px; }
 .studio-experiments > .studio-section-title { margin-bottom: 24px; }
 @media(max-width:767px) { .experiment-row { flex-wrap: wrap; } .experiment-row > div { min-width: 0; flex: 1; } .experiment-cta { margin-left: 36px; } }
+
+.studio-client.has-logo { position: relative; flex-direction: column; justify-content: center; gap: 10px; min-height: 124px; }
+.studio-client.has-logo .client-logo { width: 64px; height: 54px; }
+.studio-client.has-logo .client-name { text-align: center; }
+.studio-client:focus-visible { outline: 2px solid var(--color-text); outline-offset: -3px; }
+@media (min-width: 768px) and (hover: hover) {
+  .studio-client.has-logo .client-name { position: absolute; bottom: 8px; left: 8px; right: 8px; opacity: 0; }
+  .studio-client.has-logo:hover .client-name, .studio-client.has-logo:focus-visible .client-name { opacity: 1; }
+}
