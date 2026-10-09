@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { MOVE_URL } from "@/lib/move-url";
+import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
   const { companyId } = await searchParams;
@@ -33,6 +34,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
   }[locale as "ca" | "es" | "en" | "fr"];
   return (
     <div className="portfolio-shell">
+      <AnalyticsTracker token="preview" />
       <StudioHeader locale={locale} isAdmin={!!user} />
       <main className="studio-main">
 

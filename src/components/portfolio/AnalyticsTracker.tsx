@@ -12,6 +12,7 @@ export function AnalyticsTracker({ token }: DropTrackerProps) {
   const recorded = useRef("");
 
   useEffect(() => {
+    if(token==='preview')return;
     // 1. Notify Access (Resend) if it's the first time
     const notifyAccess = async () => {
       try {

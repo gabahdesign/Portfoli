@@ -73,7 +73,7 @@ export default async function TokenLayout({
 
   return (
     <div className="portfolio-shell studio-interior min-h-screen bg-[var(--color-bg)] w-full">
-      {!isPreview && <AnalyticsTracker token={token} />}
+      <AnalyticsTracker token={token} />
       <StudioHeader token={token} locale={locale} isAdmin={!!user} />
       
       <main className="studio-route-content pb-20 md:pb-0 min-h-screen overflow-x-hidden">

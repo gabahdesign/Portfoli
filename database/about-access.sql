@@ -16,7 +16,7 @@ if auth.uid() is distinct from 'a899bd7c-d921-4bf4-a3d6-63ff0460e418'::uuid then
 select * into r from public.access_requests where id=request_id for update;
 if not found or r.status<>'pending' then raise exception 'Request already reviewed or missing'; end if;
 if approve then
-insert into public.access_tokens(token,label,active,expires_at) values(replace(gen_random_uuid()::text,'-','')||replace(gen_random_uuid()::text,'-',''),r.name,true,now()+interval '60 days') returning id into linked_id;
+insert into public.access_tokens(token,label,active,expires_at) values(replace(gen_random_uuid()::text,'-',''),r.name,true,now()+interval '60 days') returning id into linked_id;
 end if;
 update public.access_requests set status=case when approve then 'approved' else 'rejected' end, token_id=linked_id where id=request_id;
 return linked_id;

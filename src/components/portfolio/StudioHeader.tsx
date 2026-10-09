@@ -68,6 +68,7 @@ export function StudioHeader({ locale, token = "preview", isAdmin = false }: { l
         </div>
         <button className="studio-settings-trigger" aria-label={t("settings")} title={t("settings")} onClick={() => {setOpen(false);if (isAdmin) router.push("/admin/ajustos"); else setSettingsOpen(true);}}><Settings size={19}/><span>{t("settings")}</span></button>
         {isAdmin && <button className="studio-settings-trigger" aria-label="Tancar sessió i veure el web públic" title="Tancar sessió i veure el web públic" disabled={loggingOut} onClick={logout}><DoorOpen size={19}/><span>{loggingOut ? "Tancant sessió…" : "Tancar sessió"}</span></button>}
+        {!isAdmin && token !== "preview" && <button className="studio-settings-trigger" aria-label="Tancar l’accés de Sobre mi" title="Tancar l’accés de Sobre mi" onClick={async()=>{const result=await fetch('/api/about/access',{method:'DELETE'});if(result.ok)window.location.assign('/v/preview/sobre-mi');}}><DoorOpen size={19}/><span>Tancar accés</span></button>}
         {logoutError && <p role="alert">{logoutError}</p>}
         <button className="studio-menu" aria-label={open ? c.close : c.open} aria-expanded={open} aria-controls="studio-navigation" onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button>
       </div>
