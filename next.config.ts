@@ -5,7 +5,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    const upstream = (process.env.CALENDAR_UPSTREAM_URL || (process.env.NODE_ENV === "development" ? "http://127.0.0.1:3001" : "")).replace(/\/$/, "");
+    const upstream = (process.env.CALENDAR_UPSTREAM_URL || (process.env.NODE_ENV === "development" ? "http://127.0.0.1:3001" : "https://elcalendario.lovable.app")).replace(/\/$/, "");
     if (!upstream) return [];
     // Nitro publishes build assets at its root; the browser still sees /move.
     // Vite development already serves those files under /move.

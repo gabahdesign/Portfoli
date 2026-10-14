@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL(`/admin?calendar_state=${state}`, request.url));
   if (user.id !== "a899bd7c-d921-4bf4-a3d6-63ff0460e418") return new NextResponse("Accés no autoritzat", { status: 403 });
-  const calendarOrigin = "https://elcalendario.lovable.app";
+  const calendarOrigin = "https://elcalendario.lovable.app/move";
   const local = process.env.NODE_ENV !== "production";
   const portfolioOrigin = local ? "http://127.0.0.1:3000" : "https://descobreix.com";
   const callback = new URL("/move/auth", portfolioOrigin);
