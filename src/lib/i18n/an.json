@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "welcome": "Bienveniu",
+    "featured_works": "Treballos destacaus",
+    "experience": "Experiencia",
+    "personal_projects": "Prochectos personals y colaboracions",
+    "no_projects_found": "No s’han trobau prochectos d’ista categoría.",
+    "collaborations_title": "Clients",
+    "collaborations_desc": "Clients y empresas vincladas a’ls míos disenyos como organizadors, colaboradors u patrocinadors. Incluye marcas ta las quals he creau anuncios de patrocinadors en ixos disenyos.",
+    "view_cv": "Veyer curriculum profesional"
+  },
+  "Navigation": {
+    "home": "Inicio",
+    "about_me": "Sobre yo",
+    "cv": "Curriculum",
+    "projectes": "Prochectos",
+    "back": "Tornar",
+    "settings": "Achustes",
+    "move": "Move",
+    "webs": "Prochectos web"
+  },
+  "Settings": {
+    "title": "Achustes",
+    "language": "Idioma",
+    "dark_mode": "Modo escuro",
+    "client_access": "Acceso d’o client",
+    "privacy_policy": "Politica de privacidat",
+    "cookie_policy": "Politica de cookies",
+    "terms_of_use": "Condicions d’uso",
+    "legal_notice": "Aviso legal"
+  }
+}

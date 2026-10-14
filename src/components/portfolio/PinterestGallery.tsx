@@ -9,6 +9,8 @@ interface PinterestGalleryProps {
 }
 
 export function PinterestGallery({ items }: PinterestGalleryProps) {
+
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Close on escape
@@ -30,19 +32,19 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
     <>
       <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
         {items.map((url, idx) => (
-          <div 
-            key={idx} 
+          <div
+            key={idx}
             className="break-inside-avoid rounded-2xl overflow-hidden border border-white/5 shadow-lg group relative cursor-zoom-in bg-[var(--color-surface)]"
             onClick={() => setSelectedImage(url)}
           >
-            <Image 
-              src={url} 
+            <Image
+              src={url}
               width={600}
               height={800}
               sizes="(max-width: 768px) calc(100vw - 48px), (max-width: 1024px) 45vw, 30vw"
               quality={70}
-              className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]" 
-              alt="" 
+              className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
+              alt=""
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <div className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white border border-white/20">
@@ -55,23 +57,21 @@ export function PinterestGallery({ items }: PinterestGalleryProps) {
 
       {/* Lightbox Overlay */}
       {selectedImage && (
-        <div 
-          className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300"
-          onClick={() => setSelectedImage(null)}
+        <div
+          className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 animate-in fade-in duration-300" onClick={() => setSelectedImage(null)}
         >
-          <button 
-            className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all z-[310] border border-white/10"
-            onClick={(e) => {
+          <button
+            className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all z-[310] border border-white/10" onClick={(e) => {
               e.stopPropagation();
               setSelectedImage(null);
             }}
           >
             <X size={24} />
           </button>
-          
+
           <div className="relative w-full h-full">
-            <Image 
-              src={selectedImage} 
+            <Image
+              src={selectedImage}
               fill
               sizes="100vw"
               quality={85}

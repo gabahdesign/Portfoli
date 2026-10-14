@@ -1,32 +1,32 @@
 {
   "Index": {
     "welcome": "Welcome",
-    "featured_works": "Featured works",
+    "featured_works": "Featured work",
     "experience": "Experience",
-    "personal_projects": "Personal projects & collaborations",
-    "no_projects_found": "No projects found for the selected category.",
+    "personal_projects": "Personal projects and collaborations",
+    "no_projects_found": "No projects found in this category.",
     "collaborations_title": "Clients",
-    "collaborations_desc": "Clients and companies involved in the projects I have designed as organisers, collaborators or sponsors. This also includes brands whose sponsor advertisements I created as part of these designs.",
+    "collaborations_desc": "Clients and companies involved in my design projects as organizers, collaborators or sponsors. This includes brands whose sponsor advertisements I created within these designs.",
     "view_cv": "View professional CV"
   },
   "Navigation": {
     "home": "Home",
     "about_me": "About me",
-    "cv": "Resume",
+    "cv": "CV",
     "projectes": "Projects",
     "back": "Back",
     "settings": "Settings",
     "move": "Move",
-    "webs": "Web Projects"
+    "webs": "Web projects"
   },
   "Settings": {
     "title": "Settings",
     "language": "Language",
-    "dark_mode": "Dark Mode",
-    "client_access": "Client Access",
-    "privacy_policy": "Privacy Policy",
-    "cookie_policy": "Cookie Policy",
-    "terms_of_use": "Terms of Use",
-    "legal_notice": "Legal Notice"
+    "dark_mode": "Dark mode",
+    "client_access": "Client access",
+    "privacy_policy": "Privacy policy",
+    "cookie_policy": "Cookie policy",
+    "terms_of_use": "Terms of use",
+    "legal_notice": "Legal notice"
   }
 }

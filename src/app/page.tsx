@@ -1,3 +1,4 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PortfolioFeed, type FeedWork } from "@/components/portfolio/PortfolioFeed";
@@ -7,10 +8,17 @@ import { PresentationLoader } from "@/components/portfolio/PresentationLoader";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import {calendarLocaleUrl} from "@/lib/locales";
 import { MOVE_URL } from "@/lib/move-url";
+import { wordpressBlogUrl } from "@/lib/blog-url";
 import { AnalyticsTracker } from "@/components/portfolio/AnalyticsTracker";
 
 export default async function PublicHome({ searchParams }: { searchParams: Promise<{ companyId?: string }> }) {
+ const ui = await getUiTranslator();
+
+
+
+
   const { companyId } = await searchParams;
   const locale = await getLocale();
   const t = await getTranslations("Index");
@@ -31,13 +39,13 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
     es: { unavailable: "Los proyectos no están disponibles temporalmente. Vuelve a intentarlo más tarde.", more: "Más allá del diseño", move: "Conecta. Comparte. Muévete.", calendar: "Abrir el calendario", game: "Juego del Impostor", play: "Jugar ahora", footer: "Diseño gráfico, multimedia y experiencias digitales." },
     en: { unavailable: "Projects are temporarily unavailable. Please try again later.", more: "Beyond design", move: "Connect. Share. Move.", calendar: "Open the calendar", game: "The Impostor Game", play: "Play now", footer: "Graphic design, multimedia and digital experiences." },
     fr: { unavailable: "Les projets sont temporairement indisponibles. Réessayez plus tard.", more: "Au-delà du design", move: "Connectez. Partagez. Bougez.", calendar: "Ouvrir le calendrier", game: "Le jeu de l'Imposteur", play: "Jouer", footer: "Design graphique, multimédia et expériences digitales." },
-  }[locale as "ca" | "es" | "en" | "fr"];
+  }[(["ca","es","en","fr"].includes(locale) ? locale : "ca") as "ca" | "es" | "en" | "fr"];
   const sectionCopy = {
     ca: { move: "Plans, activitats i comunitats per compartir experiències i conèixer gent. Descobreix què passa i troba el teu pròxim pla.", blog: "Idees, descobertes i articles sobre disseny, cultura, tecnologia i territori.", read: "Explora el blog" },
     es: { move: "Planes, actividades y comunidades para compartir experiencias y conocer gente. Descubre qué pasa y encuentra tu próximo plan.", blog: "Ideas, descubrimientos y artículos sobre diseño, cultura, tecnología y territorio.", read: "Explora el blog" },
     en: { move: "Activities and communities to share experiences and meet people. Discover what’s happening and find your next plan.", blog: "Ideas, discoveries and articles about design, culture, technology and places.", read: "Explore the blog" },
     fr: { move: "Des activités et des communautés pour partager des expériences et faire des rencontres. Découvrez les événements à venir.", blog: "Idées, découvertes et articles sur le design, la culture, la technologie et les territoires.", read: "Explorer le blog" },
-  }[locale as "ca" | "es" | "en" | "fr"];
+  }[(["ca","es","en","fr"].includes(locale) ? locale : "ca") as "ca" | "es" | "en" | "fr"];
   return (
     <div className="portfolio-shell">
       <AnalyticsTracker token="preview" />
@@ -48,32 +56,31 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         <details className="studio-portfolio-group" open>
           <summary className="studio-section-summary"><span className="studio-label">01 / PORTFOLI</span><h2>Portfoli</h2><span className="studio-disclosure" aria-hidden="true">+</span></summary>
         <PresentationLoader works={works.map(work => ({ slug: work.slug, title: work.title, cover_url: work.cover_url || undefined, pdf_url: work.pdf_url || undefined }))} />
-        {worksRes.error ? <section className="studio-empty" id="projects" role="status"><p>{c.unavailable}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
-        {clients.length > 0 && <section className="studio-clients">
-          <div><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
+        {worksRes.error ? <section className="studio-empty" id="projects" role="status"><p>{ui(c.unavailable)}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
+        {clients.length > 0 && <section className="studio-clients"> <div><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
           <div className="client-grid">{clients.map(company => <Link href={`/v/preview/empresa/${company.slug}`} prefetch={false} key={company.id} className={`studio-client${company.logo_url ? " has-logo" : ""}`} aria-label={company.name}>
             {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="(max-width: 767px) 100px, 120px" quality={75} className="object-contain" /></div>}
             <span className="client-name">{company.name}</span>
           </Link>)}</div>
         </section>}
         <section className="studio-experiments">
-          <h2 className="studio-section-title">{c.more}</h2>
+          <h2 className="studio-section-title">{ui(c.more)}</h2>
 
-          <a href={`/webs/impostor/index.html?lang=${locale}`} className="experiment-row"><div><h2>{c.game}</h2><p>Experimental AI project</p></div><span className="experiment-cta">{c.play}<ArrowUpRight size={19} /></span></a>
+          <a href={`/webs/impostor/index.html?lang=${locale}`} className="experiment-row"><div><h2>{ui(c.game)}</h2><p>{ui("Experimental AI project")}</p></div><span className="experiment-cta">{ui(c.play)}<ArrowUpRight size={19} /></span></a>
         </section>
         </details>
         <section className="studio-home-section" aria-labelledby="move-title">
           <p className="studio-label">02 / MOVE</p><h2 id="move-title" className="studio-section-title">Move</h2>
-          <p className="clients-intro">{sectionCopy.move}</p>
-          <a href={MOVE_URL} className="studio-button">{c.calendar}<ArrowUpRight size={16} /></a>
+          <p className="clients-intro">{ui(sectionCopy.move)}</p>
+          <a href={calendarLocaleUrl(MOVE_URL,locale)} className="studio-button">{ui(c.calendar)}<ArrowUpRight size={16} /></a>
         </section>
         <section className="studio-home-section" aria-labelledby="blog-title">
           <p className="studio-label">03 / BLOG</p><h2 id="blog-title" className="studio-section-title">Blog</h2>
-          <p className="clients-intro">{sectionCopy.blog}</p>
-          <Link href="/v/preview/blog" className="studio-button">{sectionCopy.read}<ArrowUpRight size={16} /></Link>
+          <p className="clients-intro">{ui(sectionCopy.blog)}</p>
+          <a href={wordpressBlogUrl(locale)} className="studio-button">{ui(sectionCopy.read)}<ArrowUpRight size={16} /></a>
         </section>
       </main>
-      <footer className="studio-footer"><Link href="/" className="studio-wordmark">descobreix</Link><p>{c.footer}</p><Link href="/v/preview/cv">{t("view_cv")}<ArrowUpRight size={14} /></Link></footer>
+      <footer className="studio-footer"><Link href="/" className="studio-wordmark"><span className="studio-logo-full"><img src="/descobreix-logo.png" alt="Descobreix" width="500" height="200" className="descobreix-brand-image" /></span></Link><p>{ui(c.footer)}</p><Link href="/v/preview/cv">{t("view_cv")}<ArrowUpRight size={14} /></Link></footer>
     </div>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useMemo } from "react";
 import Image from "next/image";
-import { 
+import {
   Building2, Landmark, Plus, Edit2, Trash2, Hash, Layers, Type, X, ChevronRight, PanelLeftClose
 } from "lucide-react";
 import { Company } from "@/lib/types";
@@ -41,6 +42,11 @@ export function CompanyHierarchySidebar({
   companySortBy,
   setCompanySortBy
 }: CompanyHierarchySidebarProps) {
+ const ui = useUiTranslation();
+
+
+
+
 
   const orderedCompanies = useMemo(() => {
     let base = [...empresas];
@@ -55,7 +61,7 @@ export function CompanyHierarchySidebar({
     const parents = base.filter(e => !e.parent_id).sort((a,b) => a.name.localeCompare(b.name));
     const children = base.filter(e => e.parent_id);
     const result: CompanyWithDepth[] = [];
-    
+
     parents.forEach(parent => {
       result.push({ ...parent, depth: 0 });
       const myChildren = children.filter(c => c.parent_id === parent.id).sort((a,b) => a.name.localeCompare(b.name));
@@ -84,20 +90,20 @@ export function CompanyHierarchySidebar({
               <div className="p-2 bg-[var(--color-accent)]/10 rounded-xl text-[var(--color-accent)]">
                  <Building2 size={18} />
               </div>
-              <h2 className="text-xl font-display font-black tracking-tight text-[var(--color-text)]">Contingut</h2>
+              <h2 className="text-xl font-display font-black tracking-tight text-[var(--color-text)]">{ui("Contingut")}</h2>
            </div>
            <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="hidden lg:block p-2 text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors"
-                title="Amagar barra lateral"
+                title={ui("Amagar barra lateral")}
               >
                  <PanelLeftClose size={20} />
               </button>
-              <button 
+              <button
                 onClick={onCloseMobile}
                 className="lg:hidden p-2 text-[var(--color-muted)] hover:text-red-500 transition-colors"
-                title="Tancar"
+                title={ui("Tancar")}
               >
                  <X size={20} />
               </button>
@@ -106,20 +112,16 @@ export function CompanyHierarchySidebar({
 
         {isAdmin && (
            <div className="px-8 flex flex-col gap-6 relative z-10 my-4">
-              <div className="grid grid-cols-1 gap-3">
-                 <button 
+              <div className="grid grid-cols-1 gap-3"> <button
                    onClick={() => onAddSubcompany?.({} as any)}
-                   className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] text-white py-4 rounded-[1.5rem] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-accent)]/5 transition-all shadow-lg"
-                 >
-                   <Building2 size={14} className="shrink-0" /> Nou Client / Marca
-                 </button>
+                   className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] text-white py-4 rounded-[1.5rem] font-black uppercase tracking-widest text-[9px] flex items-center justify-center gap-2 hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-accent)]/5 transition-all shadow-lg" > <Building2 size={14} className="shrink-0" /> {ui("Nou Client / Marca")} </button>
               </div>
            </div>
         )}
 
          <nav className="space-y-2 flex-1 overflow-y-auto scrollbar-hide py-4">
             <div className="px-4 mb-6 space-y-4">
-               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] opacity-50">Vista Clients</p>
+               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] opacity-50">{ui("Vista Clients")}</p>
                <div className="flex gap-2">
                   {[
                      { id: 'hierarchy', icon: Layers, label: 'Jerarquia' },
@@ -141,7 +143,7 @@ export function CompanyHierarchySidebar({
             </div>
 
             <div className="px-2">
-              <button 
+              <button
                 onClick={() => onSelectCompany(null)}
                 className={clsx(
                   "w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between group mb-2 border border-transparent",
@@ -152,15 +154,15 @@ export function CompanyHierarchySidebar({
                    <div className={clsx("w-6 h-6 rounded-lg flex items-center justify-center border transition-all", !activeCompanyId ? "bg-[var(--color-accent)] text-white border-transparent" : "bg-black/20 border-white/5")}>
                       <Hash size={12} />
                    </div>
-                   <span>Tots els Projectes</span>
+                   <span>{ui("Tots els Projectes")}</span>
                 </div>
                 {totalWorks > 0 && <span className="text-[10px] opacity-40">{totalWorks}</span>}
               </button>
 
               <div className="space-y-1">
                  {orderedCompanies.map(emp => (
-                   <div 
-                      key={emp.id} 
+                   <div
+                      key={emp.id}
                       className={clsx(
                          "group/side relative rounded-2xl transition-all border border-transparent",
                          activeCompanyId === emp.id ? "bg-white/5 border-white/10 shadow-lg" : "hover:bg-white/5"
@@ -180,12 +182,12 @@ export function CompanyHierarchySidebar({
                               activeCompanyId === emp.id ? "bg-[var(--color-accent)] text-white border-transparent" : "bg-white/5 border-white/5 opacity-40 group-hover/side:opacity-100"
                            )}>
                               {emp.logo_url ? (
-                                 <Image 
-                                   src={emp.logo_url} 
-                                   alt="" 
-                                   width={24} 
-                                   height={24} 
-                                   className="w-full h-full object-cover" 
+                                 <Image
+                                   src={emp.logo_url}
+                                   alt=""
+                                   width={24}
+                                   height={24}
+                                   className="w-full h-full object-cover"
                                  />
                               ) : (
                                  emp.depth === 0 ? <Landmark size={12} /> : <Building2 size={12} />
@@ -193,27 +195,27 @@ export function CompanyHierarchySidebar({
                            </div>
                            <span className="truncate">{emp.name}</span>
                         </button>
-                        
+
                         {isAdmin && (
                           <div className="flex items-center gap-1 px-2 opacity-0 group-hover/side:opacity-100 transition-opacity">
-                             <button 
+                             <button
                                 onClick={(e) => { e.stopPropagation(); onAddSubcompany?.(emp); }}
                                 className="p-1.5 bg-white/5 border border-white/5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]/40 transition-all"
-                                title="Afegir Sub-empresa"
+                                title={ui("Afegir Sub-empresa")}
                              >
                                 <Plus size={10} />
                              </button>
-                             <button 
+                             <button
                                 onClick={(e) => { e.stopPropagation(); onEditCompany?.(emp); }}
                                 className="p-1.5 bg-white/5 border border-white/5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]/40 transition-all"
-                                title="Editar Client"
+                                title={ui("Editar Client")}
                              >
                                 <Edit2 size={10} />
                              </button>
-                             <button 
+                             <button
                                 onClick={(e) => { e.stopPropagation(); onDeleteCompany?.(emp.id); }}
                                 className="p-1.5 bg-white/5 border border-white/5 rounded-lg text-[var(--color-muted)] hover:text-red-500 hover:border-red-500/40 transition-all"
-                                title="Eliminar Client"
+                                title={ui("Eliminar Client")}
                              >
                                 <Trash2 size={10} />
                              </button>

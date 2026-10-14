@@ -1,5 +1,6 @@
 "use client";
 
+import {LOCALES,rememberLocale,localePath} from "@/lib/locales";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -11,12 +12,7 @@ export function LanguageSelector() {
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
 
-  const languages = [
-    { code: "ca", label: "CA" },
-    { code: "es", label: "ES" },
-    { code: "en", label: "EN" },
-    { code: "fr", label: "FR" },
-  ];
+  const languages = LOCALES.map(code=>({code,label:code.toUpperCase()}));
 
   const handleLanguageChange = (newLocale: string) => {
     setIsOpen(false);
@@ -24,11 +20,11 @@ export function LanguageSelector() {
 
     // Save language preference in cookie
     // eslint-disable-next-line react-hooks/immutability
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
-    
+    rememberLocale(newLocale);
+
     startTransition(() => {
       // Refresh the current route to apply the new locale server-side
-      router.refresh();
+      window.location.assign(localePath(newLocale,window.location.pathname)+window.location.search+window.location.hash);
     });
   };
 
@@ -52,10 +48,10 @@ export function LanguageSelector() {
       </div>
 
       {isOpen && (
-        <div 
-          className="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-color-surface ring-1 shadow-lg ring-color-border focus:outline-hidden" 
-          role="menu" 
-          aria-orientation="vertical" 
+        <div
+          className="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-color-surface ring-1 shadow-lg ring-color-border focus:outline-hidden"
+          role="menu"
+          aria-orientation="vertical"
           aria-labelledby="menu-button"
         >
           <div className="py-1" role="none">

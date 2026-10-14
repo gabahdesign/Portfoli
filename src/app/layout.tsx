@@ -1,3 +1,5 @@
+import {headers} from "next/headers";
+import {LOCALES,localePath} from "@/lib/locales";
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
@@ -22,7 +24,7 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: "Descobreix",
   description: "Descobreix el portfolio de Marc G. - Disseny, Estratègia i Producte.",
   icons: {
@@ -31,6 +33,15 @@ export const metadata: Metadata = {
   },
 };
 
+
+export async function generateMetadata(): Promise<Metadata> {
+ const requestHeaders = await headers();
+ const path = requestHeaders.get("x-descobreix-path") || "/";
+ const locale = await getLocale();
+ if (path.startsWith("/admin") || /^\/v\/(?!preview(?:\/|$))/.test(path)) return {...baseMetadata,robots:{index:false,follow:false}};
+ const root = "https://descobreix.com";
+ return {...baseMetadata,alternates:{canonical:root+localePath(locale,path),languages:Object.fromEntries([...LOCALES.map(code=>[code,root+localePath(code,path)]),["x-default",root+localePath("ca",path)]])}};
+}
 
 export default async function RootLayout({
   children,
@@ -48,7 +59,7 @@ export default async function RootLayout({
           id="theme-initializer"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.theme==='light'){document.documentElement.classList.add('light')}else{document.documentElement.classList.remove('light')}}catch(_){}`,
+            __html: `try{const t=localStorage.getItem('studio-theme')||localStorage.getItem('theme');if(t==='dark'){document.documentElement.dataset.studioTheme='dark';document.documentElement.classList.remove('light')}else if(t==='light'){document.documentElement.dataset.studioTheme='light';document.documentElement.classList.add('light')}}catch(_){}`,
           }}
         />
       </head>

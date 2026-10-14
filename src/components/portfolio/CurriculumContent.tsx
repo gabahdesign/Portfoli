@@ -1,9 +1,15 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Download } from "lucide-react";
 import { canAccessAbout } from "@/lib/about-access";
 
 export default async function CurriculumContent({ token }: { token: string }) {
+ const ui = await getUiTranslator();
+
+
+
+
   if (!(await canAccessAbout(token))) return null;
   const locale = await getLocale();
   const t = await getTranslations("Navigation");
@@ -27,28 +33,28 @@ export default async function CurriculumContent({ token }: { token: string }) {
 
   const renderSectionContent = (content: any) => {
     if (!content) return null;
-    
+
     // If array directly (new flat format)
     if (Array.isArray(content)) {
        return renderArrayContent(content);
     }
-    
+
     // If object with language keys {ca:[...], es:[...]}
     const localizedContent = content[locale] || content["ca"] || content["es"] || content["en"];
-    
+
     if (Array.isArray(localizedContent)) {
        return renderArrayContent(localizedContent);
     }
-    
+
     if (typeof localizedContent === "string") {
       return (
-        <div 
+        <div
           className="prose prose-invert prose-p:text-[var(--color-muted)] max-w-none prose-strong:text-[var(--color-text)]"
-          dangerouslySetInnerHTML={{ __html: localizedContent }} 
+          dangerouslySetInnerHTML={{ __html: localizedContent }}
         />
       );
     }
-    
+
     return null;
   };
 
@@ -77,10 +83,10 @@ export default async function CurriculumContent({ token }: { token: string }) {
               </span>
             )}
           </div>
-          
+
           {(item.place || item.subtitle || item.level) && <h4 className="text-[var(--color-accent)] font-semibold text-sm mb-3">{item.place || item.subtitle || item.level}</h4>}
           {item.description && (
-            <div 
+            <div
               className="text-[var(--color-muted)] text-sm leading-relaxed"
               dangerouslySetInnerHTML={{ __html: item.description }}
             />
@@ -96,29 +102,25 @@ export default async function CurriculumContent({ token }: { token: string }) {
           <h2 className="font-display text-4xl md:text-5xl font-black text-[var(--color-text)] tracking-tight">
             {t("cv")}
           </h2>
-         <a 
-           href={`/api/cv/pdf?token=${token}&lang=${locale}`} 
-           target="_blank"            
+         <a
+           href={`/api/cv/pdf?token=${token}&lang=${locale}`}
+           target="_blank"
            className="inline-flex items-center gap-2 bg-[var(--color-accent)] text-white px-6 py-3 rounded-xl font-bold hover:bg-[var(--color-accent-hover)] transition-all shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 active:scale-95"
           >
-            <Download size={18} />
-            Descarregar PDF
-          </a>
+            <Download size={18} /> {ui("Descarregar PDF")} </a>
       </div>
 
 
 
       <div className="space-y-20">
         {(!cvSections || cvSections.length === 0) && (
-           <div className="text-center text-color-muted py-12 border border-dashed border-color-border rounded-xl">
-             Encara no hi ha seccions del currículum configurades.
-           </div>
+           <div className="text-center text-color-muted py-12 border border-dashed border-color-border rounded-xl"> {ui("Encara")} {ui("no hi ha seccions del currículum configurades.")} </div>
         )}
-        
+
         {(cvSections || []).map((section) => (
-          <section 
-            key={section.id} 
-            id={`cv-section-${section.type}`} 
+          <section
+            key={section.id}
+            id={`cv-section-${section.type}`}
             className="cv-section scroll-mt-24 grid grid-cols-1 md:grid-cols-4 gap-8"
           >
             <h2 className="font-sans text-sm font-bold text-color-muted uppercase tracking-wider pt-1">

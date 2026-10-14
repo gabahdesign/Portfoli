@@ -1,10 +1,16 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Loader2 } from "lucide-react";
 
 export default function AdminEmpresas() {
+ const ui = useUiTranslation();
+
+
+
+
   const router = useRouter();
 
   useEffect(() => {
@@ -17,8 +23,8 @@ export default function AdminEmpresas() {
           <Building2 size={40} />
        </div>
        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-black uppercase tracking-tighter">Sincronitzant Univers...</h1>
-          <p className="text-[var(--color-muted)] text-sm font-medium">Estem unificant els teus projectes i clients en un sol espai.</p>
+          <h1 className="text-2xl font-black uppercase tracking-tighter">{ui("Sincronitzant Univers...")}</h1>
+          <p className="text-[var(--color-muted)] text-sm font-medium">{ui("Estem unificant els teus projectes i clients en un sol espai.")}</p>
        </div>
        <Loader2 className="animate-spin text-[var(--color-accent)] mt-4" size={24} />
     </div>

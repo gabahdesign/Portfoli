@@ -1,65 +1,22 @@
 "use client";
 
+import { wordpressBlogUrl } from "@/lib/blog-url";
+import { wordpressPageUrl } from "@/lib/blog-url";
+import { useUiTranslation } from "@/lib/fixed-ui-client";
+import {LOCALES,LANGUAGE_NAMES,rememberLocale,localePath} from "@/lib/locales";
+import {LanguageFlag} from "@/components/ui/LanguageFlag";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   Home, User, LayoutGrid, FileText,
-  Settings, Globe, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar, PanelLeftClose, PanelLeftOpen
+  Settings, Sun, Moon, X, ChevronRight, ShieldCheck, BookOpen, Lock, Pencil, Calendar, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 import { RequestAccessModal } from "./RequestAccessModal";
 import { MOVE_URL } from "@/lib/move-url";
 
-// Inline SVG flag components
-function FlagCA() {
-  return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
-      <rect width="24" height="16" fill="#FCDD09" />
-      <rect y="1.78" width="24" height="1.78" fill="#DA121A" />
-      <rect y="5.33" width="24" height="1.78" fill="#DA121A" />
-      <rect y="8.89" width="24" height="1.78" fill="#DA121A" />
-      <rect y="12.44" width="24" height="1.78" fill="#DA121A" />
-    </svg>
-  );
-}
-function FlagES() {
-  return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
-      <rect width="24" height="4" fill="#AA151B" />
-      <rect y="4" width="24" height="8" fill="#F1BF00" />
-      <rect y="12" width="24" height="4" fill="#AA151B" />
-    </svg>
-  );
-}
-function FlagEN() {
-  return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
-      <rect width="24" height="16" fill="#012169" />
-      <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.5" />
-      <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.5" />
-      <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
-      <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.5" />
-    </svg>
-  );
-}
-function FlagFR() {
-  return (
-    <svg viewBox="0 0 24 16" className="w-6 h-4 rounded-[3px] overflow-hidden shrink-0 grayscale">
-      <rect width="8" height="16" fill="#002395" />
-      <rect x="8" width="8" height="16" fill="#FFFFFF" />
-      <rect x="16" width="8" height="16" fill="#ED2939" />
-    </svg>
-  );
-}
-
-const languages = [
-  { code: "ca", label: "Català", Flag: FlagCA },
-  { code: "es", label: "Español", Flag: FlagES },
-  { code: "en", label: "English", Flag: FlagEN },
-  { code: "fr", label: "Français", Flag: FlagFR },
-];
+const languages = LOCALES.map(code=>({code,label:LANGUAGE_NAMES[code],Flag:()=> <LanguageFlag code={code}/> }));
 
 function WebIcon({ className }: { className?: string }) {
   return (
@@ -69,156 +26,48 @@ function WebIcon({ className }: { className?: string }) {
   );
 }
 
-export function SettingsPanel({ onClose, currentLocale, token }: { onClose: () => void; currentLocale: string; token: string }) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [isPending, startTransition] = useTransition();
-  const [langOpen, setLangOpen] = useState(false);
-  const router = useRouter();
-  const t = useTranslations("Settings");
-
-  useEffect(() => {
-    setTheme(document.querySelector(".studio-header") ? (document.documentElement.dataset.studioTheme === "dark" ? "dark" : "light") : document.documentElement.classList.contains("light") ? "light" : "dark");
-  }, []);
-
-  const handleLang = (code: string) => {
-    setLangOpen(false);
-    if (code === currentLocale) return;
-    // eslint-disable-next-line react-hooks/immutability
-    document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000`;
-    startTransition(() => { router.refresh(); });
-  };
-
-  const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    document.documentElement.classList.toggle("light", next === "light");
-    localStorage.setItem("theme", next);
-    document.documentElement.dataset.studioTheme = next;
-    localStorage.setItem("studio-theme", next);
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--color-border)]">
-        <span className="text-sm font-bold text-[var(--color-text)] tracking-wide uppercase" style={{ fontFamily: "var(--font-display)" }}>{t("title")}</span>
-        <button onClick={onClose} aria-label={currentLocale === "ca" ? "Tanca els ajustos" : "Close settings"} className="p-1.5 rounded-lg text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* iPhone Style List */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-8 bg-[var(--color-bg)]">
-        {/* Language & Theme Group */}
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
-          <button
-            type="button"
-            onClick={() => setLangOpen(!langOpen)}
-            className="w-full p-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
-                <Globe className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-semibold">{t("language")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {(() => { const current = languages.find(l => l.code === currentLocale); return current ? <current.Flag /> : null; })()}
-              <ChevronRight className={`w-3 h-3 text-[var(--color-muted)] transition-transform duration-300 ${langOpen ? 'rotate-90' : ''}`} />
-            </div>
-          </button>
-
-          {langOpen && (
-            <div className="bg-[var(--color-bg)] p-2">
-              <div className="flex flex-col gap-1">
-                {languages.map((lng) => {
-                  const isSelected = currentLocale === lng.code;
-                  return (
-                    <button
-                      key={lng.code}
-                      onClick={() => handleLang(lng.code)}
-                      disabled={isPending}
-                      className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm transition-all duration-200 ${
-                        isSelected
-                          ? 'bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-bold'
-                          : 'text-[var(--color-text)] hover:bg-[var(--color-surface)] hover:text-[var(--color-accent)]'
-                      }`}
-                    >
-                      <lng.Flag />
-                      <span className="flex-1 text-left">{lng.label}</span>
-                      {isSelected && (
-                        <svg className="w-4 h-4 text-[var(--color-accent)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          <div className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
-                {theme === "dark" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-              </div>
-              <span className="text-sm font-semibold">{t("dark_mode")}</span>
-            </div>
-            <button
-              onClick={toggleTheme}
-              role="switch"
-              aria-label={t("dark_mode")}
-              aria-checked={theme === "dark"}
-              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${theme === "dark" ? "bg-[var(--color-accent)]" : "bg-zinc-700"}`}
-            >
-              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg transition-all duration-300 ${theme === "dark" ? "left-7" : "left-1"}`} />
-            </button>
-          </div>
-        </div>
-
-        {/* Admin Access Group */}
-        <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
-          <Link
-            href="/admin"
-            className="p-4 flex items-center justify-between hover:bg-[var(--color-surface-2)] transition-all"
-            onClick={onClose}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-[var(--color-accent)]/10 flex items-center justify-center text-[var(--color-accent)]">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-semibold">{t("client_access")}</span>
-            </div>
-            <ChevronRight className="w-4 h-4 text-[var(--color-muted)]" />
-          </Link>
-        </div>
-
-        {/* Legal Group */}
-        <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] divide-y divide-[var(--color-border)]/50">
-          {[
-            { label: t("privacy_policy"), slug: "privacitat" },
-            { label: t("cookie_policy"), slug: "cookies" },
-            { label: t("terms_of_use"), slug: "condicions" },
-            { label: t("legal_notice"), slug: "avis-legal" }
-          ].map((item) => (
-            <Link
-              key={item.slug}
-              href={`/v/${token}/legal/${item.slug}`}
-              onClick={onClose}
-              className="p-4 flex items-center justify-between hover:bg-[var(--color-surface-2)] transition-all"
-            >
-              <span className="text-sm font-medium text-[var(--color-muted)]">{item.label}</span>
-              <ChevronRight className="w-4 h-4 text-[var(--color-muted)]/50" />
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+export function SettingsPanel({ onClose, currentLocale }: { onClose: () => void; currentLocale: string; token?: string }) {
+ const ui = useUiTranslation();
+ const t = useTranslations("Settings");
+ const toggleTheme = () => {
+   const next = document.documentElement.dataset.studioTheme === "dark" ? "light" : "dark";
+   document.documentElement.classList.toggle("light", next === "light");
+   document.documentElement.dataset.studioTheme = next;
+   localStorage.setItem("theme", next);
+   localStorage.setItem("studio-theme", next);
+ };
+ const pages = [
+   { label: t("privacy_policy"), slug: "/politica-de-privacitat/" },
+   { label: t("terms_of_use"), slug: "/termes-i-condicions/" },
+   { label: t("cookie_policy"), slug: "/politica-de-cookies/" },
+   { label: ui("Contacte"), slug: "/contacte/" },
+ ];
+ const changeLanguage = (code: string) => {
+   if (code === currentLocale) return;
+   rememberLocale(code);
+   window.location.assign(localePath(code,window.location.pathname)+window.location.search+window.location.hash);
+ };
+ return <div className="studio-settings-content">
+   <div className="studio-settings-heading"><span>{ui("Aparença")}</span><button onClick={onClose} aria-label={ui("Tancar els ajustos")}><X size={16}/></button></div>
+   <button type="button" className="studio-appearance-button" aria-label={ui("Canviar aparença")} onClick={toggleTheme}>
+     <span className="studio-appearance-icon"><Sun className="studio-theme-light-icon" size={18}/><Moon className="studio-theme-dark-icon" size={18}/></span>
+     <span className="studio-appearance-copy"><strong>{t("dark_mode")}</strong><small className="studio-theme-light-label">{ui("Mode clar")}</small><small className="studio-theme-dark-label">{ui("Mode fosc")}</small></span>
+     <span className="studio-appearance-switch" aria-hidden="true"><i/></span>
+   </button>
+   <div className="studio-mobile-settings-languages"><p>{t("language")}</p>{languages.map(item=><button key={item.code} type="button" aria-pressed={item.code===currentLocale} onClick={()=>changeLanguage(item.code)}><LanguageFlag code={item.code}/><span>{item.label}</span></button>)}</div>
+   <div className="studio-settings-links" aria-label={ui("Informació legal i contacte")}>
+     {pages.map(item=><a key={item.slug} href={wordpressPageUrl(currentLocale,item.slug)} onClick={onClose}><span>{item.label}</span><ChevronRight size={15}/></a>)}
+   </div>
+   <a className="studio-settings-access" href="/admin" onClick={onClose}><ShieldCheck size={16}/><span>{t("client_access")}</span><ChevronRight size={15}/></a>
+ </div>;
 }
 
 export function Navbar({ token, locale = "ca", isAdmin = false }: { token: string; locale?: string; isAdmin?: boolean }) {
+ const ui = useUiTranslation();
+
+
+
+
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -248,10 +97,13 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
     { href: `/v/${token}/sobre-mi`, label: t("about_me"), icon: User },
     { href: `/v/${token}/projectes`, label: t("projectes"), icon: LayoutGrid },
     { href: `/v/${token}/cv`, label: t("cv"), icon: FileText },
-    { href: `/v/${token}/blog`, label: "Blog", icon: BookOpen },
+    { href: wordpressBlogUrl(locale, isAdmin), label: "Blog", icon: BookOpen },
     { href: MOVE_URL, label: t("move"), icon: Calendar },
     { href: `/v/${token}/webs`, label: t("webs"), icon: WebIcon },
   ];
+  // On small screens put the two main destinations first, then the portfolio
+  // and editorial sections. Keep the desktop sidebar in its established order.
+  const mobileLinks = [links[0], links[5], links[2], links[4], links[1], links[3], links[6]];
 
   const isActive = (href: string) => {
     if (isPreview && href === "/") {
@@ -276,15 +128,11 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
           <SettingsPanel onClose={() => setSettingsOpen(false)} currentLocale={locale} token={token} />
         ) : (
           <div className="flex flex-col h-full py-8 px-4">
-            <button className="legacy-collapse p-2 mb-4 self-end" aria-label={collapsed ? "Amplia la navegació" : "Minimitza la navegació"} aria-expanded={!collapsed} onClick={toggleCollapsed}>{collapsed ? <PanelLeftOpen size={19}/> : <PanelLeftClose size={19}/>}</button>
+            <button className="legacy-collapse p-2 mb-4 self-end" aria-label={collapsed ? ui("Amplia la navegació") : ui("Minimitza la navegació")} aria-expanded={!collapsed} onClick={toggleCollapsed}>{collapsed ? <PanelLeftOpen size={19}/> : <PanelLeftClose size={19}/>}</button>
             {/* Logo */}
             <Link
               href={`/v/${token}`}
-              className="text-[var(--color-text)] text-xl font-black tracking-tight px-2 mb-10 hover:text-[var(--color-accent)] transition-colors block"
-              style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.04em" }}
-            >
-              descobreix
-              <span style={{ color: "var(--color-accent)" }}>.</span>
+              className="text-[var(--color-text)] text-xl font-black tracking-tight px-2 mb-10 hover:text-[var(--color-accent)] transition-colors block" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.04em" }} > descobreix <span style={{ color: "var(--color-accent)" }}>.</span>
             </Link>
 
             {/* Nav Links */}
@@ -317,8 +165,8 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
                     onMouseLeave={(e) => { if (!active && !isLocked) { (e.currentTarget as HTMLElement).style.color = "var(--color-muted)"; (e.currentTarget as HTMLElement).style.background = "transparent"; } }}
                   >
                     <Icon className={`w-4 h-4 shrink-0 ${isLocked ? 'opacity-30' : ''}`} />
-                    <span className={isLocked ? 'opacity-30' : ''}>{label}</span>
-                    
+                    <span className={isLocked ? "opacity-30" : ''}>{label}</span>
+
                     {isLocked && (
                       <div className="absolute right-3 opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
                         <Lock className="w-3 h-3 text-[var(--color-accent)]" />
@@ -336,7 +184,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
                   href="/admin/dashboard"
                   className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold w-full transition-all text-white bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] shadow-lg shadow-[var(--color-accent-glow)]/20"
                 >
-                  <span className="flex items-center gap-3"><Pencil className="w-4 h-4" /> Administrar</span>
+                  <span className="flex items-center gap-3"><Pencil className="w-4 h-4" /> {ui("Administrar")}</span>
                   <ChevronRight className="w-3.5 h-3.5 opacity-50" />
                 </Link>
               )}
@@ -364,7 +212,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
           borderTop: "1px solid var(--color-border)",
         }}
       >
-        {links.map(({ href, label, icon: Icon }) => {
+        {mobileLinks.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           const sectionKey = href.split('/').pop() || "";
           const isLocked = isPreview && restrictedSections.includes(sectionKey);
@@ -413,7 +261,7 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
         <div className="flex items-center gap-2 -mr-2">
           <Link
             href={`/v/${token}/webs`}
-            className={`p-2 transition-colors ${pathname.includes('/webs') ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}
+            className={`p-2 transition-colors ${pathname.includes('/webs') ? "text-[var(--color-accent)]" : "text-[var(--color-muted)]"}`}
           >
             <WebIcon />
           </Link>
@@ -448,9 +296,9 @@ export function Navbar({ token, locale = "ca", isAdmin = false }: { token: strin
         </div>
       )}
 
-      <RequestAccessModal 
-        isOpen={requestModalOpen} 
-        onClose={() => setRequestModalOpen(false)} 
+      <RequestAccessModal
+        isOpen={requestModalOpen}
+        onClose={() => setRequestModalOpen(false)}
         sectionName={selectedSection}
       />
     </>

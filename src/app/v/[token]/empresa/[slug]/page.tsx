@@ -1,9 +1,15 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { FeaturedWorkCard } from "@/components/portfolio/FeaturedWorkCard";
 import Image from "next/image";
 
 export default async function CompanyPage({ params }: { params: Promise<{ token: string, slug: string }> }) {
+ const ui = await getUiTranslator();
+
+
+
+
   const { token, slug } = await params;
   const supabase = await createClient(token || undefined);
 
@@ -21,7 +27,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
   const { data: tokenData } = await supabase.from("access_tokens").select("company_ids").eq("token", token).single();
   if (tokenData && tokenData.company_ids && tokenData.company_ids.length > 0) {
      if (!tokenData.company_ids.includes(company.id) && !company.is_freelance) {
-       notFound(); 
+       notFound();
      }
   }
 
@@ -38,7 +44,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 animate-in fade-in duration-500">
-      
+
       {/* HEADER EMPRESA */}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-16 pb-8 border-b border-color-border">
          <div className="w-24 h-24 bg-color-surface border border-color-border rounded-xl flex items-center justify-center p-3 relative shrink-0">
@@ -58,20 +64,17 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
                <span>{company.location}</span>
                {company.website && (
                  <>
-                   <span className="w-1 h-1 rounded-full bg-color-border hidden md:block"></span>
-                    <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors font-bold underline underline-offset-4 decoration-2">Web</a>
+                   <span className="w-1 h-1 rounded-full bg-color-border hidden md:block"></span> <a href={company.website} target="_blank" rel="noopener noreferrer" className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors font-bold underline underline-offset-4 decoration-2">{ui("Web")}</a>
                  </>
                )}
             </div>
             <p className="mt-4 leading-relaxed max-w-3xl text-color-text">{company.description}</p>
          </div>
       </div>
-      
+
       {/* TRABAJOS DE LA EMPRESA */}
       {(!works || works.length === 0) ? (
-        <div className="text-center py-20 text-color-muted border border-dashed border-color-border rounded-xl bg-color-surface/30">
-          No hay trabajos publicados en este momento.
-        </div>
+        <div className="text-center py-20 text-color-muted border border-dashed border-color-border rounded-xl bg-color-surface/30"> {ui("No hay trabajos publicados en este momento.")} </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {works.map((work) => (

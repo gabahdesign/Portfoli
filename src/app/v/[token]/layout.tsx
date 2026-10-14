@@ -9,9 +9,9 @@ import { Metadata } from "next";
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
   const { token } = await params;
   const supabase = await createClient(token || undefined);
-  
+
   const isPreview = token === "preview";
-  
+
   let title = "Portfolio de Marc";
   let description = "Explora mis últimos proyectos y experiencia profesional.";
 
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
     if (tokenData && tokenData.label) {
       title = `Portfolio de Marc · Para ${tokenData.label}`;
     }
-    const { data: aboutData } = await supabase.from("about_me").select("tagline").single();
+    const { data: aboutData } = await supabase.from("public_profile").select("tagline").single();
     if (aboutData && aboutData.tagline) {
        description = aboutData.tagline["ca"] || description;
     }
@@ -44,6 +44,7 @@ export default async function TokenLayout({
   children: React.ReactNode;
   params: Promise<{ token: string }>;
 }) {
+
   const { token } = await params;
   const supabase = await createClient(token || undefined);
   const locale = await getLocale();
@@ -60,13 +61,13 @@ export default async function TokenLayout({
       .maybeSingle();
 
     const isActive = tokenData?.active ?? false;
-    
-    // We no longer call notFound() here. 
+
+    // We no longer call notFound() here.
     // Validation for private sections like /blog will happen in their own layout.
 
     const welcome_msg = tokenData?.welcome_message as Record<string, string> | null;
     const defaultMsg = welcome_msg ? (welcome_msg as Record<string, string>)["ca"] : undefined;
-    welcomeMessage = welcome_msg 
+    welcomeMessage = welcome_msg
       ? (welcome_msg as Record<string, string>)[locale] || defaultMsg
       : undefined;
   }
@@ -74,8 +75,8 @@ export default async function TokenLayout({
   return (
     <div className="portfolio-shell studio-interior min-h-screen bg-[var(--color-bg)] w-full">
       <AnalyticsTracker token={token} />
-      <StudioHeader token={token} locale={locale} isAdmin={!!user} />
-      
+      <StudioHeader token={token} locale={locale} isAdmin={user?.id==="a899bd7c-d921-4bf4-a3d6-63ff0460e418"} />
+
       <main className="studio-route-content pb-20 md:pb-0 min-h-screen overflow-x-hidden">
         {!isPreview && <WelcomeBanner message={welcomeMessage} />}
 

@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "welcome": "Bienveníu",
+    "featured_works": "Trabayos destacaos",
+    "experience": "Esperiencia",
+    "personal_projects": "Proyeutos personales y collaboraciones",
+    "no_projects_found": "Nun s’atoparon proyeutos d’esta categoría.",
+    "collaborations_title": "Clientes",
+    "collaborations_desc": "Clientes y empreses venceyaes a los mios diseños como organizadores, collaboradores o patrocinadores. Inclúi marques pa les que creé anuncios de patrocinadores dientro d’esos diseños.",
+    "view_cv": "Ver currículum profesional"
+  },
+  "Navigation": {
+    "home": "Entamu",
+    "about_me": "Sobre min",
+    "cv": "Currículum",
+    "projectes": "Proyeutos",
+    "back": "Volver",
+    "settings": "Axustes",
+    "move": "Move",
+    "webs": "Proyeutos web"
+  },
+  "Settings": {
+    "title": "Axustes",
+    "language": "Idioma",
+    "dark_mode": "Mou escuru",
+    "client_access": "Accesu del cliente",
+    "privacy_policy": "Política de privacidá",
+    "cookie_policy": "Política de cookies",
+    "terms_of_use": "Condiciones d’usu",
+    "legal_notice": "Avisu llegal"
+  }
+}

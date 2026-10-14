@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useState } from "react";
 import { Lock } from "lucide-react";
 
@@ -9,11 +10,16 @@ interface PinGateProps {
   description?: string;
 }
 
-export function PinGate({ 
-  onUnlock, 
-  title = "Acceso Protegido", 
-  description = "Este contenido es confidencial y requiere un PIN de acceso proporcionado directamente." 
+export function PinGate({
+  onUnlock,
+  title = "Acceso Protegido",
+  description = "Este contenido es confidencial y requiere un PIN de acceso proporcionado directamente."
 }: PinGateProps) {
+ const ui = useUiTranslation();
+
+
+
+
   const [pin, setPin] = useState(["", "", "", ""]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,7 +69,7 @@ export function PinGate({
         <div className="absolute inset-0 border border-[var(--color-accent)] rounded-full animate-ping opacity-20"></div>
         <Lock className="w-8 h-8 text-[var(--color-accent)]" />
       </div>
-      
+
       <h2 className="text-4xl font-display font-black text-[var(--color-text)] mb-4 text-center tracking-tight">{title}</h2>
       <p className="text-[var(--color-muted)] text-center max-w-md leading-relaxed mb-10 font-medium">
         {description}
@@ -83,27 +89,25 @@ export function PinGate({
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               className={`w-14 h-16 text-center text-2xl font-mono font-bold text-[var(--color-text)] bg-[var(--color-surface)] border-2 rounded-2xl focus:outline-none transition-all ${
-                error 
-                  ? 'border-red-500/50 focus:border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)] animate-shake' 
+                error
+                  ? 'border-red-500/50 focus:border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)] animate-shake'
                   : 'border-[var(--color-border)] focus:border-[var(--color-accent)] focus:ring-4 focus:ring-[var(--color-accent-glow)]'
               }`}
               autoFocus={index === 0}
             />
           ))}
         </div>
-        
+
         {error && (
-          <p className="text-red-500 text-sm font-medium animate-in slide-in-from-top-2">
-            El PIN introducido es incorrecto. Inténtalo de nuevo.
-          </p>
+          <p className="text-red-500 text-sm font-medium animate-in slide-in-from-top-2"> {ui("El")} {ui("PIN introducido es incorrecto. Inténtalo de nuevo.")} </p>
         )}
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={loading || pin.join("").length < 4}
           className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white font-bold px-10 py-4 rounded-xl transition-all disabled:opacity-50 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[var(--color-accent-glow)] whitespace-nowrap"
         >
-          {loading ? "Verificant..." : "Desbloquejar Contingut"}
+          {loading ? ui("Verificant...") : ui("Desbloquejar Contingut")}
         </button>
       </form>
     </div>

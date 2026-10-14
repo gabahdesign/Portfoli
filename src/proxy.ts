@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {isLocale,localePath,stripLocale} from '@/lib/locales';
 import { createServerClient } from '@supabase/ssr';
 
 export const config = {
@@ -15,16 +16,31 @@ export const config = {
 };
 
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  const rawPath = request.nextUrl.pathname;
+  // The calendar owns every route, asset and server function under /move.
+  // Do not localize these URLs or run the portfolio's auth middleware on them.
+  if (rawPath === '/move' || rawPath.startsWith('/move/')) return NextResponse.next();
+  const prefix = rawPath.split('/')[1];
+  const preferred = request.nextUrl.searchParams.get('lang') || request.headers.get('x-descobreix-locale') || request.cookies.get('NEXT_LOCALE')?.value;
+  const locale = isLocale(prefix) ? prefix : isLocale(preferred) ? preferred : 'ca';
+  const localized = isLocale(prefix);
+  const path = localized ? stripLocale(rawPath) : rawPath;
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-descobreix-locale', locale);
+  requestHeaders.set('x-descobreix-path', path);
+  const destination = request.nextUrl.clone();
+  destination.pathname = path;
+  // Preserve the browser's origin: Next dev normalizes 127.0.0.1 to
+  // localhost, which would turn this into an external rewrite and loop.
+  const incomingHost = request.headers.get('host');
+  if (incomingHost) destination.host = incomingHost;
+  const makeResponse = () => localized ? NextResponse.rewrite(destination,{request:{headers:requestHeaders}}) : NextResponse.next({request:{headers:requestHeaders}});
+  let response = makeResponse();
 
   const hostname = request.headers.get('host') || '';
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'descobreix.com';
   const url = request.nextUrl;
-  const pathname = url.pathname;
+  const pathname = path;
 
   // -------------------------------------------------------------------------
   // 1. SUBDOMAIN REWRITES (Move & Impostor)
@@ -50,6 +66,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Language URLs never rewrite API calls or bundled assets.
+  if (!localized && !isLocale(request.headers.get('x-descobreix-locale')) && !pathname.startsWith('/api/') && !pathname.startsWith('/webs/') && !pathname.includes('.')) {
+    const localizedUrl = request.nextUrl.clone();
+    localizedUrl.pathname = localePath(locale, pathname);
+    localizedUrl.searchParams.delete('lang');
+    return NextResponse.redirect(localizedUrl);
+  }
+  response.cookies.set('NEXT_LOCALE',locale,{path:'/',maxAge:31536000,sameSite:'lax'});
+
   // -------------------------------------------------------------------------
   // 2. SUPABASE AUTH & SESSION (Extracted from old proxy.ts)
   // -------------------------------------------------------------------------
@@ -64,9 +89,8 @@ export async function proxy(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({
-            request,
-          });
+          response = makeResponse();
+          response.cookies.set("NEXT_LOCALE",locale,{path:"/",maxAge:31536000,sameSite:"lax"});
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
