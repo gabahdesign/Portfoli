@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
     const assets = process.env.NODE_ENV === "development" ? [] : [
       { source: "/move/assets/:path*", destination: `${upstream}/assets/:path*` },
       { source: "/move/workbox-:file.js", destination: `${upstream}/workbox-:file.js` },
-      ...["sw.js","manifest.webmanifest","firebase-messaging-sw.js","favicon.png","apple-touch-icon.png","app-icon.png","bright-retro.otf","occitania-flag.svg","aragon-council-flag.jpg","la-merce-2026.html","robots.txt"].map(file=>({source:`/move/${file}`,destination:`${upstream}/${file}`})),
+      ...["sw.js","manifest.webmanifest","firebase-messaging-sw.js","favicon.png","apple-touch-icon.png","app-icon.png","descobreix-logo.png","bright-retro.otf","occitania-flag.svg","aragon-council-flag.jpg","la-merce-2026.html","robots.txt"].map(file=>({source:`/move/${file}`,destination:`${upstream}/${file}`})),
     ];
     return [
       ...assets,
