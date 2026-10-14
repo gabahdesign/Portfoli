@@ -1,3 +1,4 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -24,6 +25,11 @@ export default async function WorkPage({
   params: Promise<{ token: string; slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+ const ui = await getUiTranslator();
+
+
+
+
   const { token, slug } = await params;
 
   const supabase = await createClient(token || undefined);
@@ -47,10 +53,10 @@ export default async function WorkPage({
     .maybeSingle();
 
   const isActive = tokenData?.active ?? false;
-  
-  // No longer blocking access to works by token validity here. 
-  // Portfolio is now public. 
-  
+
+  // No longer blocking access to works by token validity here.
+  // Portfolio is now public.
+
   if (tokenData && tokenData.active && tokenData.company_ids && tokenData.company_ids.length > 0) {
     // Note: work.companies is the joined company record
     if (!tokenData.company_ids.includes(work.company_id) && !work.companies?.is_freelance) {
@@ -82,7 +88,7 @@ export default async function WorkPage({
         return (
           <div key={block.id} style={blockStyle}>
             <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full" : "max-w-4xl")}>
-              <article 
+              <article
                 className="prose prose-invert prose-lg max-w-none prose-p:text-[var(--color-muted)] prose-headings:text-[var(--color-text)]"
                 dangerouslySetInnerHTML={{ __html: html }}
               />
@@ -99,17 +105,12 @@ export default async function WorkPage({
                   {content.mimeType?.startsWith('video') ? (
                     <video src={content.url} controls className="w-full h-auto block" />
                   ) : (
-                    <Image 
-                      src={content.url} 
-                      alt="" 
-                      width={1400} 
+                    <Image
+                      src={content.url}
+                      alt=""
+                      width={1400}
                       height={800}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1480px) calc(100vw - 128px), 1400px"
-                      quality={85}
-                      className="w-full h-auto block" 
-                    />
-                  )}
-               </div>
+                      sizes="(max-width: 768px) 100vw, (max-width: 1480px) calc(100vw - 128px), 1400px" quality={85} className="w-full h-auto block" /> )} </div>
             </div>
           </div>
         );
@@ -133,19 +134,19 @@ export default async function WorkPage({
                <div className={clsx("mx-auto px-6", settings.fullWidth ? "w-full px-0" : "max-w-[1400px]")}>
                  <div className="relative w-full min-h-[500px] md:min-h-[800px] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 group">
                     {/* Clean Viewer Wrapper */}
-                    <iframe 
+                    <iframe
                       src={`${content.url}#toolbar=0&navpanes=0&scrollbar=0`}
                       className="absolute inset-0 w-full h-full border-none pointer-events-none md:pointer-events-auto"
                       title={content.title}
                     />
-                     
+
                      {/* Overlay for mobile or to provide a clean exit/open action */}
                      <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a 
-                          href={content.url} 
-                          target="_blank" 
+                        <a
+                          href={content.url}
+                          target="_blank"
                           className="p-3 bg-black/60 backdrop-blur-xl text-white rounded-xl border border-white/10 hover:bg-[var(--color-accent)] transition-all"
-                          title="Veure en pantalla completa"
+                          title={ui("Veure en pantalla completa")}
                         >
                           <Maximize className="w-5 h-5" />
                         </a>
@@ -166,17 +167,15 @@ export default async function WorkPage({
                      <FileText size={40} />
                   </div>
                   <div className="flex-1 text-center md:text-left">
-                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] mb-2">Documentació Oficial PDF</p>
+                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] mb-2">{ui("Documentació Oficial PDF")}</p>
                      <h3 className="text-xl font-bold text-[var(--color-text)] mb-2">{content.title}</h3>
                      {content.description && <p className="text-sm text-[var(--color-muted)] line-clamp-2">{content.description}</p>}
                   </div>
-                  <a 
-                    href={content.url} 
-                    target="_blank" 
+                  <a
+                    href={content.url}
+                    target="_blank"
                     className="bg-[var(--color-accent)] text-white px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-[var(--color-accent-glow)] hover:scale-105 transition-all"
-                  >
-                    Obrir Document
-                  </a>
+                  > {ui("Obrir Document")} </a>
                </div>
             </div>
           </div>
@@ -195,7 +194,7 @@ export default async function WorkPage({
   // -----------------------------------------
   let prevWork: { slug: string, title: string } | null = null;
   let nextWork: { slug: string, title: string } | null = null;
-  
+
   const { data: rawWorks } = await supabase
     .from("works")
     .select("slug, title, company_id, companies (is_freelance)")
@@ -248,22 +247,22 @@ export default async function WorkPage({
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 border-b border-color-border pb-8">
            <div>
              <div className="flex items-center gap-3 mb-4">
-               <Link 
+               <Link
                  href={`/v/${token}?companyId=${work.company_id}`}
                  className="text-color-accent font-medium hover:underline flex items-center gap-1.5 group"
                >
-                 {work.companies?.name || "Proyecto Independiente"}
+                 {work.companies?.name || ui("Proyecto Independiente")}
                </Link>
                <span className="w-1 h-1 rounded-full bg-color-border"></span>
-               <span className="text-color-muted font-mono text-sm">{work.work_date ? new Date(work.work_date).getFullYear() : "Presente"}</span>
+               <span className="text-color-muted font-mono text-sm">{work.work_date ? new Date(work.work_date).getFullYear() : ui("Presente")}</span>
              </div>
               <h1 className="font-display text-4xl md:text-6xl font-black text-[var(--color-text)] leading-tight tracking-tight">{work.title}</h1>
            </div>
-           
+
            {work.protected && (
               <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 shadow-2xl">
                 <Lock className="w-4 h-4 text-[var(--color-accent)]" />
-                <span className="text-sm font-bold text-white shadow-sm uppercase tracking-widest text-[10px]">Strictly Confidential</span>
+                <span className="text-sm font-bold text-white shadow-sm uppercase tracking-widest text-[10px]">{ui("Strictly Confidential")}</span>
               </div>
            )}
         </div>
@@ -281,7 +280,7 @@ export default async function WorkPage({
            {Array.isArray(work.content) ? (
              work.content.map((block: any) => renderBlock(block))
            ) : (
-             <article 
+             <article
                className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:text-[var(--color-text)] prose-p:text-[var(--color-muted)] prose-p:leading-relaxed prose-a:text-[var(--color-accent)] hover:prose-a:text-[var(--color-accent-hover)] prose-img:rounded-2xl prose-img:border prose-img:border-[var(--color-border)] mb-16"
                dangerouslySetInnerHTML={{ __html: htmlContent || "" }}
              />
@@ -293,14 +292,14 @@ export default async function WorkPage({
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 py-8 border-t border-[var(--color-border)] mt-16">
             {prevWork ? (
                <Link href={`/v/${token}/trabajo/${prevWork.slug}`} className="flex flex-col items-start w-full sm:w-1/2 p-4 rounded-xl hover:bg-[var(--color-surface)] transition-colors border border-transparent hover:border-[var(--color-border)] group text-left">
-                 <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-muted)] group-hover:text-[var(--color-accent)] mb-1 transition-colors">Anterior</span>
+                 <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-muted)] group-hover:text-[var(--color-accent)] mb-1 transition-colors">{ui("Anterior")}</span>
                  <span className="font-display font-bold text-[var(--color-text)] group-hover:text-white transition-colors line-clamp-1">{prevWork.title}</span>
                </Link>
             ) : <div className="hidden sm:block w-1/2" />}
-            
+
             {nextWork ? (
                <Link href={`/v/${token}/trabajo/${nextWork.slug}`} className="flex flex-col items-end w-full sm:w-1/2 p-4 rounded-xl hover:bg-[var(--color-surface)] transition-colors border border-transparent hover:border-[var(--color-border)] group text-right">
-                 <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-muted)] group-hover:text-[var(--color-accent)] mb-1 transition-colors">Següent</span>
+                 <span className="text-[10px] uppercase tracking-widest font-bold text-[var(--color-muted)] group-hover:text-[var(--color-accent)] mb-1 transition-colors">{ui("Següent")}</span>
                  <span className="font-display font-bold text-[var(--color-text)] group-hover:text-white transition-colors line-clamp-1">{nextWork.title}</span>
                </Link>
             ) : <div className="hidden sm:block w-1/2" />}

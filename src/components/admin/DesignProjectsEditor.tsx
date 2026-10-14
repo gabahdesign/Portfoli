@@ -1,9 +1,10 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { 
-  Plus, Search, Filter, LayoutGrid, 
+import {
+  Plus, Search, Filter, LayoutGrid,
   Building2, Landmark, MapPin, Loader2, X,
   ArrowUpDown, Hash, Layers, Edit2, Trash2, Sparkles, Link as LinkIcon, Type, Upload,
   PanelLeft, Image as ImageIcon, ChevronDown, Check
@@ -26,12 +27,17 @@ const PREDEFINED_SECTORS = [
   "Consultoria", "Logística", "Energia", "Farmàcia", "Cosmètica",
 ];
 
-type WorkWithCompany = Work & { 
+type WorkWithCompany = Work & {
   companies: { name: string; logo_url: string | null } | null;
 };
 
 // --- Sector Autocomplete ---
 function SectorCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+ const ui = useUiTranslation();
+
+
+
+
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const suggestions = useMemo(() =>
@@ -53,7 +59,7 @@ function SectorCombobox({ value, onChange }: { value: string; onChange: (v: stri
     <div ref={ref} className="relative">
       <input
         type="text"
-        placeholder="Ex: Hostaleria, Moda..."
+        placeholder={ui("Ex: Hostaleria, Moda...")}
         value={value}
         onFocus={() => setOpen(true)}
         onChange={e => { onChange(e.target.value); setOpen(true); }}
@@ -83,6 +89,11 @@ function SectorCombobox({ value, onChange }: { value: string; onChange: (v: stri
 
 // --- Logo Drag & Drop ---
 function LogoUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+ const ui = useUiTranslation();
+
+
+
+
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,10 +126,8 @@ function LogoUploader({ value, onChange }: { value: string; onChange: (url: stri
       {value && (
         <div className="flex items-center gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Logo preview" className="w-14 h-14 object-contain rounded-xl bg-black/20 border border-white/10 p-1" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-white font-bold truncate">{value.split("/").pop()}</p>
-            <p className="text-[10px] text-[var(--color-muted)] mt-0.5">Logo actual</p>
+          <img src={value} alt={ui("Logo preview")} className="w-14 h-14 object-contain rounded-xl bg-black/20 border border-white/10 p-1" /> <div className="flex-1 min-w-0"> <p className="text-xs text-white font-bold truncate">{value.split("/").pop()}</p>
+            <p className="text-[10px] text-[var(--color-muted)] mt-0.5">{ui("Logo actual")}</p>
           </div>
           <button type="button" onClick={() => onChange("")} className="p-2 text-[var(--color-muted)] hover:text-red-500 transition-colors">
             <X size={16} />
@@ -146,8 +155,8 @@ function LogoUploader({ value, onChange }: { value: string; onChange: (url: stri
           </div>
         )}
         <div className="text-center">
-          <p className="text-sm font-bold text-white">{uploading ? "Pujant..." : "Arrossega el logo aquí"}</p>
-          <p className="text-[11px] text-[var(--color-muted)] mt-1">o fes clic per seleccionar · PNG, JPG, SVG, WEBP · Màx. 5MB</p>
+          <p className="text-sm font-bold text-white">{uploading ? ui("Pujant...") : ui("Arrossega el logo aquí")}</p>
+          <p className="text-[11px] text-[var(--color-muted)] mt-1">{ui("o fes clic per seleccionar · PNG, JPG, SVG, WEBP · Màx. 5MB")}</p>
         </div>
       </div>
 
@@ -155,7 +164,7 @@ function LogoUploader({ value, onChange }: { value: string; onChange: (url: stri
       <div className="relative">
         <input
           type="text"
-          placeholder="O enganxa una URL de logo..."
+          placeholder={ui("O enganxa una URL de logo...")}
           value={value}
           onChange={e => onChange(e.target.value)}
           className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-3 pl-12 text-white text-sm font-semibold focus:outline-none focus:border-[var(--color-accent)] transition-colors"
@@ -163,13 +172,18 @@ function LogoUploader({ value, onChange }: { value: string; onChange: (url: stri
         <ImageIcon size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
       </div>
 
-      {error && <p className="text-xs text-amber-400 pl-2">{error}</p>}
+      {error && <p className="text-xs text-amber-400 pl-2">{ui(error)}</p>}
     </div>
   );
 }
 
 // --- Main Page ---
 export default function AdminTrabajos() {
+ const ui = useUiTranslation();
+
+
+
+
   const [works, setWorks] = useState<WorkWithCompany[]>([]);
   const [empresas, setEmpresas] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -181,9 +195,9 @@ export default function AdminTrabajos() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileContentOpen, setIsMobileContentOpen] = useState(false);
   const [companySortBy, setCompanySortBy] = useState<"hierarchy" | "alphabetical" | "recent">("hierarchy");
-  
+
   const tagList = useMemo(() => PREDEFINED_TAGS, []);
-  
+
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isSavingCompany, setIsSavingCompany] = useState(false);
@@ -209,13 +223,13 @@ export default function AdminTrabajos() {
   useEffect(() => { fetchInitialData(); }, [fetchInitialData]);
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`¿Eliminar "${title}"?`)) return;
+    if (!confirm(ui("¿Eliminar \"{0}\"?", [title]))) return;
     await supabase.from("works").delete().eq("id", id);
     fetchInitialData();
   };
 
   const handleDuplicate = async (work: any) => {
-    if (!confirm(`¿Duplicar "${work.title}"?`)) return;
+    if (!confirm(ui("¿Duplicar \"{0}\"?", [work.title]))) return;
     const newWork = { ...work, id: undefined, created_at: undefined, updated_at: undefined, companies: undefined, slug: `${work.slug}-copy-${Date.now()}`, title: `${work.title} (Copia)`, status: 'draft' };
     Object.keys(newWork).forEach(key => newWork[key] === undefined && delete newWork[key]);
     await supabase.from("works").insert([newWork]);
@@ -256,7 +270,7 @@ export default function AdminTrabajos() {
   };
 
   const handleDeleteCompany = async (id: string) => {
-    if (!confirm("Segur que vols eliminar aquesta empresa?")) return;
+    if (!confirm(ui("Segur que vols eliminar aquesta empresa?"))) return;
     await supabase.from("companies").delete().eq("id", id);
     fetchInitialData();
   };
@@ -268,7 +282,7 @@ export default function AdminTrabajos() {
       const matchesStatus = statusFilter === "all" || wk.status === statusFilter;
       const matchesCompany = !activeCompanyId || wk.company_id === activeCompanyId;
       const matchesTag = !activeTag || (wk.tags || []).includes(activeTag);
-      const matchesSearch = !searchQuery || 
+      const matchesSearch = !searchQuery ||
         wk.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (wk.tags || []).some(t => t.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesStatus && matchesCompany && matchesSearch && matchesTag;
@@ -280,12 +294,12 @@ export default function AdminTrabajos() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-[var(--color-bg)] animate-in fade-in duration-700">
-      
+
       {isMobileContentOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[65] lg:hidden" onClick={() => setIsMobileContentOpen(false)} />
       )}
 
-      <CompanyHierarchySidebar 
+      <CompanyHierarchySidebar
         empresas={empresas}
         activeCompanyId={activeCompanyId}
         onSelectCompany={setActiveCompanyId}
@@ -303,7 +317,7 @@ export default function AdminTrabajos() {
 
       <main className="flex-1 w-full min-w-0 overflow-x-hidden">
         <div className="p-3 md:p-8 lg:p-12 space-y-6 md:space-y-12">
-          
+
           <div className="flex flex-col gap-4 md:gap-10">
              <div className="flex flex-wrap items-center justify-between gap-4">
                  <div className="flex items-center gap-3 min-w-0">
@@ -312,26 +326,25 @@ export default function AdminTrabajos() {
                     </button>
                     <div className="space-y-0.5 min-w-0">
                        <h1 className="text-xl md:text-5xl font-display font-black tracking-tighter text-[var(--color-text)] truncate max-w-[calc(100vw-100px)]">
-                          {activeCompanyId ? empresas.find(e => e.id === activeCompanyId)?.name : "Arxiu Global"}
+                          {activeCompanyId ? empresas.find(e => e.id === activeCompanyId)?.name : ui("Arxiu Global")}
                        </h1>
                        <p className="text-[8px] md:text-xs font-bold text-[var(--color-muted)] uppercase tracking-widest opacity-40">
-                          {filteredWorks.length} mòduls
-                       </p>
+                          {filteredWorks.length} {ui("mòduls")} </p>
                     </div>
                  </div>
                  <div className="flex flex-wrap items-center gap-2">
                     <div className="relative group flex-1 sm:flex-none">
                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-muted)]" />
-                       <input type="text" placeholder="Busca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                       <input type="text" placeholder={ui("Busca...")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                          className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl pl-10 pr-4 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-[var(--color-accent)] w-full sm:w-48 transition-all" />
                     </div>
                     <div className="flex items-center gap-2">
                        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
                          className="bg-[var(--color-surface)] border border-[var(--color-border)] text-white text-[10px] font-bold rounded-2xl px-3 py-2.5 outline-none focus:border-[var(--color-accent)] appearance-none cursor-pointer">
-                          <option value="all">Tots</option>
-                          <option value="published">Publicats</option>
-                          <option value="draft">Esborranys</option>
-                          <option value="archived">Arxivats</option>
+                          <option value="all">{ui("Tots")}</option>
+                          <option value="published">{ui("Publicats")}</option>
+                          <option value="draft">{ui("Esborranys")}</option>
+                          <option value="archived">{ui("Arxivats")}</option>
                        </select>
                        <button onClick={() => setSortBy(sortBy === 'recent' ? 'alphabetical' : 'recent')}
                          className="p-2.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl text-[var(--color-muted)] hover:text-white hover:border-[var(--color-accent)] transition-all">
@@ -339,7 +352,7 @@ export default function AdminTrabajos() {
                        </button>
                        <button onClick={() => router.push("/admin/trabajos/nuevo/editar")}
                          className="flex items-center gap-2 bg-[var(--color-accent)] text-white px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-[var(--color-accent-glow)]/20 hover:scale-[1.02] active:scale-95 transition-all">
-                         <Plus size={16} /> <span className="hidden sm:inline">Nou Projecte</span>
+                         <Plus size={16} /> <span className="hidden sm:inline">{ui("Nou Projecte")}</span>
                        </button>
                     </div>
                  </div>
@@ -347,9 +360,7 @@ export default function AdminTrabajos() {
              <div className="flex flex-wrap items-center gap-2">
                 <button onClick={() => setActiveTag(null)}
                   className={clsx("px-4 md:px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all border",
-                    activeTag === null ? 'bg-white text-black border-white shadow-xl scale-105' : 'bg-[var(--color-surface)]/20 text-[var(--color-muted)] border-[var(--color-border)] hover:text-white')}>
-                  All Tags
-                </button>
+                    activeTag === null ? 'bg-white text-black border-white shadow-xl scale-105' : 'bg-[var(--color-surface)]/20 text-[var(--color-muted)] border-[var(--color-border)] hover:text-white')}> {ui("All Tags")} </button>
                 <div className="hidden md:block w-px h-6 bg-[var(--color-border)] opacity-30" />
                 {tagList.map(tag => (
                    <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)}
@@ -365,13 +376,13 @@ export default function AdminTrabajos() {
           {loading ? (
              <div className="py-32 flex flex-col items-center justify-center gap-4 text-[var(--color-muted)] opacity-50">
                 <Loader2 className="animate-spin" size={32} />
-                <p className="text-[10px] font-black uppercase tracking-[0.4em]">Sincronitzant arxius...</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em]">{ui("Sincronitzant arxius...")}</p>
              </div>
           ) : filteredWorks.length === 0 ? (
              <div className="py-32 border-2 border-dashed border-[var(--color-border)] rounded-[3rem] flex flex-col items-center justify-center gap-6 text-center opacity-80">
                 <LayoutGrid size={40} className="text-[var(--color-muted)] opacity-20" />
-                <p className="text-[var(--color-muted)] font-bold">No s&apos;ha trobat cap mòdul</p>
-                <button onClick={() => { setSearchQuery(""); setStatusFilter("all"); setActiveCompanyId(null); }} className="text-[var(--color-accent)] font-black uppercase tracking-widest text-[10px] hover:underline">Reiniciar Filtres</button>
+                <p className="text-[var(--color-muted)] font-bold">{ui("No s'ha trobat cap mòdul")}</p>
+                <button onClick={() => { setSearchQuery(""); setStatusFilter("all"); setActiveCompanyId(null); }} className="text-[var(--color-accent)] font-black uppercase tracking-widest text-[10px] hover:underline">{ui("Reiniciar Filtres")}</button>
              </div>
           ) : (
               <div className="columns-1 sm:columns-2 lg:columns-2 xl:columns-3 2xl:columns-4 3xl:columns-5 gap-4 md:gap-8 space-y-4 md:space-y-8">
@@ -388,17 +399,17 @@ export default function AdminTrabajos() {
         <div className="fixed inset-0 z-[200] flex flex-col">
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsCompanyModalOpen(false)} />
-          
+
           {/* Panel — almost full screen with small margin */}
           <div className="relative m-3 md:m-6 flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 fade-in duration-300">
-            
+
             {/* Header */}
             <div className="flex items-center justify-between px-8 md:px-12 py-6 border-b border-[var(--color-border)] bg-[var(--color-surface)]/50 shrink-0">
               <div>
                 <h2 className="text-3xl md:text-4xl font-display font-black text-white tracking-tighter">
-                  {editingCompany ? "Editar Client" : "Nou Client"}
+                  {editingCompany ? ui("Editar Client") : ui("Nou Client")}
                 </h2>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-accent)] mt-1">Identitat Corporativa</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-accent)] mt-1">{ui("Identitat Corporativa")}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button type="button" onClick={() => setIsCompanyModalOpen(false)}
@@ -411,40 +422,40 @@ export default function AdminTrabajos() {
             {/* Scrollable form body */}
             <form onSubmit={handleSaveCompany} className="flex-1 overflow-y-auto scrollbar-hide p-8 md:p-12">
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 xl:gap-16">
-                
+
                 {/* LEFT COLUMN */}
                 <div className="space-y-8">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] border-b border-[var(--color-border)] pb-3">Informació Bàsica</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] border-b border-[var(--color-border)] pb-3">{ui("Informació Bàsica")}</h3>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Nom Comercial *</label>
-                    <input type="text" placeholder="Ex: Apple Inc." value={companyFormData.name}
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Nom Comercial *")}</label>
+                    <input type="text" placeholder={ui("Ex: Apple Inc.")} value={companyFormData.name}
                       onChange={e => { set("name", e.target.value); if (!editingCompany) set("slug", e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")); }}
                       className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 text-white font-bold focus:outline-none focus:border-[var(--color-accent)] transition-colors" required />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Slug *</label>
-                    <input type="text" placeholder="ex-apple-inc" value={companyFormData.slug} onChange={e => set("slug", e.target.value)}
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Slug *")}</label>
+                    <input type="text" placeholder={ui("ex-apple-inc")} value={companyFormData.slug} onChange={e => set("slug", e.target.value)}
                       className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 text-white font-bold font-mono text-sm focus:outline-none focus:border-[var(--color-accent)] transition-colors" required />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Sector / Especialitat</label>
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Sector / Especialitat")}</label>
                     <SectorCombobox value={companyFormData.sector || ""} onChange={v => set("sector", v)} />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Ubicació</label>
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Ubicació")}</label>
                     <div className="relative">
-                      <input type="text" placeholder="Tarragona, Catalunya..." value={companyFormData.location || ""} onChange={e => set("location", e.target.value)}
+                      <input type="text" placeholder={ui("Tarragona, Catalunya...")} value={companyFormData.location || ""} onChange={e => set("location", e.target.value)}
                         className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 pl-12 text-white font-bold focus:outline-none focus:border-[var(--color-accent)] transition-colors" />
                       <MapPin size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Website</label>
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Website")}</label>
                     <div className="relative">
                       <input type="text" placeholder="https://" value={companyFormData.website || ""} onChange={e => set("website", e.target.value)}
                         className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 pl-12 text-white font-bold focus:outline-none focus:border-[var(--color-accent)] transition-colors" />
@@ -453,11 +464,11 @@ export default function AdminTrabajos() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Empresa Matriu</label>
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Empresa Matriu")}</label>
                     <div className="relative">
                       <select value={companyFormData.parent_id || ""} onChange={e => set("parent_id", e.target.value || null)}
                         className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] text-white font-bold rounded-[1.5rem] px-6 py-4 focus:outline-none focus:border-[var(--color-accent)] appearance-none transition-colors cursor-pointer">
-                        <option value="">Independent (sense empresa matriu)</option>
+                        <option value="">{ui("Independent (sense empresa matriu)")}</option>
                         {empresas.filter(e => e.id !== editingCompany?.id).map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                       </select>
                       <ChevronDown size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none" />
@@ -467,21 +478,21 @@ export default function AdminTrabajos() {
 
                 {/* RIGHT COLUMN */}
                 <div className="space-y-8">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] border-b border-[var(--color-border)] pb-3">Identitat Visual i Relació</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)] border-b border-[var(--color-border)] pb-3">{ui("Identitat Visual i Relació")}</h3>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Logo</label>
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Logo")}</label>
                     <LogoUploader value={companyFormData.logo_url || ""} onChange={v => set("logo_url", v)} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Relació Des de</label>
+                      <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Relació Des de")}</label>
                       <input type="date" value={companyFormData.start_date || ""} onChange={e => set("start_date", e.target.value)}
                         className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 text-white font-bold focus:outline-none focus:border-[var(--color-accent)] [color-scheme:dark] transition-colors" />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Fins a</label>
+                      <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Fins a")}</label>
                       <input type="date" value={companyFormData.end_date || ""} onChange={e => set("end_date", e.target.value)}
                         className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[1.5rem] px-6 py-4 text-white font-bold focus:outline-none focus:border-[var(--color-accent)] [color-scheme:dark] transition-colors" />
                     </div>
@@ -491,8 +502,8 @@ export default function AdminTrabajos() {
                   <div className="space-y-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6">
                     <label className="flex items-center justify-between cursor-pointer group">
                       <div>
-                        <p className="text-sm font-bold text-white">Col·laboració Pública</p>
-                        <p className="text-xs text-[var(--color-muted)] mt-0.5">Apareix a l&apos;arxiu públic del portfolio</p>
+                        <p className="text-sm font-bold text-white">{ui("Col·laboració Pública")}</p>
+                        <p className="text-xs text-[var(--color-muted)] mt-0.5">{ui("Apareix a l'arxiu públic del portfolio")}</p>
                       </div>
                       <div className="relative shrink-0">
                         <input type="checkbox" checked={companyFormData.is_freelance} onChange={e => set("is_freelance", e.target.checked)} className="sr-only peer" />
@@ -503,8 +514,8 @@ export default function AdminTrabajos() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">Descripció / Notes</label>
-                    <textarea rows={5} placeholder="Breu descripció de la relació, projectes o context..."
+                    <label className="block text-[10px] font-black text-[var(--color-muted)] uppercase tracking-widest pl-1">{ui("Descripció / Notes")}</label>
+                    <textarea rows={5} placeholder={ui("Breu descripció de la relació, projectes o context...")}
                       value={companyFormData.description || ""} onChange={e => set("description", e.target.value)}
                       className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[2rem] px-8 py-6 text-white font-medium focus:outline-none focus:border-[var(--color-accent)] resize-none transition-colors" />
                   </div>
@@ -517,18 +528,15 @@ export default function AdminTrabajos() {
               {editingCompany && (
                 <button type="button" onClick={() => handleDeleteCompany(editingCompany.id)}
                   className="px-6 py-3 text-red-500 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center gap-2">
-                  <Trash2 size={14} /> Eliminar
-                </button>
+                  <Trash2 size={14} /> {ui("Eliminar")} </button>
               )}
               <div className="flex items-center gap-3 ml-auto">
                 <button type="button" onClick={() => setIsCompanyModalOpen(false)}
-                  className="px-8 py-3.5 font-black uppercase tracking-widest text-[10px] text-[var(--color-muted)] border border-[var(--color-border)] rounded-2xl hover:text-white hover:border-white/20 transition-all">
-                  Cancel·lar
-                </button>
+                  className="px-8 py-3.5 font-black uppercase tracking-widest text-[10px] text-[var(--color-muted)] border border-[var(--color-border)] rounded-2xl hover:text-white hover:border-white/20 transition-all"> {ui("Cancel·lar")} </button>
                 <button type="submit" onClick={handleSaveCompany} disabled={isSavingCompany}
                   className="px-10 py-3.5 bg-[var(--color-accent)] text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-[var(--color-accent-glow)]/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center gap-2">
                   {isSavingCompany ? <Loader2 className="animate-spin" size={16} /> : null}
-                  {editingCompany ? "Sincronitzar" : "Crear Client"}
+                  {editingCompany ? ui("Sincronitzar") : ui("Crear Client")}
                 </button>
               </div>
             </div>

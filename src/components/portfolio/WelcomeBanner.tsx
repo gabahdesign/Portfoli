@@ -9,6 +9,7 @@ interface WelcomeBannerProps {
 }
 
 export function WelcomeBanner({ message }: WelcomeBannerProps) {
+
   const [isVisible, setIsVisible] = useState(true);
   const pathname = usePathname();
 
@@ -32,7 +33,7 @@ export function WelcomeBanner({ message }: WelcomeBannerProps) {
   if (!message || !isHomePage) return null;
 
   return (
-    <div 
+    <div
       className={`flex justify-center py-4 px-4 transition-all duration-700 ease-out ${
         isVisible ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0 pointer-events-none"
       }`}

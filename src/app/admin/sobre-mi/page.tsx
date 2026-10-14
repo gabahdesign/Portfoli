@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Save, Loader2, User, Mail, Phone, MapPin, Link2, Globe, Upload, Camera, Trash2, FileText } from "lucide-react";
@@ -16,6 +17,11 @@ const LANGUAGES = [
 ];
 
 export default function AdminSobreMi() {
+ const ui = useUiTranslation();
+
+
+
+
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,7 +68,7 @@ export default function AdminSobreMi() {
       ...formData,
       updated_at: new Date().toISOString()
     });
-    if (!error) alert("Informació guardada correctament!");
+    if (!error) alert(ui("Informació guardada correctament!"));
     else alert("Error: " + error.message);
     setSaving(false);
   };
@@ -95,15 +101,15 @@ export default function AdminSobreMi() {
     }
   };
 
-  if (loading) return <div className="p-4 md:p-8 text-[var(--color-muted)] animate-pulse">Carregant informació personal...</div>;
+  if (loading) return <div className="p-4 md:p-8 text-[var(--color-muted)] animate-pulse">{ui("Carregant informació personal...")}</div>;
 
   return (
     <div className="p-4 md:p-8 animate-in fade-in duration-500 w-full pb-32">
       {/* Header */}
       <div className="mb-10 border-b border-[var(--color-border)] pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-black text-[var(--color-text)] tracking-tight">Sobre Mi</h1>
-          <p className="text-[var(--color-muted)] text-sm mt-1">Gestiona el teu perfil públic, foto i dades de contacte.</p>
+          <h1 className="text-4xl font-black text-[var(--color-text)] tracking-tight">{ui("Sobre Mi")}</h1>
+          <p className="text-[var(--color-muted)] text-sm mt-1">{ui("Gestiona el teu perfil públic, foto i dades de contacte.")}</p>
         </div>
         <button
           onClick={handleSave}
@@ -111,9 +117,7 @@ export default function AdminSobreMi() {
           className="flex items-center gap-2 px-8 py-3 rounded-2xl text-sm font-bold text-white transition-all shadow-xl shadow-[var(--color-accent-glow)] hover:scale-[1.02] active:scale-[0.98]"
           style={{ background: "var(--color-accent)" }}
         >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          Guardar Informació
-        </button>
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} {ui("Guardar Informació")} </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -122,25 +126,19 @@ export default function AdminSobreMi() {
           {/* FOTO CARD */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 shadow-sm overflow-hidden">
              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-6 flex items-center gap-2">
-               <Camera className="w-3 h-3" /> Foto de Perfil
-             </h2>
-             
+               <Camera className="w-3 h-3" /> {ui("Foto de Perfil")} </h2>
+
              <div className="relative group mx-auto w-48 h-48 mb-6">
                 <div className="w-full h-full rounded-3xl overflow-hidden bg-[var(--color-bg)] border-2 border-[var(--color-border)] relative">
                   {formData.photo_url ? (
-                    <Image src={formData.photo_url} alt="Profile" fill className="object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-[var(--color-muted)]">
-                      <User className="w-12 h-12 opacity-20" />
-                    </div>
+                    <Image src={formData.photo_url} alt={ui("Profile")} fill className="object-cover" /> ) : ( <div className="flex items-center justify-center h-full text-[var(--color-muted)]"> <User className="w-12 h-12 opacity-20" /> </div>
                   )}
                   {uploading && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm">
-                      <Loader2 className="w-8 h-8 text-white animate-spin" />
-                    </div>
+                      <Loader2 className="w-8 h-8 text-white animate-spin" /> </div>
                   )}
                 </div>
-                
+
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -153,22 +151,22 @@ export default function AdminSobreMi() {
 
              <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1.5 ml-1">Nom Públic</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1.5 ml-1">{ui("Nom Públic")}</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={e => setFormData({...formData, name: e.target.value})}
-                    placeholder="Marc G."
+                    placeholder={ui("Marc G.")}
                     className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] outline-none transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1.5 ml-1">Tagline</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] mb-1.5 ml-1">{ui("Tagline")}</label>
                   <input
                     type="text"
                     value={formData.tagline}
                     onChange={e => setFormData({...formData, tagline: e.target.value})}
-                    placeholder="Dissenyador Professional"
+                    placeholder={ui("Dissenyador Professional")}
                     className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] outline-none transition-colors"
                   />
                 </div>
@@ -178,8 +176,7 @@ export default function AdminSobreMi() {
           {/* CONTACTE CARD */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 shadow-sm">
              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-6 flex items-center gap-2">
-               <Mail className="w-3 h-3" /> Canals de Contacte
-             </h2>
+               <Mail className="w-3 h-3" /> {ui("Canals de Contacte")} </h2>
              <div className="space-y-4">
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-muted)]" />
@@ -197,7 +194,7 @@ export default function AdminSobreMi() {
                     type="text"
                     value={formData.phone}
                     onChange={e => setFormData({...formData, phone: e.target.value})}
-                    placeholder="Telèfon"
+                    placeholder={ui("Telèfon")}
                     className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] outline-none transition-colors"
                   />
                 </div>
@@ -207,7 +204,7 @@ export default function AdminSobreMi() {
                     type="text"
                     value={formData.location}
                     onChange={e => setFormData({...formData, location: e.target.value})}
-                    placeholder="Ubicació"
+                    placeholder={ui("Ubicació")}
                     className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-xl pl-11 pr-4 py-2.5 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] outline-none transition-colors"
                   />
                 </div>
@@ -221,8 +218,7 @@ export default function AdminSobreMi() {
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-1 shadow-sm flex flex-col min-h-[600px]">
              <div className="p-5 flex items-center justify-between border-b border-[var(--color-border)] flex-col sm:flex-row gap-4">
                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] flex items-center gap-2">
-                 <FileText className="w-3 h-3" /> Biografia Professional
-               </h2>
+                 <FileText className="w-3 h-3" /> {ui("Biografia Professional")} </h2>
                <div className="flex gap-2">
                  {LANGUAGES.map(lang => (
                    <button
@@ -235,11 +231,11 @@ export default function AdminSobreMi() {
                  ))}
                </div>
              </div>
-             
+
              <div className="flex-1 p-4">
-                <TipTapEditor 
+                <TipTapEditor
                   key={activeLang}
-                  content={(formData.bio as any)[activeLang]} 
+                  content={(formData.bio as any)[activeLang]}
                   onChange={(json) => setFormData({
                     ...formData,
                     bio: { ...formData.bio, [activeLang]: json }
@@ -251,8 +247,7 @@ export default function AdminSobreMi() {
           {/* XARXES SOCIALS */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-6 shadow-sm">
              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--color-muted)] mb-6 flex items-center gap-2">
-               <Globe className="w-3 h-3" /> Presència Digital
-             </h2>
+               <Globe className="w-3 h-3" /> {ui("Presència Digital")} </h2>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] ml-1">LinkedIn</label>

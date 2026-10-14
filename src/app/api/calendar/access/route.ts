@@ -9,15 +9,18 @@ export async function GET(request: NextRequest) {
   if (!user) return NextResponse.redirect(new URL(`/admin?calendar_state=${state}`, request.url));
   if (user.id !== "a899bd7c-d921-4bf4-a3d6-63ff0460e418") return new NextResponse("Accés no autoritzat", { status: 403 });
   const calendarOrigin = "https://elcalendario.lovable.app";
-  const callback = new URL(process.env.CALENDAR_SSO_CALLBACK_URL || `${calendarOrigin}/auth`);
-  const local = process.env.NODE_ENV !== "production" && callback.origin === "http://127.0.0.1:3001";
-  if ((!local && callback.origin !== calendarOrigin) || callback.pathname !== "/auth" || callback.search || callback.hash) return new NextResponse("Configuració no vàlida", { status: 503 });
+  const local = process.env.NODE_ENV !== "production";
+  const portfolioOrigin = local ? "http://127.0.0.1:3000" : "https://descobreix.com";
+  const callback = new URL("/move/auth", portfolioOrigin);
+  const lang = request.cookies.get("NEXT_LOCALE")?.value || "ca";
+  callback.searchParams.set("sso", "descobreix");
+  callback.searchParams.set("lang", ["ca","es","en","fr","oc","ast","gl","an","eu"].includes(lang) ? lang : "ca");
   // Read the session token only after getUser has validated the current owner.
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return new NextResponse("Torna a iniciar sessió", { status: 401 });
   let tokenHash: string;
   try {
-    const exchangeOrigin = local && process.env.CALENDAR_SSO_EXCHANGE_ORIGIN !== calendarOrigin ? callback.origin : calendarOrigin;
+    const exchangeOrigin = (process.env.CALENDAR_SSO_EXCHANGE_ORIGIN || (process.env.CALENDAR_UPSTREAM_URL ? `${process.env.CALENDAR_UPSTREAM_URL.replace(/\/$/, "")}/move` : local ? "http://127.0.0.1:3001/move" : calendarOrigin)).replace(/\/$/, "");
     const exchange = await fetch(`${exchangeOrigin}/api/auth/descobreix`, {
       method: "POST", headers: { Authorization: `Bearer ${session.access_token}` },
       cache: "no-store", redirect: "error", signal: AbortSignal.timeout(15_000),

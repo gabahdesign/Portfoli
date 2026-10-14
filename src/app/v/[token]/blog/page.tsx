@@ -1,3 +1,4 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale } from "next-intl/server";
 import { Newspaper, Lock, ArrowRight, Calendar, Share2 } from "lucide-react";
@@ -5,6 +6,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default async function BlogPage({ params }: { params: Promise<{ token: string }> }) {
+ const ui = await getUiTranslator();
+
+
+
+
   const { token } = await params;
   const locale = await getLocale();
   const supabase = await createClient(token || undefined);
@@ -28,37 +34,36 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
       <header className="border-b-4 border-[var(--color-text)] border-double pt-12 pb-6 px-6 max-w-[2000px] mx-auto">
         <div className="flex justify-between items-end border-b border-[var(--color-border)] pb-2 mb-4">
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">{today}</span>
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">descobreix &middot; Gastronomia · Disseny · Tecnologia · Vida</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">{ui("descobreix · Gastronomia · Disseny · Tecnologia · Vida")}</span>
           <div className="flex gap-4">
              <Share2 size={14} className="opacity-40" />
           </div>
         </div>
-        
+
         <h1 className="font-serif text-6xl md:text-9xl text-center font-black tracking-tighter py-6 border-b border-[var(--color-border)] lowercase">
           descobreix<span className="text-[var(--color-accent)]">.</span>
         </h1>
-        
+
         <div className="flex flex-wrap justify-center gap-6 md:gap-12 py-4 text-[10px] font-black uppercase tracking-[0.2em]">
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Gastronomia</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Disseny</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Art</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">IA &amp; Eines</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Tutorials</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Muntanya</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Barcelona</span>
-           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">Festes Cat.</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Gastronomia")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Disseny")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Art")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("IA & Eines")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Tutorials")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Muntanya")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Barcelona")}</span>
+           <span className="cursor-pointer hover:text-[var(--color-accent)] transition-colors">{ui("Festes Cat.")}</span>
         </div>
       </header>
 
       <main className="max-w-[2000px] mx-auto px-6 py-16">
         {!posts || posts.length === 0 ? (
           <div className="text-center py-32 border-2 border-dashed border-[var(--color-border)] rounded-3xl">
-             <Newspaper size={48} className="mx-auto mb-4 opacity-10" />
-             <p className="font-serif text-2xl italic text-[var(--color-muted)]">No hi ha noves edicions per avui.</p>
+             <Newspaper size={48} className="mx-auto mb-4 opacity-10" /> <p className="font-serif text-2xl italic text-[var(--color-muted)]">{ui("No hi ha noves edicions per avui.")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
+
             {/* Featured Post (LHS Large) */}
             <div className="lg:col-span-8 space-y-12">
                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -75,7 +80,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                     </div>
                     <div className="max-w-3xl">
                        <div className="flex items-center gap-4 mb-4">
-                          <span className="bg-[var(--color-accent)] text-white text-[9px] font-black uppercase tracking-widest px-2 py-1">Destacat</span>
+                          <span className="bg-[var(--color-accent)] text-white text-[9px] font-black uppercase tracking-widest px-2 py-1">{ui("Destacat")}</span>
                           <span className="text-[10px] text-[var(--color-muted)] font-bold uppercase tracking-widest">{new Date(post.published_at).toLocaleDateString(locale)}</span>
                        </div>
                        <Link href={`/v/${token}/blog/${post.slug}`}>
@@ -84,9 +89,9 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                          </h2>
                        </Link>
                        <p className="font-serif text-xl text-[var(--color-muted)] leading-relaxed italic mb-8">
-                         {post.excerpt || "Descobreix els detalls d'aquesta nova entrada al nostre journal exclusiu..."}
+                         {post.excerpt || ui("Descobreix els detalls d'aquesta nova entrada al nostre journal exclusiu...")}
                        </p>
-                       
+
                        {post.is_premium ? (
                          <div className="bg-[var(--color-accent)]/5 border border-[var(--color-accent)]/20 p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
                             <div className="flex items-center gap-4">
@@ -94,23 +99,20 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                                   <Lock size={20} />
                                </div>
                                <div>
-                                  <p className="font-bold text-sm text-[var(--color-text)]">Contingut Premium</p>
-                                  <p className="text-xs text-[var(--color-muted)]">Subscriu-te per llegir l&apos;article complet.</p>
+                                  <p className="font-bold text-sm text-[var(--color-text)]">{ui("Contingut Premium")}</p>
+                                  <p className="text-xs text-[var(--color-muted)]">{ui("Subscriu-te per llegir l'article complet.")}</p>
                                </div>
                             </div>
-                            <button className="bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-3 rounded-xl font-bold text-sm hover:bg-[var(--color-accent)] hover:text-white transition-all shadow-xl">
-                               Desbloquejar ara
-                            </button>
+                            <button className="bg-[var(--color-text)] text-[var(--color-bg)] px-8 py-3 rounded-xl font-bold text-sm hover:bg-[var(--color-accent)] hover:text-white transition-all shadow-xl"> {ui("Desbloquejar ara")} </button>
                          </div>
                        ) : (
-                         <Link href={`/v/${token}/blog/${post.slug}`} className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest border-b-2 border-[var(--color-text)] pb-1 hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-all">
-                            Llegir Article <ArrowRight size={14} />
+                         <Link href={`/v/${token}/blog/${post.slug}`} className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest border-b-2 border-[var(--color-text)] pb-1 hover:text-[var(--color-accent)] hover:border-[var(--color-accent)] transition-all"> {ui("Llegir Article")} <ArrowRight size={14} />
                          </Link>
                        )}
                     </div>
                  </article>
                ))}
-               
+
                {/* Grid of smaller posts */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-16 border-t border-[var(--color-border)]">
                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -134,7 +136,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
             <aside className="lg:col-span-4 border-l border-[var(--color-border)] pl-16 hidden lg:block">
                <div className="sticky top-32 space-y-16">
                   <div>
-                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-accent)] mb-8">Darrera Hora</h4>
+                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-accent)] mb-8">{ui("Darrera Hora")}</h4>
                      <div className="space-y-8">
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {(posts || []).slice(0, 5).map((post: any, i: number) => (
@@ -143,7 +145,7 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                                 <span className="text-2xl font-serif text-[var(--color-muted)] font-black italic opacity-30">0{i+1}</span>
                                 <div>
                                    <p className="text-xs font-black leading-snug group-hover:text-[var(--color-accent)] transition-colors">{post.title}</p>
-                                   <p className="text-[9px] text-[var(--color-muted)] font-bold uppercase mt-1">Disseny</p>
+                                   <p className="text-[9px] text-[var(--color-muted)] font-bold uppercase mt-1">{ui("Disseny")}</p>
                                 </div>
                              </div>
                           </div>
@@ -152,13 +154,9 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
                   </div>
 
                   <div className="bg-[var(--color-text)] p-8 text-[var(--color-bg)] rounded-3xl">
-                     <h4 className="font-serif text-2xl font-black mb-4">Descobreix Premium</h4>
-                     <p className="text-xs text-[var(--color-bg)]/60 leading-relaxed mb-8">
-                        Accedeix a tot el contingut exclusiu, anàlisis de mercat i plantilles per només un pagament únic.
-                     </p>
-                     <button className="w-full bg-[var(--color-accent)] text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-[var(--color-accent)]/20">
-                        Subscriure&apos;m ara
-                     </button>
+                     <h4 className="font-serif text-2xl font-black mb-4">{ui("Descobreix Premium")}</h4>
+                     <p className="text-xs text-[var(--color-bg)]/60 leading-relaxed mb-8"> {ui("Accedeix a tot el contingut exclusiu, anàlisis de mercat i plantilles per només un pagament únic.")} </p>
+                     <button className="w-full bg-[var(--color-accent)] text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-[var(--color-accent)]/20"> {ui("Subscriure'm ara")} </button>
                   </div>
                </div>
             </aside>
@@ -169,13 +167,13 @@ export default async function BlogPage({ params }: { params: Promise<{ token: st
 
       <footer className="border-t border-[var(--color-border)] py-12 px-6 bg-[var(--color-surface)]">
          <div className="max-w-[2000px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="font-serif text-2xl font-black text-[var(--color-text)]">marc<span className="text-[var(--color-accent)]">.</span></p>
+            <p className="font-serif text-2xl font-black text-[var(--color-text)]">{ui("marc")}<span className="text-[var(--color-accent)]">.</span></p>
             <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">
                <span>Linkedin</span>
                <span>Instagram</span>
                <span>Twitter</span>
             </div>
-            <p className="text-[9px] text-[var(--color-muted)] opacity-50 font-bold uppercase">&copy; 2024 Marc Portfolio Journal</p>
+            <p className="text-[9px] text-[var(--color-muted)] opacity-50 font-bold uppercase">{ui("© 2024 Marc Portfolio Journal")}</p>
          </div>
       </footer>
     </div>

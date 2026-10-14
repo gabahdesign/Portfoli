@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -18,6 +19,11 @@ interface TipTapEditorProps {
 }
 
 export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
+ const ui = useUiTranslation();
+
+
+
+
   const [uploading, setUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -54,30 +60,30 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
 
   const uploadMedia = useCallback(async (file: File) => {
     if (!editor) return;
-    
+
     // Check if it's explicitly supported
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
     const isAudio = file.type.startsWith("audio/");
     const isPdf = file.type === "application/pdf";
-    
-    if (!isImage && !isVideo && !isAudio && !isPdf) { 
-      alert("Format no suportat. Usa imatges, vídeos, àudio o PDF."); 
-      return; 
+
+    if (!isImage && !isVideo && !isAudio && !isPdf) {
+      alert(ui("Format no suportat. Usa imatges, vídeos, àudio o PDF."));
+      return;
     }
-    
+
     setUploading(true);
     try {
       const supabase = createClient();
       const ext = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const filePath = `works/${fileName}`;
-      
+
       const { error } = await supabase.storage.from("portfolio-media").upload(filePath, file, { upsert: false });
       if (error) throw error;
-      
+
       const { data } = supabase.storage.from("portfolio-media").getPublicUrl(filePath);
-      
+
       if (isImage) {
         editor.chain().focus().setImage({ src: data.publicUrl }).run();
       } else if (isVideo) {
@@ -87,9 +93,9 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       } else if (isPdf) {
         editor.chain().focus().insertContent({ type: 'iframe', attrs: { src: data.publicUrl, title: file.name } }).run();
       }
-      
+
     } catch (err: unknown) {
-      alert(`Error al pujar el fitxer: ${err instanceof Error ? err.message : String(err)}`);
+      alert(ui("Error al pujar el fitxer: {0}", [err instanceof Error ? err.message : String(err)]));
     } finally {
       setUploading(false);
     }
@@ -148,7 +154,7 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           className={`p-2 rounded-lg transition-all ${uploading ? "opacity-50 cursor-not-allowed text-[var(--color-muted)]" : "text-[var(--color-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-subtle)]"}`}
-          title="Pujar mèdia (imatge, vídeo, àudio, PDF)"
+          title={ui("Pujar mèdia (imatge, vídeo, àudio, PDF)")}
         >
           {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <div className="flex -space-x-1"><ImageIcon className="w-4 h-4" /><Film className="w-4 h-4 hidden sm:block" /></div>}
         </button>
@@ -160,7 +166,7 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-color-bg/80 backdrop-blur-sm rounded-xl border-2 border-dashed border-color-accent pointer-events-none">
           <div className="text-center">
             <Upload className="w-10 h-10 text-color-accent mx-auto mb-2" />
-            <p className="text-color-accent font-bold text-lg">Suelta para subir</p>
+            <p className="text-color-accent font-bold text-lg">{ui("Suelta para subir")}</p>
           </div>
         </div>
       )}
@@ -168,8 +174,8 @@ export function TipTapEditor({ content, onChange }: TipTapEditorProps) {
       <div className="relative"><EditorContent editor={editor} /></div>
 
       <div className="flex justify-between items-center px-4 py-2 bg-[var(--color-surface)] border border-t-0 border-[var(--color-border)] rounded-b-xl text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)]">
-        <span>{editor.storage.characterCount.characters()} caràcters</span>
-        <span>{editor.storage.characterCount.words()} paraules</span>
+        <span>{editor.storage.characterCount.characters()} {ui("caràcters")}</span>
+        <span>{editor.storage.characterCount.words()} {ui("paraules")}</span>
       </div>
     </div>
   );

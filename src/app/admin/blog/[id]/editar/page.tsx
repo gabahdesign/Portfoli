@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEffect, useState, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { TipTapEditor } from "@/components/admin/TipTapEditor";
@@ -7,15 +8,20 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, Activity, Newspaper, Lock, CreditCard } from "lucide-react";
 
 export default function EditBlogPostPage() {
+ const ui = useUiTranslation();
+
+
+
+
   const params = useParams();
   const postId = params.id as string;
   const router = useRouter();
   const supabase = createClient();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success'|'error'} | null>(null);
-  
+
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -68,11 +74,11 @@ export default function EditBlogPostPage() {
   const handleSave = async (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
-    
+
     try {
       // Obtenir l'usuari actual per l'author_id
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const payload = {
         title: formData.title,
         slug: formData.slug,
@@ -92,7 +98,7 @@ export default function EditBlogPostPage() {
         else throw error;
       } else {
         const { error } = await supabase.from("blog_posts").update(payload).eq("id", postId);
-        if (!error) showToast("Article desat correctament", "success");
+        if (!error) showToast(ui("Article desat correctament"), "success");
         else throw error;
       }
     } catch (err: any) {
@@ -103,13 +109,13 @@ export default function EditBlogPostPage() {
     }
   };
 
-  if (loading) return <div className="p-4 md:p-8 text-[var(--color-muted)] animate-pulse uppercase tracking-[0.2em] font-black text-[10px]">Carregant editor de Journal...</div>;
+  if (loading) return <div className="p-4 md:p-8 text-[var(--color-muted)] animate-pulse uppercase tracking-[0.2em] font-black text-[10px]">{ui("Carregant editor de Journal...")}</div>;
 
   return (
     <div className="p-4 md:p-8 pb-32 animate-in fade-in duration-500 w-full relative">
       {toast && (
-        <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-2xl shadow-xl text-white font-bold z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5 ${toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
-          {toast.message}
+        <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-2xl shadow-xl text-white font-bold z-50 flex items-center gap-2 animate-in slide-in-from-bottom-5 ${toast.type === 'success' ? "bg-green-600" : "bg-red-600"}`}>
+          {ui(toast.message)}
         </div>
       )}
 
@@ -121,7 +127,7 @@ export default function EditBlogPostPage() {
            <div className="flex items-center gap-2 mb-1">
               <Newspaper size={14} className="text-[var(--color-accent)]" />
               <h1 className="text-3xl font-black text-[var(--color-text)] tracking-tight">
-                {postId === "nuevo" ? "Redactar Article" : "Editar Entrada"}
+                {postId === "nuevo" ? ui("Redactar Article") : ui("Editar Entrada")}
               </h1>
            </div>
         </div>
@@ -130,9 +136,7 @@ export default function EditBlogPostPage() {
           disabled={saving}
           className="bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white px-8 py-3 rounded-2xl flex items-center transition-all font-bold shadow-xl shadow-[var(--color-accent-glow)] active:scale-95 disabled:opacity-50"
         >
-          {saving ? <Activity className="w-5 h-5 mr-3 animate-spin" /> : <Save className="w-5 h-5 mr-3" />}
-          Desar Article
-        </button>
+          {saving ? <Activity className="w-5 h-5 mr-3 animate-spin" /> : <Save className="w-5 h-5 mr-3" />} {ui("Desar Article")} </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
@@ -143,13 +147,13 @@ export default function EditBlogPostPage() {
                 type="text"
                 value={formData.title}
                 onChange={handleTitleChange}
-                placeholder="Títol del nou article..."
+                placeholder={ui("Títol del nou article...")}
                 className="w-full bg-transparent border-none text-5xl font-serif font-black text-[var(--color-text)] focus:outline-none focus:ring-0 placeholder-[var(--color-muted)] opacity-80"
               />
               <textarea
                 value={formData.excerpt}
                 onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
-                placeholder="Sub-títol o resum que inciti a la lectura..."
+                placeholder={ui("Sub-títol o resum que inciti a la lectura...")}
                 rows={2}
                 className="w-full bg-transparent border-none text-xl font-serif italic text-[var(--color-muted)] focus:outline-none focus:ring-0 placeholder-[var(--color-muted-2)] resize-none"
               />
@@ -163,49 +167,49 @@ export default function EditBlogPostPage() {
         {/* Sidebar Settings */}
         <div className="space-y-8">
            <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-8 space-y-6 shadow-xl">
-              <h3 className="font-black text-[var(--color-muted)] uppercase tracking-[0.2em] text-[10px] mb-2">Preferències de Publicació</h3>
-              
+              <h3 className="font-black text-[var(--color-muted)] uppercase tracking-[0.2em] text-[10px] mb-2">{ui("Preferències de Publicació")}</h3>
+
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">Estat</label>
-                <select 
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">{ui("Estat")}</label>
+                <select
                   value={formData.status}
                   onChange={e => setFormData({...formData, status: e.target.value})}
                   className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all appearance-none"
                 >
-                  <option value="draft">Esborrany</option>
-                  <option value="published">Publicat</option>
-                  <option value="archived">Arxivat</option>
+                  <option value="draft">{ui("Esborrany")}</option>
+                  <option value="published">{ui("Publicat")}</option>
+                  <option value="archived">{ui("Arxivat")}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">URL Personalitzada (Slug)</label>
-                <input 
-                  type="text" 
-                  value={formData.slug} 
-                  onChange={e => setFormData({...formData, slug: e.target.value})} 
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all" 
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">{ui("URL Personalitzada (Slug)")}</label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={e => setFormData({...formData, slug: e.target.value})}
+                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">Data de l&apos;Article</label>
-                <input 
-                  type="date" 
-                  value={formData.published_at} 
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">{ui("Data de l'Article")}</label>
+                <input
+                  type="date"
+                  value={formData.published_at}
                   onChange={e => setFormData({...formData, published_at: e.target.value})}
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all [color-scheme:dark]" 
+                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all [color-scheme:dark]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">Imatge de Capçalera (URL)</label>
-                <input 
-                  type="text" 
-                  value={formData.cover_url} 
-                  onChange={e => setFormData({...formData, cover_url: e.target.value})} 
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-2 uppercase tracking-widest">{ui("Imatge de Capçalera (URL)")}</label>
+                <input
+                  type="text"
+                  value={formData.cover_url}
+                  onChange={e => setFormData({...formData, cover_url: e.target.value})}
                   placeholder="https://..."
-                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all" 
+                  className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm rounded-xl px-4 py-3 outline-none focus:border-[var(--color-accent)] transition-all"
                 />
               </div>
 
@@ -213,16 +217,16 @@ export default function EditBlogPostPage() {
                  <label className="flex items-center justify-between cursor-pointer group p-3 bg-[var(--color-bg)]/50 rounded-2xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all">
                     <div className="flex items-center gap-3">
                        <CreditCard size={18} className={formData.is_premium ? "text-amber-500" : "text-[var(--color-muted)]"} />
-                       <span className="text-xs font-bold text-[var(--color-text)]">Article Premium</span>
+                       <span className="text-xs font-bold text-[var(--color-text)]">{ui("Article Premium")}</span>
                     </div>
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={formData.is_premium}
                       onChange={e => setFormData({...formData, is_premium: e.target.checked})}
                       className="w-5 h-5 rounded border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
                     />
                  </label>
-                 <p className="text-[10px] text-[var(--color-muted)] italic leading-relaxed">Els articles premium requereixen de subscripció activa via Stripe per a la lectura completa.</p>
+                 <p className="text-[10px] text-[var(--color-muted)] italic leading-relaxed">{ui("Els articles premium requereixen de subscripció activa via Stripe per a la lectura completa.")}</p>
               </div>
            </div>
         </div>

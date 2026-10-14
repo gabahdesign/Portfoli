@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "welcome": "Benvengut",
+    "featured_works": "Trabalhs destacats",
+    "experience": "Experiéncia",
+    "personal_projects": "Projèctes personaus e collaboracions",
+    "no_projects_found": "Non s’a trobat cap projècte d’aguesta categoria.",
+    "collaborations_title": "Clients",
+    "collaborations_desc": "Clients e empreses ligades as projèctes que è dessenhat coma organizadors, collaborators o patrocinadors. Tanben includís marques entàs quaus è creat anuncis de patrocinadors en aguesti dessenhs.",
+    "view_cv": "Veir eth curriculum professionau"
+  },
+  "Navigation": {
+    "home": "Començament",
+    "about_me": "Sus jo",
+    "cv": "Curriculum",
+    "projectes": "Projèctes",
+    "back": "Tornar",
+    "settings": "Ajustaments",
+    "move": "Move",
+    "webs": "Projèctes web"
+  },
+  "Settings": {
+    "title": "Ajustaments",
+    "language": "Lengua",
+    "dark_mode": "Mòde escur",
+    "client_access": "Accès deth client",
+    "privacy_policy": "Politica de privacitat",
+    "cookie_policy": "Politica de cookies",
+    "terms_of_use": "Condicions d’usatge",
+    "legal_notice": "Avís legau"
+  }
+}

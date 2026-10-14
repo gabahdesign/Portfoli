@@ -1,32 +1,32 @@
 {
   "Index": {
     "welcome": "Bienvenue",
-    "featured_works": "Travaux en vedette",
+    "featured_works": "Travaux à la une",
     "experience": "Expérience",
     "personal_projects": "Projets personnels et collaborations",
-    "no_projects_found": "Aucun projet trouvé pour la catégorie sélectionnée.",
+    "no_projects_found": "Aucun projet trouvé dans cette catégorie.",
     "collaborations_title": "Clients",
-    "collaborations_desc": "Clients et entreprises associés aux projets que j'ai conçus, en tant qu'organisateurs, collaborateurs ou sponsors. Cela inclut aussi les marques pour lesquelles j'ai créé des annonces de sponsors intégrées à ces créations.",
+    "collaborations_desc": "Clients et entreprises liés à mes projets comme organisateurs, partenaires ou sponsors. Cela comprend les marques pour lesquelles j’ai créé des publicités de sponsors dans ces créations.",
     "view_cv": "Voir le CV professionnel"
   },
   "Navigation": {
     "home": "Accueil",
-    "about_me": "À propos de moi",
-    "cv": "Curriculum",
+    "about_me": "À propos",
+    "cv": "CV",
     "projectes": "Projets",
     "back": "Retour",
     "settings": "Paramètres",
     "move": "Move",
-    "webs": "Projets Web"
+    "webs": "Projets web"
   },
   "Settings": {
     "title": "Paramètres",
     "language": "Langue",
-    "dark_mode": "Mode Sombre",
-    "client_access": "Accès Client",
-    "privacy_policy": "Politique de Confidentialité",
-    "cookie_policy": "Politique de Cookies",
-    "terms_of_use": "Conditions d'Utilisation",
-    "legal_notice": "Mention Légale"
+    "dark_mode": "Mode sombre",
+    "client_access": "Accès client",
+    "privacy_policy": "Politique de confidentialité",
+    "cookie_policy": "Politique des cookies",
+    "terms_of_use": "Conditions d’utilisation",
+    "legal_notice": "Mentions légales"
   }
 }

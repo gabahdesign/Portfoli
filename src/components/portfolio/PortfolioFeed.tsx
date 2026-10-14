@@ -1,4 +1,5 @@
 "use client";
+import {uiTranslator} from "@/lib/fixed-ui";
 
 import { useState, useMemo, useEffect, useDeferredValue } from "react";
 import { FeaturedWorkCard } from "./FeaturedWorkCard";
@@ -21,7 +22,11 @@ const PAGE_SIZE = 9;
 const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 export function PortfolioFeed({ works, token, locale, initialCompanyId, companies }: { works: FeedWork[]; token: string; locale: string; initialCompanyId?: string; companies?: Array<{ id: string; name: string }> }) {
-  const c = labels[locale as keyof typeof labels] || labels.ca;
+  const ui=uiTranslator(locale);
+
+
+
+  const c = Object.fromEntries(Object.entries(labels.ca).map(([key,value])=>[key,ui(value)])) as typeof labels.ca;
   useTracker(token, "page_view");
   useEffect(() => {
     if (token !== "preview") fetch("/api/notify/entry", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) }).catch(console.error);

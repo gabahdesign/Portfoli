@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "welcome": "Benvido",
+    "featured_works": "Traballos destacados",
+    "experience": "Experiencia",
+    "personal_projects": "Proxectos persoais e colaboracións",
+    "no_projects_found": "Non se atoparon proxectos desta categoría.",
+    "collaborations_title": "Clientes",
+    "collaborations_desc": "Clientes e empresas vinculadas aos meus deseños como organizadores, colaboradores ou patrocinadores. Inclúe marcas para as que creei anuncios de patrocinadores neses deseños.",
+    "view_cv": "Ver currículo profesional"
+  },
+  "Navigation": {
+    "home": "Inicio",
+    "about_me": "Sobre min",
+    "cv": "Currículo",
+    "projectes": "Proxectos",
+    "back": "Volver",
+    "settings": "Axustes",
+    "move": "Move",
+    "webs": "Proxectos web"
+  },
+  "Settings": {
+    "title": "Axustes",
+    "language": "Idioma",
+    "dark_mode": "Modo escuro",
+    "client_access": "Acceso do cliente",
+    "privacy_policy": "Política de privacidade",
+    "cookie_policy": "Política de cookies",
+    "terms_of_use": "Condicións de uso",
+    "legal_notice": "Aviso legal"
+  }
+}

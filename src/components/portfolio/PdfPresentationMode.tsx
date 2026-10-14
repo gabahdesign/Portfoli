@@ -1,5 +1,6 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
@@ -18,6 +19,11 @@ interface PdfPresentationModeProps {
 }
 
 export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
+ const ui = useUiTranslation();
+
+
+
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,7 +48,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
     setLoading(true);
     setCurrentIndex((prev) => (prev + 1) % presentationWorks.length);
   };
-  
+
   const prev = () => {
     setLoading(true);
     setCurrentIndex((prev) => (prev - 1 + presentationWorks.length) % presentationWorks.length);
@@ -51,13 +57,13 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      
+
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") close();
         if (e.key === "ArrowRight") next();
         if (e.key === "ArrowLeft") prev();
       };
-      
+
       window.addEventListener("keydown", handleKeyDown);
       return () => {
         document.body.style.overflow = "auto";
@@ -92,16 +98,16 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
       {/* Header Area */}
       <div className="flex items-center justify-between p-6 border-b border-white/10 backdrop-blur-md bg-black/20">
         <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-accent)] mb-1">Presentació de Projectes ({currentIndex + 1} / {presentationWorks.length})</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-accent)] mb-1">{ui("Presentació de Projectes (")}{currentIndex + 1} / {presentationWorks.length})</span>
           <h2 className="text-xl font-bold font-display tracking-tight">{currentWork.title}</h2>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-2 mr-6 text-[var(--color-muted)]">
             <kbd className="px-2 py-1 bg-white/10 rounded text-[10px] border border-white/10 uppercase">Esc</kbd>
-            <span className="text-[10px] font-bold uppercase tracking-wider">Per Sortir</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider">{ui("Per Sortir")}</span>
           </div>
-          
+
           <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1">
              <button onClick={prev} className="p-2 hover:bg-white/10 rounded-lg transition-colors"><ChevronLeft size={20} /></button>
              <div className="w-px h-4 bg-white/10 mx-1" />
@@ -109,18 +115,13 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
           </div>
 
           {currentPdfUrl && (
-            <a 
-              href={currentPdfUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="p-3 bg-white/5 border border-white/10 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-xl transition-all"
-              title="Obrir PDF en pestanya nova"
-            >
-              <ExternalLink size={20} />
+            <a
+              href={currentPdfUrl}
+              target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 border border-white/10 hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-xl transition-all" title={ui("Obrir PDF en pestanya nova")} > <ExternalLink size={20} />
             </a>
           )}
 
-          <button 
+          <button
             onClick={close}
             className="p-3 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white rounded-xl transition-all"
           >
@@ -134,17 +135,15 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
         <div className="w-full h-full max-w-6xl mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/40 relative flex items-center justify-center">
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center z-[5]">
-               <div className="flex flex-col items-center gap-4">
-                 <div className="w-12 h-12 border-2 border-[var(--color-accent)]/20 border-t-[var(--color-accent)] rounded-full animate-spin" />
-                 <span className="text-xs font-bold text-[var(--color-muted)] uppercase tracking-widest animate-pulse">Carregant...</span>
+               <div className="flex flex-col items-center gap-4"> <div className="w-12 h-12 border-2 border-[var(--color-accent)]/20 border-t-[var(--color-accent)] rounded-full animate-spin" /> <span className="text-xs font-bold text-[var(--color-muted)] uppercase tracking-widest animate-pulse">{ui("Carregant...")}</span>
                </div>
             </div>
           )}
-          
+
           {pdfUrls.length > 1 && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[50] flex items-center gap-2 bg-black/60 backdrop-blur-md p-1.5 rounded-full border border-white/10 shadow-2xl">
                {pdfUrls.map((_, idx) => (
-                 <button 
+                 <button
                    key={idx}
                    onClick={() => { setCurrentPdfIndex(idx); setLoading(true); }}
                    className={clsx(
@@ -159,7 +158,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
           )}
 
           {currentPdfUrl ? (
-            <iframe 
+            <iframe
               key={currentPdfUrl} // Force re-render on URL change
               src={`${currentPdfUrl}#toolbar=1&navpanes=0&scrollbar=1`}
               className="w-full h-full border-none relative z-10"
@@ -169,8 +168,8 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
             <div className="relative w-full h-full flex items-center justify-center p-4 md:p-12">
                {currentWork.cover_url ? (
                  <div className="relative w-full h-full">
-                    <Image 
-                      src={currentWork.cover_url} 
+                    <Image
+                      src={currentWork.cover_url}
                       alt={currentWork.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 1152px"
@@ -185,7 +184,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
                     <div className="w-20 h-20 mx-auto rounded-full bg-white/5 flex items-center justify-center text-[var(--color-muted)]">
                        <X size={40} className="opacity-20" />
                     </div>
-                    <p className="text-[var(--color-muted)] font-bold uppercase tracking-widest text-xs">Sense vista prèvia disponible</p>
+                    <p className="text-[var(--color-muted)] font-bold uppercase tracking-widest text-xs">{ui("Sense vista prèvia disponible")}</p>
                  </div>
                )}
             </div>
@@ -193,13 +192,13 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
         </div>
 
         {/* Floating Nav hints */}
-        <button 
+        <button
           onClick={prev}
           className="absolute left-8 top-1/2 -translate-y-1/2 p-4 bg-black/50 hover:bg-[var(--color-accent)] text-white rounded-full backdrop-blur-xl border border-white/10 opacity-0 md:opacity-100 transition-all hover:scale-110 shadow-2xl z-30"
         >
           <ChevronLeft size={24} />
         </button>
-        <button 
+        <button
           onClick={next}
           className="absolute right-8 top-1/2 -translate-y-1/2 p-4 bg-black/50 hover:bg-[var(--color-accent)] text-white rounded-full backdrop-blur-xl border border-white/10 opacity-0 md:opacity-100 transition-all hover:scale-110 shadow-2xl z-30"
         >
@@ -216,7 +215,7 @@ export function PdfPresentationMode({ works }: PdfPresentationModeProps) {
             className={`flex-shrink-0 w-40 h-full rounded-lg border-2 transition-all flex items-center justify-center text-left p-3 overflow-hidden ${currentIndex === idx ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10 shadow-[0_0_15px_var(--color-accent-glow)]' : 'border-white/10 bg-white/5 hover:border-white/30'}`}
           >
             <div className="flex flex-col">
-               <span className={`text-[8px] font-black uppercase tracking-widest mb-1 ${currentIndex === idx ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}>Projecte {idx + 1}</span>
+               <span className={`text-[8px] font-black uppercase tracking-widest mb-1 ${currentIndex === idx ? 'text-[var(--color-accent)]' : 'text-[var(--color-muted)]'}`}>{ui("Projecte")} {idx + 1}</span>
                <span className="text-[10px] font-bold leading-tight line-clamp-2">{w.title}</span>
             </div>
           </button>

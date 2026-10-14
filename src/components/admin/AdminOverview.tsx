@@ -1,9 +1,15 @@
+import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { Eye, Users, Briefcase, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { ActivityChart } from "@/components/admin/ActivityChart";
 
 export default async function AdminDashboard() {
+ const ui = await getUiTranslator();
+
+
+
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -46,7 +52,7 @@ export default async function AdminDashboard() {
 
   // Generate 30 days chart data
   const activityMap = new Map<string, number>();
-  
+
   // Initialize last 30 days with 0
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
@@ -99,8 +105,8 @@ export default async function AdminDashboard() {
     <div className="p-4 md:p-8 animate-in fade-in duration-500 w-full mx-auto">
       {/* Header */}
       <div className="mb-10 border-b border-[var(--color-border)] pb-6">
-        <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2 tracking-tight">Panel de Control</h1>
-        <p className="text-[var(--color-muted)]">Vista general de l&apos;activitat i rendiment del portfolio.</p>
+        <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2 tracking-tight">{ui("Panel de Control")}</h1>
+        <p className="text-[var(--color-muted)]">{ui("Vista general de l'activitat i rendiment del portfolio.")}</p>
       </div>
 
       {/* KPI Cards */}
@@ -122,11 +128,11 @@ export default async function AdminDashboard() {
           </div>
         ))}
       </div>
-      
+
       {/* Activity Chart */}
       <div className="mb-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-bold text-[var(--color-text)] text-lg">Visites Últims 30 Dies</h2>
+          <h2 className="font-bold text-[var(--color-text)] text-lg">{ui("Visites Últims 30 Dies")}</h2>
         </div>
         <ActivityChart data={chartData} />
       </div>
@@ -135,17 +141,15 @@ export default async function AdminDashboard() {
         {/* Recent Activity */}
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-5">
-            <h2 className="font-bold text-[var(--color-text)] text-lg">Activitat Recent</h2>
+            <h2 className="font-bold text-[var(--color-text)] text-lg">{ui("Activitat Recent")}</h2>
             <div className="flex items-center gap-2 text-xs text-[var(--color-muted)]">
-              <Clock className="w-3.5 h-3.5" />
-              Temps mitjà: <span className="font-bold text-[var(--color-text)]">{avgDuration}s</span>
+              <Clock className="w-3.5 h-3.5" /> {ui("Temps mitjà:")} <span className="font-bold text-[var(--color-text)]">{avgDuration}{ui("s")}</span>
             </div>
           </div>
           {!recentEvents?.length ? (
-            <p className="text-[var(--color-muted)] text-sm text-center py-8">Encara no hi ha visites registrades.</p>
+            <p className="text-[var(--color-muted)] text-sm text-center py-8">{ui("Encara")} {ui("no hi ha visites registrades.")}</p>
           ) : (
-            <div className="space-y-3">
-              {recentEvents.map((ev: any) => {
+            <div className="space-y-3"> {recentEvents.map((ev: any) => {
                 const company = ev.access_tokens?.label ?? "Visitant Directe";
                 const date = new Date(ev.created_at).toLocaleDateString("ca-ES", { day: "2-digit", month: "short" });
                 const time = new Date(ev.created_at).toLocaleTimeString("ca-ES", { hour: "2-digit", minute: "2-digit" });
@@ -157,13 +161,13 @@ export default async function AdminDashboard() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[var(--color-text)] truncate max-w-[150px] sm:max-w-xs">{company}</p>
-                        <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-muted)] mt-0.5">{ev.event_type === "page_view" ? "Vista general" : "Lectura projecte"}</p>
+                        <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-muted)] mt-0.5">{ev.event_type === "page_view" ? ui("Vista general") : ui("Lectura projecte")}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-[var(--color-muted)]">{date} · {time}</p>
                       {ev.duration_sec != null && (
-                        <p className="text-xs font-medium text-[var(--color-accent)] mt-0.5">{ev.duration_sec}s · {ev.scroll_pct ?? 0}% scroll</p>
+                        <p className="text-xs font-medium text-[var(--color-accent)] mt-0.5">{ev.duration_sec}{ui("s ·")} {ev.scroll_pct ?? 0}{ui("% scroll")}</p>
                       )}
                     </div>
                   </div>
@@ -176,13 +180,12 @@ export default async function AdminDashboard() {
         {/* Top Works */}
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-6 shadow-sm">
           <div className="flex justify-between items-center mb-5">
-            <h2 className="font-bold text-[var(--color-text)] text-lg">Projectes Més Vistos</h2>
-            <Link href="/admin/trabajos" className="text-xs font-bold text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] flex items-center gap-1 transition-colors uppercase tracking-wider">
-              Veure tots <ArrowRight className="w-3 h-3" />
+            <h2 className="font-bold text-[var(--color-text)] text-lg">{ui("Projectes Més Vistos")}</h2>
+            <Link href="/admin/trabajos" className="text-xs font-bold text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] flex items-center gap-1 transition-colors uppercase tracking-wider"> {ui("Veure tots")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
           {!sortedWorks.length ? (
-            <p className="text-[var(--color-muted)] text-sm text-center py-8">Encara no hi ha dades específiques de projectes.</p>
+            <p className="text-[var(--color-muted)] text-sm text-center py-8">{ui("Encara")} {ui("no hi ha dades específiques de projectes.")}</p>
           ) : (
             <div className="space-y-4">
               {sortedWorks.map(([id, { title, count }], i) => {
@@ -192,7 +195,7 @@ export default async function AdminDashboard() {
                   <div key={id}>
                     <div className="flex justify-between items-baseline mb-2">
                       <span className="text-sm font-semibold text-[var(--color-text)] truncate pr-4">{title}</span>
-                      <span className="text-[11px] font-bold text-[var(--color-muted)] shrink-0 bg-[var(--color-bg)] border border-[var(--color-border)] px-2 py-0.5 rounded-full">{count} vista{count !== 1 ? "s" : ""}</span>
+                      <span className="text-[11px] font-bold text-[var(--color-muted)] shrink-0 bg-[var(--color-bg)] border border-[var(--color-border)] px-2 py-0.5 rounded-full">{count} {ui("vista")}{count !== 1 ? ui("s") : ""}</span>
                     </div>
                     <div className="w-full bg-[var(--color-bg)] rounded-full h-2 border border-[var(--color-border)]/50">
                       <div

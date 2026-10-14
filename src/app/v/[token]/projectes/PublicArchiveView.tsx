@@ -1,8 +1,9 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useState, useMemo } from "react";
-import { 
-  Search, Filter, LayoutGrid, List, ChevronRight, 
+import {
+  Search, Filter, LayoutGrid, List, ChevronRight,
   Building2, Landmark, Briefcase, MapPin, Loader2, X,
   ArrowUpDown, Hash, Layers, Edit2, Trash2, Sparkles, Type, Clock,
   ChevronLeft, PanelLeftClose, PanelLeft
@@ -26,9 +27,14 @@ export function PublicArchiveView({
   token,
   locale
 }: PublicArchiveViewProps) {
+ const ui = useUiTranslation();
+
+
+
+
   const t = useTranslations("Navigation");
   const tIndex = useTranslations("Index");
-  
+
   const [activeCompanyId, setActiveCompanyId] = useState<string | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,10 +46,10 @@ export function PublicArchiveView({
     return initialWorks.filter((wk) => {
       const matchesCompany = !activeCompanyId || wk.company_id === activeCompanyId;
       const matchesTag = !activeTag || (wk.tags || []).includes(activeTag);
-      const matchesSearch = !searchQuery || 
+      const matchesSearch = !searchQuery ||
         wk.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (wk.tags || []).some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+
       return matchesCompany && matchesSearch && matchesTag;
     }).sort((a, b) => {
       if (sortBy === "alphabetical") return a.title.localeCompare(b.title);
@@ -54,7 +60,7 @@ export function PublicArchiveView({
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-[var(--color-bg)] animate-in fade-in duration-700 w-full">
       {/* Sidebar - Read Only */}
-      <CompanyHierarchySidebar 
+      <CompanyHierarchySidebar
         empresas={initialCompanies}
         activeCompanyId={activeCompanyId}
         onSelectCompany={setActiveCompanyId}
@@ -74,12 +80,9 @@ export function PublicArchiveView({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                <div className="flex items-center gap-4">
                   {!isSidebarOpen && (
-                    <button 
+                    <button
                       onClick={() => setIsSidebarOpen(true)}
-                      aria-label="Mostra els clients"
-                      className="flex p-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-all animate-in slide-in-from-left-4"
-                    >
-                       <PanelLeft size={20} />
+                      aria-label={ui("Mostra els clients")} className="flex p-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-all animate-in slide-in-from-left-4" > <PanelLeft size={20} />
                     </button>
                   )}
                   <div>
@@ -88,9 +91,7 @@ export function PublicArchiveView({
                     </h1>
                     <div className="flex items-center gap-2 mt-1">
                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
-                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-60">
-                          Arxiu Professional · {filteredWorks.length} Resultats
-                       </span>
+                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-muted)] opacity-60"> {ui("Arxiu Professional ·")} {filteredWorks.length} {ui("Resultats")} </span>
                     </div>
                   </div>
                </div>
@@ -98,27 +99,27 @@ export function PublicArchiveView({
                <div className="flex items-center gap-2 sm:gap-3">
                   <div className="relative group flex-1 sm:flex-none">
                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-muted)] group-focus-within:text-[var(--color-accent)] transition-colors" />
-                     <input 
-                       type="text" 
-                       placeholder="Cerca projectes..."
+                     <input
+                       type="text"
+                       placeholder={ui("Cerca projectes...")}
                        value={searchQuery}
                        onChange={(e) => setSearchQuery(e.target.value)}
                        className="w-full sm:w-64 pl-12 pr-6 py-3 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl text-xs font-bold text-white focus:outline-none focus:border-[var(--color-accent)] transition-all placeholder:text-[var(--color-muted)]/50"
                      />
                   </div>
-                  
+
                   <div className="flex items-center bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-1 gap-1">
-                     <button 
+                     <button
                        onClick={() => setSortBy("recent")}
                        className={clsx(
                          "p-2 rounded-xl transition-all",
                          sortBy === "recent" ? "bg-[var(--color-accent)] text-white shadow-lg" : "text-[var(--color-muted)] hover:text-white"
                        )}
-                       title="Recents"
+                       title={ui("Recents")}
                      >
                         <Clock size={18} />
                      </button>
-                     <button 
+                     <button
                        onClick={() => setSortBy("alphabetical")}
                        className={clsx(
                          "p-2 rounded-xl transition-all",
@@ -139,7 +140,7 @@ export function PublicArchiveView({
               <div className="columns-1 sm:columns-2 lg:columns-2 xl:columns-3 2xl:columns-4 3xl:columns-5 4xl:columns-6 gap-4 md:gap-8 space-y-4 md:space-y-8">
                  {filteredWorks.map((work) => (
                     <div key={work.slug} className="break-inside-avoid">
-                       <FeaturedWorkCard 
+                       <FeaturedWorkCard
                           slug={work.slug}
                           title={work.title}
                           coverUrl={work.cover_url}
@@ -158,15 +159,13 @@ export function PublicArchiveView({
                     <Search size={40} />
                  </div>
                  <div>
-                    <h3 className="text-xl font-bold text-[var(--color-text)]">No s&apos;ha trobat res</h3>
-                    <p className="text-sm text-[var(--color-muted)] mt-2">Prova amb altres filtres o paraules clau.</p>
+                    <h3 className="text-xl font-bold text-[var(--color-text)]">{ui("No s'ha trobat res")}</h3>
+                    <p className="text-sm text-[var(--color-muted)] mt-2">{ui("Prova amb altres filtres o paraules clau.")}</p>
                  </div>
-                 <button 
+                 <button
                    onClick={() => { setActiveCompanyId(null); setActiveTag(null); setSearchQuery(""); }}
                    className="px-8 py-3 bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-black uppercase tracking-widest text-[10px] rounded-full border border-[var(--color-accent)]/20 hover:bg-[var(--color-accent)] hover:text-white transition-all shadow-xl"
-                 >
-                    Reiniciar filtres
-                 </button>
+                 > {ui("Reiniciar filtres")} </button>
               </div>
             )}
          </div>

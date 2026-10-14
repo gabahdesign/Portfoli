@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "welcome": "Ongi etorri",
+    "featured_works": "Lan nabarmenduak",
+    "experience": "Esperientzia",
+    "personal_projects": "Proiektu pertsonalak eta lankidetzak",
+    "no_projects_found": "Ez da kategoria honetako proiekturik aurkitu.",
+    "collaborations_title": "Bezeroak",
+    "collaborations_desc": "Nire diseinu proiektuekin lotutako bezeroak eta enpresak, antolatzaile, laguntzaile edo babesle gisa. Diseinu horietan babesleen iragarkiak sortu dizkiedan markak ere biltzen ditu.",
+    "view_cv": "Ikusi curriculum profesionala"
+  },
+  "Navigation": {
+    "home": "Hasiera",
+    "about_me": "Niri buruz",
+    "cv": "Curriculuma",
+    "projectes": "Proiektuak",
+    "back": "Itzuli",
+    "settings": "Ezarpenak",
+    "move": "Move",
+    "webs": "Web proiektuak"
+  },
+  "Settings": {
+    "title": "Ezarpenak",
+    "language": "Hizkuntza",
+    "dark_mode": "Modu iluna",
+    "client_access": "Bezeroaren sarbidea",
+    "privacy_policy": "Pribatutasun politika",
+    "cookie_policy": "Cookie politika",
+    "terms_of_use": "Erabilera baldintzak",
+    "legal_notice": "Lege oharra"
+  }
+}

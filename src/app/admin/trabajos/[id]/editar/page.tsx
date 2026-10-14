@@ -1,10 +1,11 @@
 "use client";
 
+import { useUiTranslation } from "@/lib/fixed-ui-client";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock, 
+import {
+  ArrowLeft, Save, Activity, Clock, RotateCcw, Shield, Eye, Lock,
   ChevronDown, Check, Building2, Upload, FileText, Loader2, Sparkles,
   Palette, Calendar, Hash, Type, Trash2, Globe, Layout, Maximize2, X, Plus
 } from "lucide-react";
@@ -13,23 +14,28 @@ import { PREDEFINED_TAGS } from "@/lib/constants";
 import { clsx } from "clsx";
 
 // REUSABLE DROPZONE COMPONENT
-function DropZone({ 
-  onFilesDrop, 
-  isUploading, 
-  currentUrl, 
-  label, 
+function DropZone({
+  onFilesDrop,
+  isUploading,
+  currentUrl,
+  label,
   accept = "image/*,video/*",
   icon: Icon = Upload,
   multiple = false
-}: { 
-  onFilesDrop: (files: File[]) => void, 
-  isUploading: boolean, 
-  currentUrl?: string, 
+}: {
+  onFilesDrop: (files: File[]) => void,
+  isUploading: boolean,
+  currentUrl?: string,
   label: string,
   accept?: string,
   icon?: any,
   multiple?: boolean
 }) {
+ const ui = useUiTranslation();
+
+
+
+
   const [isOver, setIsOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -46,7 +52,7 @@ function DropZone({
   };
 
   return (
-    <div 
+    <div
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -61,20 +67,18 @@ function DropZone({
         const files = Array.from(e.target.files || []);
         if (files.length > 0) onFilesDrop(multiple ? files : [files[0]]);
       }} />
-      
+
       {isUploading ? (
         <Loader2 className="w-10 h-10 text-[var(--color-accent)] animate-spin" />
       ) : (
-        <div className="flex flex-col items-center gap-4">
-          <div className={clsx(
+        <div className="flex flex-col items-center gap-4"> <div className={clsx(
             "w-16 h-16 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-border)] flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-3 shadow-lg",
             isOver && "bg-[var(--color-accent)] text-white border-[var(--color-accent)]"
           )}>
             <Icon size={28} className={isOver ? "animate-bounce" : "text-[var(--color-muted)]"} />
           </div>
-          <div className="text-center">
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--color-text)] mb-1">{label}</p>
-            <p className="text-[10px] text-[var(--color-muted)] uppercase tracking-widest">{isOver ? "Amolla ara!" : "Arrossega o fes clic"}</p>
+          <div className="text-center"> <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--color-text)] mb-1">{ui(label)}</p>
+            <p className="text-[10px] text-[var(--color-muted)] uppercase tracking-widest">{isOver ? ui("Amolla ara!") : ui("Arrossega o fes clic")}</p>
           </div>
         </div>
       )}
@@ -83,11 +87,16 @@ function DropZone({
 }
 
 export default function EditWorkPage() {
+ const ui = useUiTranslation();
+
+
+
+
   const params = useParams();
   const workId = params.id as string;
   const router = useRouter();
   const supabase = createClient();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [companies, setCompanies] = useState<any[]>([]);
@@ -99,7 +108,7 @@ export default function EditWorkPage() {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [newTag, setNewTag] = useState("");
-  
+
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -189,12 +198,12 @@ export default function EditWorkPage() {
       version_history: newHistory
     };
 
-    const { error } = workId === "nuevo" 
+    const { error } = workId === "nuevo"
       ? await supabase.from("works").insert([payload])
       : await supabase.from("works").update(payload).eq("id", workId);
 
     if (!error) {
-      showToast("Guardat correctament", "success");
+      showToast(ui("Guardat correctament"), "success");
       if (workId === "nuevo") router.push("/admin/trabajos");
       setVersionHistory(newHistory);
     } else {
@@ -219,7 +228,7 @@ export default function EditWorkPage() {
           const canvas = document.createElement("canvas");
           let width = img.width;
           let height = img.height;
-          
+
           // Max size for high-quality web display (3500px is very generous)
           const MAX_SIZE = 3500;
           if (width > height) {
@@ -233,7 +242,7 @@ export default function EditWorkPage() {
               height = MAX_SIZE;
             }
           }
-          
+
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext("2d");
@@ -243,7 +252,7 @@ export default function EditWorkPage() {
             ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, width, height);
           }
-          
+
           canvas.toBlob((blob) => {
             if (blob && blob.size < file.size) {
               resolve(new File([blob], file.name, { type: "image/jpeg" }));
@@ -262,18 +271,18 @@ export default function EditWorkPage() {
     if (filesArray.length === 0) return;
 
     const isPdf = filesArray[0].type === 'application/pdf' || filesArray[0].name.toLowerCase().endsWith('.pdf');
-    
+
     // Check file size limit (Supabase Free Plan is typically 50MB)
     const MAX_MB = 48; // A bit less than 50 to be safe
     for (const file of filesArray) {
       if (file.size > MAX_MB * 1024 * 1024 && isPdf) {
-        alert(`El fitxer "${file.name}" és massa gran (${(file.size / 1024 / 1024).toFixed(1)}MB). El límit és de ${MAX_MB}MB.`);
+        alert(ui("El fitxer \"{0}\" és massa gran ({1}MB). El límit és de {2}MB.", [file.name,(file.size / 1024 / 1024).toFixed(1),MAX_MB]));
         return;
       }
     }
 
     if (field === 'cover_url' && isPdf) {
-      if (confirm("Vols posar aquest PDF com a ARXIU adjunt en lloc de portada?")) {
+      if (confirm(ui("Vols posar aquest PDF com a ARXIU adjunt en lloc de portada?"))) {
         return processFileUpload(filesArray, 'pdf_url');
       }
     }
@@ -288,7 +297,7 @@ export default function EditWorkPage() {
         // Compress if it's an image
         let fileToUpload = fileToProcess;
         if (field === 'cover_url' && !isPdf) {
-          showToast(`Optimitzant ${fileToProcess.name}...`, "success");
+          showToast(ui("Optimitzant {0}...", [fileToProcess.name]), "success");
           fileToUpload = await compressImage(fileToProcess) as File;
         }
 
@@ -321,7 +330,7 @@ export default function EditWorkPage() {
         }
       });
 
-      showToast(filesArray.length > 1 ? "Pujats correctament!" : "Pujat correctament!", "success");
+      showToast(filesArray.length > 1 ? ui("Pujats correctament!") : ui("Pujat correctament!"), "success");
     } catch (err: any) {
       showToast("Error: " + err.message, "error");
     } finally {
@@ -333,8 +342,8 @@ export default function EditWorkPage() {
   const toggleTag = (tag: string) => {
     setFormData(prev => {
       const currentTags = prev.tags || [];
-      const newTags = currentTags.includes(tag) 
-        ? currentTags.filter(t => t !== tag) 
+      const newTags = currentTags.includes(tag)
+        ? currentTags.filter(t => t !== tag)
         : [...currentTags, tag];
       return { ...prev, tags: newTags };
     });
@@ -351,7 +360,7 @@ export default function EditWorkPage() {
   if (loading) return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-[var(--color-bg)] gap-4">
       <Loader2 className="w-12 h-12 text-[var(--color-accent)] animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)]">Carregant Univers...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--color-muted)]">{ui("Carregant Univers...")}</p>
     </div>
   );
 
@@ -364,7 +373,7 @@ export default function EditWorkPage() {
           toast.type === 'success' ? 'bg-green-600 shadow-green-900/20' : 'bg-red-600 shadow-red-900/20'
         )}>
           {toast.type === 'success' ? <Check size={20} /> : <Activity size={20} />}
-          {toast.message}
+          {ui(toast.message)}
         </div>
       )}
 
@@ -377,22 +386,22 @@ export default function EditWorkPage() {
              </button>
              <div className="h-10 w-px bg-[var(--color-border)]" />
              <h1 className="text-2xl md:text-4xl font-black text-[var(--color-text)] tracking-tight font-display">
-                {workId === "nuevo" ? "Crear Nou" : "Edita el Teu Món"}
+                {workId === "nuevo" ? ui("Crear Nou") : ui("Edita el Teu Món")}
              </h1>
           </div>
-          
+
           <div className="space-y-2">
             <input
               type="text"
               value={formData.title}
               onChange={handleTitleChange}
-              placeholder="Títol del projecte..."
+              placeholder={ui("Títol del projecte...")}
               className="w-full bg-transparent border-none text-4xl md:text-6xl font-display font-black text-[var(--color-text)] focus:outline-none focus:ring-0 placeholder-[var(--color-muted)]/20 p-0"
             />
             <textarea
               value={formData.summary}
               onChange={(e) => setFormData({...formData, summary: e.target.value})}
-              placeholder="Escriu un resum captivador aquí..."
+              placeholder={ui("Escriu un resum captivador aquí...")}
               className="w-full bg-transparent border-none text-lg md:text-xl text-[var(--color-muted)] focus:outline-none focus:ring-0 placeholder-[var(--color-muted)]/30 p-0 resize-none h-20"
             />
           </div>
@@ -401,8 +410,8 @@ export default function EditWorkPage() {
         <div className="bg-[var(--color-accent)] rounded-[2.5rem] p-8 flex flex-col justify-between text-white shadow-2xl shadow-[var(--color-accent-glow)] relative overflow-hidden group">
           <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-10 group-hover:rotate-12 transition-transform duration-1000 scale-150" />
           <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 mb-2">Editor d&apos;Univers</p>
-            <h2 className="text-2xl font-bold font-display">Publicació Immediata</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 mb-2">{ui("Editor d'Univers")}</p>
+            <h2 className="text-2xl font-bold font-display">{ui("Publicació Immediata")}</h2>
           </div>
           <div className="relative z-10 flex flex-col gap-4 mt-12">
             <button
@@ -411,11 +420,10 @@ export default function EditWorkPage() {
                className="w-full bg-white text-[var(--color-accent)] py-4 rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
             >
               {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-              {workId === "nuevo" ? "Llançar Projecte" : "Actualitzar Ara"}
+              {workId === "nuevo" ? ui("Llançar Projecte") : ui("Actualitzar Ara")}
             </button>
             <button className="w-full bg-white/10 backdrop-blur-md text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-white/20 transition-all border border-white/10">
-              <Eye size={16} /> Vista Prèvia de Client
-            </button>
+              <Eye size={16} /> {ui("Vista Prèvia de Client")} </button>
           </div>
         </div>
       </div>
@@ -424,7 +432,7 @@ export default function EditWorkPage() {
       <div className="space-y-6">
          <div className="flex items-center gap-4 text-[var(--color-text)]">
             <Maximize2 size={20} className="text-[var(--color-accent)]" />
-            <h2 className="text-xl font-display font-black tracking-tight uppercase">Arquitectura del Contingut</h2>
+            <h2 className="text-xl font-display font-black tracking-tight uppercase">{ui("Arquitectura del Contingut")}</h2>
             <div className="flex-1 h-px bg-gradient-to-r from-[var(--color-border)] to-transparent" />
          </div>
          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[3rem] p-8 md:p-16 shadow-2xl relative">
@@ -434,38 +442,31 @@ export default function EditWorkPage() {
 
       {/* CONTEXT GRID BI-BENTO */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* LEFT COLUMN: VISUALS & MEDIA */}
         <div className="lg:col-span-4 space-y-8">
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[2.5rem] p-8 shadow-lg">
             <div className="flex items-center gap-3 mb-8">
                <div className="p-3 bg-[var(--color-accent)]/10 rounded-2xl text-[var(--color-accent)]"><Layout size={20} /></div>
-               <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">Identitat Visual</h3>
+               <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">{ui("Identitat Visual")}</h3>
             </div>
-            
+
             <div className="space-y-6">
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Miniatura del Projecte (Llistat)</label>
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">{ui("Miniatura del Projecte (Llistat)")}</label>
                 {!formData.cover_url ? (
-                  <DropZone 
-                    onFilesDrop={(f) => processFileUpload(f, 'cover_url')} 
-                    isUploading={uploadingCover} 
-                    label="Pujar Miniatura"
-                    icon={Upload}
+                  <DropZone
+                    onFilesDrop={(f) => processFileUpload(f, 'cover_url')}
+                    isUploading={uploadingCover}
+                    label="Pujar Miniatura" icon={Upload}
                   />
                 ) : (
-                  <div className="relative rounded-3xl overflow-hidden border border-[var(--color-border)] group shadow-2xl">
-                     {formData.cover_url.match(/\.(mp4|webm|mov)$/i) || formData.cover_url.includes('video') ? (
+                  <div className="relative rounded-3xl overflow-hidden border border-[var(--color-border)] group shadow-2xl"> {formData.cover_url.match(/\.(mp4|webm|mov)$/i) || formData.cover_url.includes('video') ? (
                        <video src={formData.cover_url} autoPlay muted loop className="w-full aspect-video object-cover" />
                      ) : (
-                       <img src={formData.cover_url} className="w-full aspect-video object-cover" alt="" />
-                     )}
-                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                        <button onClick={() => setFormData(p => ({...p, cover_url: ''}))} className="p-4 bg-red-500 text-white rounded-2xl hover:scale-110 transition-transform">
-                           <Trash2 size={24} />
+                       <img src={formData.cover_url} className="w-full aspect-video object-cover" alt="" /> )} <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4"> <button onClick={() => setFormData(p => ({...p, cover_url: ''}))} className="p-4 bg-red-500 text-white rounded-2xl hover:scale-110 transition-transform"> <Trash2 size={24} />
                         </button>
-                        <button onClick={() => processFileUpload(null as any, 'cover_url')} className="p-4 bg-white text-black rounded-2xl hover:scale-110 transition-transform">
-                           <RotateCcw size={24} />
+                        <button onClick={() => processFileUpload(null as any, 'cover_url')} className="p-4 bg-white text-black rounded-2xl hover:scale-110 transition-transform"> <RotateCcw size={24} />
                         </button>
                      </div>
                   </div>
@@ -473,7 +474,7 @@ export default function EditWorkPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Arxius PDF / Lectura</label>
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">{ui("Arxius PDF / Lectura")}</label>
                 <div className="space-y-3 mb-6">
                   {(() => {
                     const urls = (() => {
@@ -483,7 +484,7 @@ export default function EditWorkPage() {
                         return [formData.pdf_url];
                       } catch { return [formData.pdf_url]; }
                     })();
-                    
+
                     return urls.map((url: string, idx: number) => (
                       <div key={idx} className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="flex-1 p-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl flex items-center gap-3 group">
@@ -492,14 +493,14 @@ export default function EditWorkPage() {
                            </div>
                            <div className="flex-1 min-w-0">
                              <p className="text-[10px] font-bold truncate text-[var(--color-text)] opacity-80">
-                               {url.split('/').pop()?.split('-').slice(1).join('-') || "Document PDF"}
+                               {url.split('/').pop()?.split('-').slice(1).join('-') || ui("Document PDF")}
                              </p>
                            </div>
-                           <button 
+                           <button
                              onClick={() => {
                                const newUrls = urls.filter((_: any, i: number) => i !== idx);
                                setFormData(p => ({ ...p, pdf_url: newUrls.length === 0 ? "" : (newUrls.length === 1 ? newUrls[0] : JSON.stringify(newUrls)) }));
-                             }} 
+                             }}
                              className="p-2 text-red-500 hover:bg-red-500/10 rounded-xl transition-colors opacity-0 group-hover:opacity-100"
                            >
                              <Trash2 size={14} />
@@ -510,9 +511,9 @@ export default function EditWorkPage() {
                   })()}
                 </div>
 
-                <DropZone 
-                  onFilesDrop={(f) => processFileUpload(f, 'pdf_url')} 
-                  isUploading={uploadingPdf} 
+                <DropZone
+                  onFilesDrop={(f) => processFileUpload(f, 'pdf_url')}
+                  isUploading={uploadingPdf}
                   label="Afegir PDF"
                   accept="application/pdf"
                   icon={FileText}
@@ -521,7 +522,7 @@ export default function EditWorkPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest">Color de l&apos;Aura</label>
+                <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest">{ui("Color de l'Aura")}</label>
                 <div className="flex items-center gap-4 p-4 bg-[var(--color-bg)] rounded-2xl border border-[var(--color-border)]">
                    <input type="color" value={formData.accent_color} onChange={e => setFormData({...formData, accent_color: e.target.value})} className="w-12 h-12 rounded-xl bg-transparent border-none cursor-pointer p-0" />
                    <input type="text" value={formData.accent_color} onChange={e => setFormData({...formData, accent_color: e.target.value})} className="flex-1 bg-transparent border-none text-sm font-bold uppercase tracking-widest focus:outline-none" />
@@ -539,19 +540,19 @@ export default function EditWorkPage() {
                 <div className="space-y-8">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-3 bg-[var(--color-accent)]/10 rounded-2xl text-[var(--color-accent)]"><Globe size={20} /></div>
-                    <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">Visibilitat i Context</h3>
+                    <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">{ui("Visibilitat i Context")}</h3>
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Estat Publicació</label>
+                      <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">{ui("Estat Publicació")}</label>
                       <div className="flex flex-wrap gap-2">
                         {[
                           { id: 'draft', label: 'Esborrany', icon: Type },
                           { id: 'published', label: 'Publicat', icon: Check },
                           { id: 'archived', label: 'Arxivat', icon: Clock }
                         ].map(st => (
-                          <button 
+                          <button
                             key={st.id}
                             onClick={() => setFormData({...formData, status: st.id})}
                             className={clsx(
@@ -559,21 +560,21 @@ export default function EditWorkPage() {
                               formData.status === st.id ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-lg" : "bg-[var(--color-bg)] border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-accent)]/50"
                             )}
                           >
-                             <st.icon size={14} /> {st.label}
+                             <st.icon size={14} /> {ui(st.label)}
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">Tipus d&apos;Accés</label>
+                      <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest">{ui("Tipus d'Accés")}</label>
                       <div className="flex flex-col gap-2">
                         {[
                           { id: 'private', label: 'Privat', icon: Lock },
                           { id: 'public_token', label: 'Protegit amb Token', icon: Shield },
                           { id: 'public_always', label: 'Obert al Públic', icon: Eye }
                         ].map(st => (
-                          <button 
+                          <button
                             key={st.id}
                             onClick={() => setFormData({...formData, visibility_type: st.id})}
                             className={clsx(
@@ -582,7 +583,7 @@ export default function EditWorkPage() {
                             )}
                           >
                              <div className="flex items-center gap-3">
-                               <st.icon size={16} /> {st.label}
+                               <st.icon size={16} /> {ui(st.label)}
                              </div>
                              {formData.visibility_type === st.id && <Check size={14} />}
                           </button>
@@ -595,13 +596,13 @@ export default function EditWorkPage() {
                         <div className={clsx("w-5 h-5 rounded-md border flex items-center justify-center transition-all", formData.featured ? "bg-amber-500 border-amber-500 text-white" : "border-[var(--color-border)]")}>
                           {formData.featured && <Check size={12} />}
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] group-hover:text-white">Destacat</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] group-hover:text-white">{ui("Destacat")}</span>
                       </div>
                       <div className="flex items-center gap-3 p-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-2xl hover:border-[var(--color-accent)]/50 transition-colors cursor-pointer group" onClick={() => setFormData({...formData, protected: !formData.protected})}>
                         <div className={clsx("w-5 h-5 rounded-md border flex items-center justify-center transition-all", formData.protected ? "bg-red-500 border-red-500 text-white" : "border-[var(--color-border)]")}>
                           {formData.protected && <Check size={12} />}
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] group-hover:text-white">Pin Extra</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-muted)] group-hover:text-white">{ui("Pin Extra")}</span>
                       </div>
                     </div>
                   </div>
@@ -610,25 +611,24 @@ export default function EditWorkPage() {
                 <div className="space-y-8">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-3 bg-[var(--color-accent)]/10 rounded-2xl text-[var(--color-accent)]"><Hash size={20} /></div>
-                    <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">Anotacions i Etiquetes</h3>
+                    <h3 className="font-black uppercase tracking-[0.2em] text-[var(--color-text)] text-xs">{ui("Anotacions i Etiquetes")}</h3>
                   </div>
 
                   <div className="space-y-6">
                     <div>
                         <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest flex items-center gap-2">
-                           <Building2 size={12} /> Empresa Associada
-                        </label>
+                           <Building2 size={12} /> {ui("Empresa Associada")} </label>
                         <div className="relative">
-                           <button 
+                           <button
                             onClick={() => setIsCompanyOpen(!isCompanyOpen)}
                             className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] text-sm font-bold rounded-2xl px-5 py-4 flex items-center justify-between"
                            >
-                              {companies.find(c => c.id === formData.company_id)?.name || "Acció Independent"}
+                              {companies.find(c => c.id === formData.company_id)?.name || ui("Acció Independent")}
                               <ChevronDown size={14} className={clsx("transition-transform", isCompanyOpen && "rotate-180")} />
                            </button>
                            {isCompanyOpen && (
                              <div className="absolute top-full left-0 w-full mt-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto animate-in zoom-in-95 duration-200">
-                                <button onClick={() => { setFormData({...formData, company_id: ""}); setIsCompanyOpen(false); }} className="w-full text-left px-5 py-4 hover:bg-[var(--color-bg)] text-xs font-bold border-b border-[var(--color-border)]/50">Cap (Desvinculat)</button>
+                                <button onClick={() => { setFormData({...formData, company_id: ""}); setIsCompanyOpen(false); }} className="w-full text-left px-5 py-4 hover:bg-[var(--color-bg)] text-xs font-bold border-b border-[var(--color-border)]/50">{ui("Cap (Desvinculat)")}</button>
                                 {companies.map(c => (
                                   <button key={c.id} onClick={() => { setFormData({...formData, company_id: c.id}); setIsCompanyOpen(false); }} className="w-full text-left px-5 py-4 hover:bg-[var(--color-bg)] text-xs font-bold border-b border-[var(--color-border)]/50 last:border-0">{c.name}</button>
                                 ))}
@@ -639,52 +639,49 @@ export default function EditWorkPage() {
 
                     <div>
                         <label className="block text-[10px] font-black text-[var(--color-muted)] mb-3 uppercase tracking-widest flex items-center gap-2">
-                           <Calendar size={12} /> Data del Mòdul
-                        </label>
-                        <input 
-                          type="text" 
-                          placeholder="Ex: 2024 o 2024-12-31"
-                          value={formData.work_date} 
-                          onChange={e => setFormData({...formData, work_date: e.target.value})} 
-                          className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-sm font-bold rounded-2xl px-5 py-3.5 focus:outline-none focus:border-[var(--color-accent)] placeholder-[var(--color-muted)]/30" 
+                           <Calendar size={12} /> {ui("Data del Mòdul")} </label>
+                        <input
+                          type="text"
+                          placeholder={ui("Ex: 2024 o 2024-12-31")}
+                          value={formData.work_date}
+                          onChange={e => setFormData({...formData, work_date: e.target.value})}
+                          className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-sm font-bold rounded-2xl px-5 py-3.5 focus:outline-none focus:border-[var(--color-accent)] placeholder-[var(--color-muted)]/30"
                         />
-                        <p className="text-[9px] text-[var(--color-muted)] mt-2 pl-1">Pots escriure només l&apos;any si no saps el dia exacte.</p>
+                        <p className="text-[9px] text-[var(--color-muted)] mt-2 pl-1">{ui("Pots escriure només l'any si no saps el dia exacte.")}</p>
                     </div>
 
                     <div>
                         <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest flex items-center justify-between">
-                           <span>Etiquetes del Projecte</span>
-                           <span className="opacity-50">{formData.tags?.length || 0} actives</span>
+                           <span>{ui("Etiquetes del Projecte")}</span>
+                           <span className="opacity-50">{formData.tags?.length || 0} {ui("actives")}</span>
                         </label>
-                        
+
                         {/* Custom Tag Input */}
                         <div className="flex gap-2 mb-6">
-                           <input 
+                           <input
                              type="text"
                              value={newTag}
                              onChange={(e) => setNewTag(e.target.value)}
                              onKeyDown={(e) => {
-                               if (e.key === 'Enter') {
+                               if (e.key === "Enter") {
                                  e.preventDefault();
                                  addCustomTag();
                                }
                              }}
-                             placeholder="Escriu i prem Enter..."
+                             placeholder={ui("Escriu i prem Enter...")}
                              className="flex-1 bg-[var(--color-bg)] border border-[var(--color-border)] text-white text-[10px] font-bold rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--color-accent)] placeholder-[var(--color-muted)]/30"
                            />
-                           <button 
+                           <button
                              onClick={(e) => { e.preventDefault(); addCustomTag(); }}
                              className="px-4 py-3 bg-[var(--color-accent)] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[var(--color-accent-glow)]"
-                           >
-                              Afegir
-                           </button>
+                           > {ui("Afegir")} </button>
                         </div>
 
                         {/* Selected Tags Display (especially for custom ones) */}
                         {formData.tags?.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-6 p-3 bg-[var(--color-bg)] rounded-2xl border border-[var(--color-border)]/50">
                              {formData.tags.map(tag => (
-                               <button 
+                               <button
                                  key={tag}
                                  onClick={() => toggleTag(tag)}
                                  className="px-2 py-1 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 text-[var(--color-accent)] rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-all group"
@@ -696,12 +693,12 @@ export default function EditWorkPage() {
                           </div>
                         )}
 
-                        <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest opacity-50">Sugeriments</label>
+                        <label className="block text-[10px] font-black text-[var(--color-muted)] mb-4 uppercase tracking-widest opacity-50">{ui("Sugeriments")}</label>
                         <div className="flex flex-wrap gap-2 overflow-y-auto max-h-[120px] p-1 scrollbar-hide">
                            {PREDEFINED_TAGS.map(tag => {
                              const isSelected = formData.tags?.includes(tag);
                              return (
-                               <button 
+                               <button
                                  key={tag}
                                  onClick={() => toggleTag(tag)}
                                  className={clsx(
@@ -727,19 +724,19 @@ export default function EditWorkPage() {
         <div className="max-w-3xl mx-auto bg-[var(--color-bg)] border border-[var(--color-border)] rounded-3xl p-8">
            <div className="flex items-center gap-3 mb-6">
               <Clock size={16} className="text-[var(--color-muted)]" />
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">Càpsules del Temps (Versions)</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--color-muted)]">{ui("Càpsules del Temps (Versions)")}</p>
            </div>
            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {versionHistory.map((snap, i) => (
-                <button 
-                  key={i} 
+                <button
+                  key={i}
                   onClick={() => {
-                    if(confirm("Restaurar?")) setFormData(p => ({...p, title: snap.title, summary: snap.summary, content: snap.content }));
+                    if(confirm(ui("Restaurar?"))) setFormData(p => ({...p, title: snap.title, summary: snap.summary, content: snap.content }));
                   }}
                   className="shrink-0 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl hover:border-[var(--color-accent)] transition-all flex flex-col gap-1 items-start min-w-[200px]"
                 >
-                  <span className="text-[10px] font-black text-white">{new Date(snap.timestamp).toLocaleString("ca-ES", { day:"numeric", month:"long" })}</span>
-                  <span className="text-[9px] text-[var(--color-muted)] uppercase tracking-widest">{new Date(snap.timestamp).toLocaleTimeString("ca-ES", { hour: '2-digit', minute: '2-digit'})}</span>
+                  <span className="text-[10px] font-black text-white">{new Date(snap.timestamp).toLocaleString(ui.locale, { day:"numeric", month:"long" })}</span>
+                  <span className="text-[9px] text-[var(--color-muted)] uppercase tracking-widest">{new Date(snap.timestamp).toLocaleTimeString(ui.locale, { hour: '2-digit', minute: '2-digit'})}</span>
                 </button>
               ))}
            </div>

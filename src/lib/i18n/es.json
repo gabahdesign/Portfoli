@@ -4,9 +4,9 @@
     "featured_works": "Trabajos destacados",
     "experience": "Experiencia",
     "personal_projects": "Proyectos personales y colaboraciones",
-    "no_projects_found": "No se ha encontrado ningún proyecto de la categoría seleccionada.",
+    "no_projects_found": "No se han encontrado proyectos de esta categoría.",
     "collaborations_title": "Clientes",
-    "collaborations_desc": "Clientes y empresas vinculadas a los proyectos que he diseñado, ya sea organizándolos, colaborando o patrocinándolos. También incluye marcas para las que he creado anuncios de patrocinadores dentro de estos diseños.",
+    "collaborations_desc": "Clientes y empresas vinculadas a mis diseños como organizadores, colaboradores o patrocinadores. Incluye marcas para las que he creado anuncios de patrocinadores dentro de esos diseños.",
     "view_cv": "Ver currículum profesional"
   },
   "Navigation": {
@@ -17,16 +17,16 @@
     "back": "Volver",
     "settings": "Ajustes",
     "move": "Move",
-    "webs": "Proyectos Web"
+    "webs": "Proyectos web"
   },
   "Settings": {
     "title": "Ajustes",
     "language": "Idioma",
-    "dark_mode": "Modo Oscuro",
-    "client_access": "Acceso Cliente",
-    "privacy_policy": "Política de Privacidad",
-    "cookie_policy": "Política de Cookies",
-    "terms_of_use": "Condiciones de Uso",
-    "legal_notice": "Aviso Legal"
+    "dark_mode": "Modo oscuro",
+    "client_access": "Acceso de cliente",
+    "privacy_policy": "Política de privacidad",
+    "cookie_policy": "Política de cookies",
+    "terms_of_use": "Condiciones de uso",
+    "legal_notice": "Aviso legal"
   }
 }

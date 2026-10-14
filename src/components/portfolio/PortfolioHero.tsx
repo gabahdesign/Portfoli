@@ -1,3 +1,4 @@
+import {uiTranslator} from "@/lib/fixed-ui";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 
@@ -9,7 +10,8 @@ const copy = {
 };
 
 export function PortfolioHero({ name, tagline, locale, token = "preview" }: { name: string; tagline: string; locale: string; token?: string }) {
-  const c = copy[locale as keyof typeof copy] || copy.ca;
+  const ui=uiTranslator(locale);
+ const c=Object.fromEntries(Object.entries(copy.ca).map(([key,value])=>[key,ui(value)])) as typeof copy.ca;
   return (
     <section className="portfolio-hero" aria-labelledby="portfolio-title">
       <div className="hero-copy">
@@ -22,9 +24,9 @@ export function PortfolioHero({ name, tagline, locale, token = "preview" }: { na
         </div>
       </div>
       <div className="hero-object" aria-hidden="true">
-        <span className="object-coordinate">FIG. 01 / FORM & FUNCTION</span>
+        <span className="object-coordinate">{ui("FIG. 01 / FORM & FUNCTION")}</span>
         <div className="orb"><div className="orb-rings" /></div>
-        <span className="object-caption">DESCOBREIX®<br />CREATIVE EXPLORATION</span>
+        <span className="object-caption">DESCOBREIX®<br />{ui("CREATIVE EXPLORATION")}</span>
         <span className="object-cross">+</span>
       </div>
       <div className="hero-footer"><span>DESCOBREIX</span><span>{c.index}</span><ArrowDown size={14} /></div>
