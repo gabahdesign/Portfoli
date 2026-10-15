@@ -1,3 +1,4 @@
+import { recoveredWorks, recoveredCompanies } from "@/lib/public-portfolio-recovery";
 import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -13,13 +14,14 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
   const { token, slug } = await params;
   const supabase = await createClient(token || undefined);
 
-  const { data: company, error } = await supabase
+  const { data: liveCompany, error } = await supabase
     .from("companies")
     .select("*")
     .eq("slug", slug)
     .single();
 
-  if (error || !company) {
+  const company = liveCompany || (error && token === "preview" ? recoveredCompanies.find(item => item.slug === slug) : null);
+  if (!company) {
     notFound();
   }
 
@@ -31,12 +33,14 @@ export default async function CompanyPage({ params }: { params: Promise<{ token:
      }
   }
 
-  const { data: works } = await supabase
+  const { data: liveWorks, error: worksError } = await supabase
     .from("works")
     .select("slug, title, cover_url, summary, tags, protected")
     .eq("company_id", company.id)
     .eq("status", "published")
     .order("work_date", { ascending: false });
+
+  const works = liveWorks || (worksError && token === "preview" ? recoveredWorks.filter(item => item.company_id === company.id) : []);
 
   const formattedDates = `${new Date(company.start_date).getFullYear()} - ${
     company.end_date ? new Date(company.end_date).getFullYear() : "Present"

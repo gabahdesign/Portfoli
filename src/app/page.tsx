@@ -1,3 +1,4 @@
+import { recoveredWorks, recoveredCompanies } from "@/lib/public-portfolio-recovery";
 import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -30,8 +31,8 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
     supabase.from("works").select("slug, title, cover_url, summary, tags, protected, company_id, work_date, pdf_url, companies(name)").eq("status", "published").order("work_date", { ascending: false }),
   ]);
   const about = aboutRes.data;
-  const companies = companiesRes.data || [];
-  const works: FeedWork[] = (worksRes.data || []).map(work => ({ ...work, companies: Array.isArray(work.companies) ? work.companies[0] : work.companies }));
+  const companies = companiesRes.data || (companiesRes.error ? recoveredCompanies : []);
+  const works: FeedWork[] = (worksRes.data || (worksRes.error ? recoveredWorks : [])).map(work => ({ ...work, companies: Array.isArray(work.companies) ? work.companies[0] : work.companies }));
   const clients = companies.filter(company => company.is_freelance);
   const tagline = typeof about?.tagline === "object" && about.tagline ? about.tagline[locale] || about.tagline.ca || "" : about?.tagline || "";
   const c = {
@@ -56,7 +57,7 @@ export default async function PublicHome({ searchParams }: { searchParams: Promi
         <details className="studio-portfolio-group" open>
           <summary className="studio-section-summary"><span className="studio-label">01 / PORTFOLI</span><h2>Portfoli</h2><span className="studio-disclosure" aria-hidden="true">+</span></summary>
         <PresentationLoader works={works.map(work => ({ slug: work.slug, title: work.title, cover_url: work.cover_url || undefined, pdf_url: work.pdf_url || undefined }))} />
-        {worksRes.error ? <section className="studio-empty" id="projects" role="status"><p>{ui(c.unavailable)}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
+        {worksRes.error && works.length === 0 ? <section className="studio-empty" id="projects" role="status"><p>{ui(c.unavailable)}</p></section> : <PortfolioFeed works={works} token="preview" locale={locale} initialCompanyId={companyId} companies={companies} />}
         {clients.length > 0 && <section className="studio-clients"> <div><h2>{t("collaborations_title")}</h2><p className="clients-intro">{t("collaborations_desc")}</p></div>
           <div className="client-grid">{clients.map(company => <Link href={`/v/preview/empresa/${company.slug}`} prefetch={false} key={company.id} className={`studio-client${company.logo_url ? " has-logo" : ""}`} aria-label={company.name}>
             {company.logo_url && <div className="client-logo"><Image src={company.logo_url} alt="" fill sizes="(max-width: 767px) 100px, 120px" quality={75} className="object-contain" /></div>}

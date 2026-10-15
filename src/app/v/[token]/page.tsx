@@ -1,3 +1,4 @@
+import { recoveredWorks, recoveredCompanies } from "@/lib/public-portfolio-recovery";
 import { createClient } from "@/lib/supabase/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { PortfolioFeed } from "@/components/portfolio/PortfolioFeed";
@@ -32,7 +33,7 @@ export default async function PortfolioHome({
       supabase.from("companies").select("*").order("start_date", { ascending: false }),
     ]);
     aboutData = aboutRes.data;
-    allCompanies = companiesRes.data || [];
+    allCompanies = companiesRes.data || (companiesRes.error && token === "preview" ? recoveredCompanies : []);
   } else {
     const [tokenRes, aboutRes, companiesRes] = await Promise.all([
       supabase.from("access_tokens").select("company_ids").eq("token", token).maybeSingle(),
@@ -54,11 +55,13 @@ export default async function PortfolioHome({
 
   const collaborationCompanyIds = (allCompanies || []).filter(c => c.is_freelance).map(c => c.id);
 
-  const { data: featuredWorks } = await supabase
+  const { data: liveFeaturedWorks, error: worksError } = await supabase
     .from("works")
     .select("slug, title, cover_url, summary, tags, protected, company_id, work_date, featured, pdf_url, companies(name)")
     .eq("status", "published")
     .order("work_date", { ascending: false });
+
+  const featuredWorks = liveFeaturedWorks || (worksError && token === "preview" ? recoveredWorks : []);
 
   // Filter works based on visibility and specifically ensuring that if a companyId is provided,
   // we include those works regardless of being featured, while the client side handling
@@ -146,3 +149,4 @@ export default async function PortfolioHome({
     </div>
   );
 }
+

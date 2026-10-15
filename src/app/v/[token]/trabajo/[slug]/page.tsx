@@ -1,3 +1,4 @@
+import { recoveredWorks, recoveredCompanies } from "@/lib/public-portfolio-recovery";
 import { getUiTranslator } from "@/lib/fixed-ui-server";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -35,13 +36,14 @@ export default async function WorkPage({
   const supabase = await createClient(token || undefined);
 
   // Obtain work info
-  const { data: work, error } = await supabase
+  const { data: liveWork, error } = await supabase
     .from("works")
     .select("*, companies (name, is_freelance)")
     .eq("slug", slug)
     .single();
 
-  if (error || !work || work.status !== "published") {
+  const work = liveWork || (error && token === "preview" ? recoveredWorks.find(item => item.slug === slug) : null);
+  if (!work || work.status !== "published") {
     notFound();
   }
 
