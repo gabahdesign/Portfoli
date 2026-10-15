@@ -1,0 +1,312 @@
+{
+  "capturedAt": "2026-10-15",
+  "works": [
+    {
+      "id": "d2805bcd-5748-483c-9a26-349429aead53",
+      "slug": "felicitaci-nadal",
+      "title": "Felicitació Nadal",
+      "cover_url": "/recovered-portfolio/cf4e687ffa9e9adbd31c7fc6.webp",
+      "summary": "",
+      "content": [
+        {
+          "id": "icau0bc",
+          "type": "media",
+          "content": {
+            "url": "/recovered-portfolio/2e440dc7296843bb4a5e3307.mp4",
+            "mimeType": "video/mp4"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        }
+      ],
+      "tags": [],
+      "work_date": null,
+      "status": "published",
+      "protected": false,
+      "visibility_type": "public_always",
+      "pdf_url": "",
+      "accent_color": "#5e6efc",
+      "company_id": "f5e42ffb-f47c-4963-a235-d53ecd87bbad",
+      "companies": {
+        "name": "VIA P TRAVEL",
+        "logo_url": "/images/companies/Via_P_Travel.png",
+        "is_freelance": true
+      }
+    },
+    {
+      "id": "8e8e4a0b-bce9-4281-bb4d-c70a09d4999d",
+      "slug": "il-lustracions",
+      "title": "Il·lustracions",
+      "cover_url": "/recovered-portfolio/331e611d7ddb2ce258f6de9f.webp",
+      "summary": "Il·lustracions fora d'hora.",
+      "content": [
+        {
+          "id": "6heax40",
+          "type": "gallery",
+          "content": {
+            "items": [
+              "/recovered-portfolio/0f10e47332a06b7f0d08ac52.webp",
+              "/recovered-portfolio/331e611d7ddb2ce258f6de9f.webp",
+              "/recovered-portfolio/5bf62340a6fea6ac214ba24b.webp",
+              "/recovered-portfolio/55917f9e4207765fc6e24b9c.webp",
+              "/recovered-portfolio/c3b7787c809d9bf8a9a16926.webp",
+              "/recovered-portfolio/c93230c5ce76da2e77a288a1.webp",
+              "/recovered-portfolio/21d576a860a86ecfc237970f.webp",
+              "/recovered-portfolio/ce700ba4a45df76f7d6a13d6.webp",
+              "/recovered-portfolio/ab28b8d1595f1ffb11ccd2fa.webp",
+              "/recovered-portfolio/318dda4ee45893652e1b2a18.webp",
+              "/recovered-portfolio/239c1139033fb9e161a908fc.webp",
+              "/recovered-portfolio/145bd6ff14f91c9cbaf92b01.webp",
+              "/recovered-portfolio/d2cf628f73213b449aeacd3a.webp",
+              "/recovered-portfolio/fa51d1f82603677b75c25306.webp"
+            ]
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        }
+      ],
+      "tags": [
+        "Illustration"
+      ],
+      "work_date": null,
+      "status": "published",
+      "protected": false,
+      "visibility_type": "public_always",
+      "pdf_url": "",
+      "accent_color": "#5e6efc",
+      "company_id": "da3ff37e-bddd-4db4-a3ad-b91a5d90166c",
+      "companies": {
+        "name": "Descobreix",
+        "logo_url": "",
+        "is_freelance": false
+      }
+    },
+    {
+      "id": "46638de1-876b-425b-8dc9-a5facd00cf12",
+      "slug": "grup-sol-ric-carta-tapitapes-carta-tapitapes-final",
+      "title": "Postals de Nadal",
+      "cover_url": "/recovered-portfolio/a395a5fe97b92fc7d9a174e6.webp",
+      "summary": "(Diferents anys)",
+      "content": [
+        {
+          "id": "eds8jsv",
+          "type": "media",
+          "content": {
+            "url": "/recovered-portfolio/feb4b1b7a820ea4b3acdc451.webp",
+            "mimeType": "image/gif"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "1dalv0p",
+          "type": "media",
+          "content": {
+            "url": "/recovered-portfolio/6a8ce84c4addf3d8c671e2b9.webp",
+            "mimeType": "image/gif"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "vleuqvl",
+          "type": "media",
+          "content": {
+            "url": "/recovered-portfolio/a32e48a3b44e572997f4d14b.webp",
+            "mimeType": "image/gif"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        }
+      ],
+      "tags": [],
+      "work_date": null,
+      "status": "published",
+      "protected": false,
+      "visibility_type": "public_always",
+      "pdf_url": "",
+      "accent_color": "#5e6efc",
+      "company_id": "bb1cbfc8-8eb7-4454-9187-7d935bcf5208",
+      "companies": {
+        "name": "EDEL",
+        "logo_url": "/images/companies/Edel.png",
+        "is_freelance": true
+      }
+    },
+    {
+      "id": "eaf70ffc-f233-4f36-822b-f0f09cd69a5f",
+      "slug": "aeht-2022-salou-gastro-wine-music-aaff",
+      "title": "Gastro Wine Music",
+      "cover_url": "",
+      "summary": "Jornades Gastronòmiques",
+      "content": [
+        {
+          "id": "07ghqyu",
+          "type": "pdf",
+          "content": {
+            "url": "/recovered-portfolio/62719afd1831ce3b2de99743.pdf",
+            "title": "AAFF_CARTELL_A3_GWM_ES"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "awczq69",
+          "type": "pdf",
+          "content": {
+            "url": "/recovered-portfolio/fb3d6704947c1d310003e0cd.pdf",
+            "title": "AAFF_DIPTIC_GWM_ES"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "tcdbp39",
+          "type": "pdf",
+          "content": {},
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "id": "48a11aa",
+          "type": "pdf",
+          "content": {
+            "url": "/recovered-portfolio/62719afd1831ce3b2de99743.pdf",
+            "title": "AAFF_CARTELL_A3_GWM_ES"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": false,
+            "backgroundColor": "transparent"
+          }
+        }
+      ],
+      "tags": [],
+      "work_date": "2022-01-01",
+      "status": "published",
+      "protected": false,
+      "visibility_type": "public_always",
+      "pdf_url": "/recovered-portfolio/62719afd1831ce3b2de99743.pdf",
+      "accent_color": "#5e6efc",
+      "company_id": "1389bc96-f3c4-4c35-8d42-e1af7fb343ef",
+      "companies": {
+        "name": "Aeh Salou",
+        "logo_url": "/images/companies/AEH_SALOU.png",
+        "is_freelance": true
+      }
+    },
+    {
+      "id": "434ceb13-cfbc-4c28-b4df-edd3580f25f0",
+      "slug": "aeht-cartell-a3-a4-aaff",
+      "title": "Mar, Riu i Muntanya",
+      "cover_url": "/recovered-portfolio/747328bade245064dfcda34b.webp",
+      "summary": "Jornades Gastronòmiques del Baix Gaià",
+      "content": [
+        {
+          "id": "lcsy64h",
+          "type": "media",
+          "content": {
+            "url": "/recovered-portfolio/747328bade245064dfcda34b.webp",
+            "mimeType": "image/jpeg"
+          },
+          "settings": {
+            "padding": "2.5rem",
+            "fullWidth": true,
+            "backgroundColor": "transparent"
+          }
+        }
+      ],
+      "tags": [
+        "Cartell"
+      ],
+      "work_date": "2021-01-01",
+      "status": "published",
+      "protected": false,
+      "visibility_type": "public_always",
+      "pdf_url": "",
+      "accent_color": "#5e6efc",
+      "company_id": "6bf381e8-bbb9-42bc-b716-7e57c1ad174a",
+      "companies": {
+        "name": "AEH Baix Gaia",
+        "logo_url": "/images/companies/AEH_BAIX_GAIA.png",
+        "is_freelance": true
+      }
+    }
+  ],
+  "companies": [
+    {
+      "id": "bb1cbfc8-8eb7-4454-9187-7d935bcf5208",
+      "slug": "edel",
+      "name": "EDEL",
+      "logo_url": null,
+      "sector": "Ascensors",
+      "start_date": null,
+      "is_freelance": true,
+      "parent_id": null
+    },
+    {
+      "id": "6bf381e8-bbb9-42bc-b716-7e57c1ad174a",
+      "slug": "aeh-baix-gaia",
+      "name": "AEH Baix Gaia",
+      "logo_url": null,
+      "sector": "Hosteleria",
+      "start_date": null,
+      "is_freelance": true,
+      "parent_id": "335e2991-4c56-44aa-a127-1d5e2511ea11"
+    },
+    {
+      "id": "f5e42ffb-f47c-4963-a235-d53ecd87bbad",
+      "slug": "via-p-travel",
+      "name": "VIA P TRAVEL",
+      "logo_url": null,
+      "sector": "turisme",
+      "start_date": null,
+      "is_freelance": true,
+      "parent_id": null
+    },
+    {
+      "id": "1389bc96-f3c4-4c35-8d42-e1af7fb343ef",
+      "slug": "aeh-salou",
+      "name": "Aeh Salou",
+      "logo_url": null,
+      "sector": "Col·laboració",
+      "start_date": null,
+      "is_freelance": true,
+      "parent_id": "335e2991-4c56-44aa-a127-1d5e2511ea11"
+    },
+    {
+      "id": "da3ff37e-bddd-4db4-a3ad-b91a5d90166c",
+      "slug": "descobreix",
+      "name": "Descobreix",
+      "logo_url": null,
+      "sector": "Arts",
+      "start_date": null,
+      "is_freelance": false,
+      "parent_id": null
+    }
+  ]
+}
