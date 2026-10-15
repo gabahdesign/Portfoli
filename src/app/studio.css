@@ -572,3 +572,14 @@ html[data-studio-theme="dark"] .studio-appearance-switch i{transform:translateX(
 }
 @media(prefers-reduced-motion:reduce){.studio-settings-inline,.studio-appearance-button,.studio-appearance-switch,.studio-appearance-switch i{animation:none;transition:none}}
 @keyframes studio-settings-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* Match the six public icons and order used by Move and WordPress. */
+@media(max-width:767px){
+ .studio-header:not(.is-admin) .studio-nav{grid-template-columns:repeat(6,minmax(0,1fr));padding-inline:2px}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(1){order:0}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(3){order:1}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(2){order:2}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(4){order:3}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(5){order:4}
+ .studio-header:not(.is-admin) .studio-nav>a:nth-child(6){order:5}
+ .studio-header:not(.is-admin) .studio-nav>a>svg:first-child{width:20px;height:20px;stroke-width:1.5}
+}
