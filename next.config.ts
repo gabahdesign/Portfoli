@@ -14,11 +14,12 @@ const nextConfig: NextConfig = {
       { source: "/move/workbox-:file.js", destination: `${upstream}/workbox-:file.js` },
       ...["sw.js","manifest.webmanifest","firebase-messaging-sw.js","favicon.png","apple-touch-icon.png","app-icon.png","descobreix-logo.png","bright-retro.otf","occitania-flag.svg","aragon-council-flag.jpg","la-merce-2026.html","robots.txt"].map(file=>({source:`/move/${file}`,destination:`${upstream}/${file}`})),
     ];
-    return [
+    // The old public/move/index.html must not take precedence over the live calendar.
+    return { beforeFiles: [
       ...assets,
       { source: "/move", destination: `${upstream}/move/` },
       { source: "/move/:path*", destination: `${upstream}/move/:path*` },
-    ];
+    ], afterFiles: [], fallback: [] };
   },
   typescript: {
     ignoreBuildErrors: false,
