@@ -583,3 +583,7 @@ html[data-studio-theme="dark"] .studio-appearance-switch i{transform:translateX(
  .studio-header:not(.is-admin) .studio-nav>a:nth-child(6){order:5}
  .studio-header:not(.is-admin) .studio-nav>a>svg:first-child{width:20px;height:20px;stroke-width:1.5}
 }
+@media(max-width:767px){
+ .studio-header:not(.is-admin) .studio-nav{gap:0;overflow:hidden}
+ .studio-header:not(.is-admin) .studio-nav>a{min-height:0;height:100%}
+}
