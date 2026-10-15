@@ -27,6 +27,14 @@ export function StudioHeader({ locale, token = "preview", isAdmin = false }: { l
   const [collapsed, setCollapsed] = useState(true);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  useEffect(() => {
+    if (!settingsOpen || !window.matchMedia('(max-width:767px)').matches) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') setSettingsOpen(false); };
+    window.addEventListener('keydown', close);
+    return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', close); };
+  }, [settingsOpen]);
   const [pending] = useTransition();
   const [logoutError, setLogoutError] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);

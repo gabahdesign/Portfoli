@@ -587,3 +587,8 @@ html[data-studio-theme="dark"] .studio-appearance-switch i{transform:translateX(
  .studio-header:not(.is-admin) .studio-nav{gap:0;overflow:hidden}
  .studio-header:not(.is-admin) .studio-nav>a{min-height:0;height:100%}
 }
+@media(max-width:767px){
+ .studio-header.is-settings-open{overflow:visible;max-height:none}
+ .studio-settings-inline{inset:0;z-index:200;height:100dvh;max-height:100dvh;padding:calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));border:0;overscroll-behavior:contain}
+ .studio-settings-heading{position:sticky;top:0;background:var(--color-bg);z-index:1;min-height:48px}
+}
